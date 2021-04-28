@@ -1,8 +1,23 @@
-import express from "express";
+import { App } from '@slack/bolt';
 
-const app = express();
-app.use(express.json());
-app.get("/rafaelTchola", (request, response) => {
-  return response.status(200).json({ message: "full tchola" });
+const app = new App({
+  token: process.env.SLACK_TOKEN, 
+  appToken: process.env.SLACK_APP_TOKEN,
+  socketMode: true,
 });
-app.listen(3333);
+
+(async () => {
+  await app.start();
+  console.log('⚡️ Bolt app started');
+})();
+
+// subscribe to 'app_mention' event in your App config
+// need app_mentions:read and chat:write scopes
+app.message('romulo', async ({ event, context, client, say }) => {
+  try {
+    await say("romulo tcholas kkk teste");
+  }
+  catch (error) {
+    console.error(error);
+  }
+});
