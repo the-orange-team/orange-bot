@@ -15,7 +15,7 @@ const app = new App({
 // need app_mentions:read and chat:write scopes
 app.message('romulo', async ({ event, context, client, say }) => {
   try {
-    await say("tcholas kkk teste");
+    await say("romulo tcholas kkk teste");
   }
   catch (error) {
     console.error(error);
