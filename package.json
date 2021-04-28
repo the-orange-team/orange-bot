@@ -1,0 +1,17 @@
+{
+  "name": "orange-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "repository": "https://github.com/romulogmp/orange-bot.git",
+  "author": "romulogmp <romulogmp@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
