@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch 'src/' --exec 'ts-node src/index.ts' -e ts"
+    "dev": "nodemon --watch 'src/' --exec 'ts-node src/index.ts' -e ts",
+    "lint": "eslint . --ext .ts"
   },
   "repository": "https://github.com/romulogmp/orange-bot.git",
   "author": "romulogmp <romulogmp@gmail.com>",
@@ -12,6 +13,9 @@
     "@slack/bolt": "^3.3.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "eslint": "^7.25.0",
     "nodemon": "^2.0.7",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
