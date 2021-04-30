@@ -1,4 +1,5 @@
 import { App } from '@slack/bolt';
+import { getValue, setValue } from './storage';
 
 const app = new App({
   token: process.env.SLACK_TOKEN, 
@@ -14,6 +15,7 @@ const app = new App({
 
 // subscribe to 'app_mention' event in your App config
 // need app_mentions:read and chat:write scopes
+
 app.message('romulo', async ({ event, context, client, say }) => {
   try {
     await say("romulo tcholas kkk teste");
