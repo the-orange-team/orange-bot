@@ -7,7 +7,8 @@ const app = new App({
 });
 
 (async () => {
-  await app.start();
+  let port: number = Number(process.env["PORT"] || 3000);
+  await app.start(port);
   console.log('⚡️ Bolt app started');
 })();
 
