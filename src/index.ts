@@ -7,10 +7,9 @@ const app = new App({
 });
 
 (async () => {
-  await app.start(Number(process.env.PORT) || 3000);
-  console.log("<<<<PORT>>>>")
-  console.log(process.env.PORT)
-  console.log('⚡️ Bolt app started');
+  const PORT = Number(process.env.PORT)
+  await app.start( PORT || 3000);
+  console.log(`⚡️ Bolt app started on port ${PORT}`);
 })();
 
 // subscribe to 'app_mention' event in your App config
