@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch 'src/' --exec 'ts-node src/index.ts' -e ts",
-    "start": "nodemon --watch 'src/' --exec 'ts-node src/index.ts' -e ts",
+    "start": "ts-node src/index.ts",
     "lint": "eslint . --ext .ts"
   },
   "repository": "https://github.com/romulogmp/orange-bot.git",
