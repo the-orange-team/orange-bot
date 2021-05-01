@@ -1,13 +1,12 @@
 import redis, {ClientOpts} from 'redis'
 
 const PORT = Number(process.env.REDIS_PORT) || 3333;
-const confiClient: ClientOpts= {
-    port: PORT,
-    url: process.env.REDIS_URL,
-    password: process.env.REDIS_PASSWORD
+const redisUrl = process.env.REDIS_URL || '';
+const configClient: ClientOpts= {
+    auth_pass: process.env.REDIS_PASSWORD,
 };
 
-const client = redis.createClient(confiClient)
+const client = redis.createClient(PORT, redisUrl, configClient)
 
 type ReturnTypeRedis = string | number | null
 
