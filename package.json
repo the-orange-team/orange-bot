@@ -4,8 +4,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch src/ --exec ts-node src/index.ts -e ts",
-    "start": "yarn build && node dist/index.js",
-    "build": "tsc -p .",
+    "start": "node dist/index.js",
+    "tsc": "tsc",
+    "postinstall": "yarn run tsc",
     "lint": "eslint . --ext .ts"
   },
   "repository": "https://github.com/romulogmp/orange-bot.git",
@@ -13,14 +14,14 @@
   "license": "MIT",
   "dependencies": {
     "@slack/bolt": "^3.3.0",
-    "tedis": "^0.1.12",
-    "typescript": "^4.2.4"
+    "tedis": "^0.1.12"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "eslint": "^7.25.0",
     "nodemon": "^2.0.7",
-    "ts-node": "^9.1.1"
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
   }
 }
