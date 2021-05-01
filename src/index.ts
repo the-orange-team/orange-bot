@@ -20,7 +20,7 @@ const app = new App({
 app.message('getvalue', async ({ event, context, client, say }) => {
   try {
     await say("getting value");
-    console.log(await getValue("test"));
+    console.log(await getValue("teste"));
   }
   catch (error) {
     app.error(error);
