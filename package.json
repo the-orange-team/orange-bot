@@ -14,9 +14,11 @@
   "license": "MIT",
   "dependencies": {
     "@slack/bolt": "^3.3.0",
-    "tedis": "^0.1.12"
+    "tedis": "^0.1.12",
+    "twitter": "^1.7.1"
   },
   "devDependencies": {
+    "@types/twitter": "^1.7.0",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "eslint": "^7.25.0",
