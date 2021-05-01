@@ -12,9 +12,6 @@ jobs:
           name: Install
           command: yarn install
       - run:
-          name: Build
-          command: yarn run build
-      - run:
           name: Lint
           command: yarn run lint
 
