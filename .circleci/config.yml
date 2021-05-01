@@ -12,9 +12,6 @@ jobs:
           name: Install
           command: yarn install
       - run:
-          name: Postinstall
-          command: yarn run postinstall
-      - run:
           name: Lint
           command: yarn run lint
 
