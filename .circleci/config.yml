@@ -4,6 +4,8 @@ orbs:
 version: 2.1
 jobs:
   Build:
+    docker:
+      - image: node:10
     steps:
       - run:
           name: Install
