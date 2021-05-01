@@ -19,7 +19,7 @@ const app = new App({
 app.message('romulo', async ({ event, context, client, say }) => {
   try {
     await say("romulo tcholas kkk teste");
-    await getValue("test")
+    console.log(await getValue("teste"));
   }
   catch (error) {
     console.error(error);
