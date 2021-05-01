@@ -5,7 +5,7 @@ version: 2.1
 jobs:
   Build:
     docker:
-      - image: node:10
+      - image: node:16
     working_directory: ~/orange-bot
     steps:
       - checkout
