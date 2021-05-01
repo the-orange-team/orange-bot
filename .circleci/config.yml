@@ -1,0 +1,19 @@
+orbs: 
+  node: circleci/node@2.0.2
+
+version: 2.1
+jobs:
+  Build:
+    steps:
+      - yarn run build
+
+  Lint:
+    steps:
+      - yarn run lint
+
+
+workflows:
+  "Orangebot deploy checklist":
+    jobs:
+      - Build
+      - Lint
