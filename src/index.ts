@@ -23,7 +23,7 @@ app.message('getvalue', async ({ event, context, client, say }) => {
     console.log(await getValue("test"));
   }
   catch (error) {
-    console.error(error);
+    app.error(error);
   }
 });
 
