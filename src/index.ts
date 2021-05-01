@@ -26,6 +26,16 @@ app.message('romulo', async ({ event, context, client, say }) => {
   }
 });
 
+app.message('getvalue', async ({ event, context, client, say }) => {
+  try {
+    await say("getting value");
+    console.log(await getValue("teste"));
+  }
+  catch (error) {
+    console.error(error);
+  }
+});
+
 app.command('/echo', async ({ command, ack, say }) => {
   try{
     await ack();
