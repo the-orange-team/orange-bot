@@ -6,6 +6,7 @@ jobs:
   Build:
     docker:
       - image: node:10
+    working_directory: ~/orange-bot
     steps:
       - run:
           name: Install
