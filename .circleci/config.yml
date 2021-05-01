@@ -3,6 +3,7 @@ orbs:
   slack: circleci/slack@4.0
 
 version: 2.1
+
 jobs:
   Build:
     docker:
@@ -27,4 +28,5 @@ jobs:
 workflows:
   "Orangebot deploy checklist":
     jobs:
-      - Build
+      - Build:
+          context: slack-secrets
