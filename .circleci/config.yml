@@ -8,6 +8,7 @@ jobs:
       - image: node:10
     working_directory: ~/orange-bot
     steps:
+      - checkout
       - run:
           name: Install
           command: yarn install
