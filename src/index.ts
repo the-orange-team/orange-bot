@@ -1,7 +1,7 @@
 import { App } from '@slack/bolt';
 import { storage } from './storage';
 import Twitter from 'twitter';
-import { returnValue } from './messages/messages';
+import { returnValue, messageStartingWithColonRegex } from './messages/messages';
 import { textToSlackMessage } from './messages/slackAdapter';
 
 const app = new App({
@@ -16,7 +16,7 @@ const app = new App({
     console.log(`⚡️ Orange Bot started on port ${PORT}`);
 })();
 
-app.message(/^:.*[^:]$/, async ({ context, say }) => {
+app.message(messageStartingWithColonRegex, async ({ context, say }) => {
     // RegExp matches are inside of context.matches
     try {
         const command = context.matches[0].toLowerCase();
