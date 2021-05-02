@@ -1,6 +1,7 @@
 import { App } from '@slack/bolt';
 import { getValue, setValue } from './storage';
 import Twitter from 'twitter';
+import { getRandomElement } from './utils';
 
 const app = new App({
     token: process.env.SLACK_TOKEN, 
@@ -31,7 +32,11 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
         await say(`getting ${command}`);
         const response = await getValue(command);
         if (response) { 
-            await say(response.toString());
+            if (response instanceof Array){
+                await say(getRandomElement(response));
+            } else {
+                await say(response);
+            }
         }
         else { 
             await say("command doesn't exist");
@@ -47,10 +52,10 @@ app.command('/create', async ({ command, ack, say }) => {
     try {
         const regex = /^(.*) returning (.*)$/;
         await ack();
-        const args = regex.test(command.text) ? regex.exec(command.text) : null;
+        const args = regex.exec(command.text);
         if (args) {
-            const commandName = args[1]?.toString();
-            const value = args[2]?.toString();
+            const [ , commandName, values ] = args; // ignoring full match (first element)
+            const value = values.includes(' ')? values.split(' ') : values;
             await setValue(`:${commandName}`, value);
             await say(`You can now use the command writing :${commandName}`);
         } else {
