@@ -1,6 +1,5 @@
 import Twitter from 'twitter';
 import { app } from '../app';
-import { textToSlackMessage } from '../messages/slack-adapter';
 
 app.message('pokedolar', async ({ say }) => {
     const client = new Twitter({
@@ -14,8 +13,7 @@ app.message('pokedolar', async ({ say }) => {
     client.get('statuses/user_timeline', params, async function (error, tweets) {
         if (!error) {
             try {
-                const URL = tweets[0]?.entities?.media[0]?.url;
-                await say(textToSlackMessage('pokedolar', URL));
+                await say(tweets[0]?.entities?.media[0]?.url);
             } catch (error) {
                 await say('Failed to fetch last tweet.');
                 app.error(error);
