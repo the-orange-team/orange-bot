@@ -1,7 +1,7 @@
 import Twitter from 'twitter';
 import { app } from '../app';
 
-app.message('pokedolar', async () => {
+app.message('pokedolar', async ({ say }) => {
     const client = new Twitter({
         consumer_key: process.env.TWITTER_API_KEY ?? '',
         consumer_secret: process.env.TWITTER_API_SECRET_KEY ?? '',
@@ -10,9 +10,9 @@ app.message('pokedolar', async () => {
 
     const params = { screen_name: 'PokeDolar', count: 1 };
 
-    client.get('statuses/user_timeline', params, function (error, tweets) {
+    client.get('statuses/user_timeline', params, async function (error, tweets) {
         if (!error) {
-            console.log(tweets);
+            await say(tweets[0].text);
         }
     });
 });
