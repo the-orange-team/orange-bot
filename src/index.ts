@@ -28,8 +28,8 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
   // RegExp matches are inside of context.matches
   const command = context.matches[0];
   try {
-      await say(`getting ${command.text}`);
-      const response = await getValue(command.text);
+      await say(`getting ${command}`);
+      const response = await getValue(command);
       if(response) { await say(response.toString()) }
       else { await say("command doesn't exist") }
     }
