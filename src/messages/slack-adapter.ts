@@ -27,13 +27,12 @@ export function textToSlackMessage(command: string, response: string): string | 
 export function slackCommandToCommand(slackCommand: string): Maybe<Command> {
     const regex = /^(.*) returning (.*)$/;
     const args = regex.exec(slackCommand);
-    if (args) {
-        const [, commandName, values] = args; // ignoring full match (first element)
-        return {
-            command: commandName,
-            values: values.includes(' ') ? values.split(' ') : values,
-        };
-    } else {
-        return null;
-    }
+
+    if (!args) return null;
+
+    const [, commandName, values] = args; // ignoring full match (first element)
+    return {
+        command: commandName,
+        values: values.includes(' ') ? values.split(' ') : values,
+    };
 }
