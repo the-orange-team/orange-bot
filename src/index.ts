@@ -30,7 +30,7 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
     try {
         await say(`getting ${command}`);
         const response = await getValue(command);
-        if(response) { 
+        if (response) { 
             await say(response.toString());
         }
         else { 
@@ -44,11 +44,11 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
 });
 
 app.command('/create', async ({ command, ack, say }) => {
-    try{
+    try {
         const regex = /^(.*) returning (.*)$/;
         await ack();
         const args = regex.test(command.text) ? regex.exec(command.text) : null;
-        if(args) {
+        if (args) {
             const commandName = args[1]?.toString();
             const value = args[2]?.toString();
             await setValue(`:${commandName}`, value);
@@ -56,17 +56,17 @@ app.command('/create', async ({ command, ack, say }) => {
         } else {
             await say('Invalid command pattern');
         }
-    } catch(err){
+    } catch (err){
         await say('Something went wrong');
     }
 });
 
 app.command('/echo', async ({ command, ack, say }) => {
-    try{
+    try {
         await ack();
         await say(`${command.text}`);
         await setValue('test', command.text);
-    } catch(err){
+    } catch (err){
         await say('MANDA O TEXTO FDP');
     }
 });

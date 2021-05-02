@@ -12,7 +12,8 @@
   "rules": {
     "indent": ["error", 4],
     "quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
-    "semi": ["error", "always"]
+    "semi": ["error", "always"],
+    "keyword-spacing": "error"
   },
   "overrides": [
     {
