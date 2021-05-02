@@ -30,12 +30,12 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
   try {
       await say(`getting ${command}`);
       const response = await getValue(command);
-      if(response) { app.client.chat.postMessage({
-        text: `${response}`,
-        channel: "C020CFFD4AE",
-        as_user: true
-      }) }
-      else { await say("command doesn't exist") }
+      if(response) { 
+        await say(response.toString()) 
+      }
+      else { 
+        await say("command doesn't exist") 
+      }
     }
     catch (error) {
       await say("command failed");
