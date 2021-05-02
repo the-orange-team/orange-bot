@@ -1,5 +1,5 @@
 import { App } from '@slack/bolt';
-import { setValue } from './storage';
+import { storage } from './storage';
 import Twitter from 'twitter';
 import { returnValue } from './messages/messages';
 
@@ -20,7 +20,7 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
     try {
         const command = context.matches[0].toLowerCase();
         await say(`getting ${command}`);
-        await say(await returnValue(command));
+        await say(await returnValue(command, storage));
     } catch (error) {
         await say('command failed');
         app.error(error);
@@ -35,7 +35,7 @@ app.command('/create', async ({ command, ack, say }) => {
         if (args) {
             const [, commandName, values] = args; // ignoring full match (first element)
             const value = values.includes(' ') ? values.split(' ') : values;
-            await setValue(`:${commandName}`.toLowerCase(), value);
+            await storage.setValue(`:${commandName}`.toLowerCase(), value);
             await say(`You can now use the command writing :${commandName}`);
         } else {
             await say('Invalid command pattern');
