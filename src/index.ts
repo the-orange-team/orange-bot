@@ -33,9 +33,17 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
         const response = await getValue(command);
         if (response) { 
             if (response instanceof Array){
-                await say(getRandomElement(response));
+                await say({
+                    text: getRandomElement(response),
+                    unfurl_media: true,
+                    unfurl_links: true,
+                });
             } else {
-                await say(response);
+                await say({
+                    text: response,
+                    unfurl_media: true,
+                    unfurl_links: true,
+                });
             }
         }
         else { 
