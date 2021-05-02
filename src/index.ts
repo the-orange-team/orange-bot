@@ -4,7 +4,7 @@ import Twitter from 'twitter';
 import { returnValue } from './messages/messages';
 
 const app = new App({
-    token: process.env.SLACK_TOKEN, 
+    token: process.env.SLACK_TOKEN,
     appToken: process.env.SLACK_APP_TOKEN,
     socketMode: true,
 });
@@ -15,7 +15,7 @@ const app = new App({
     console.log(`⚡️ Orange Bot started on port ${PORT}`);
 })();
 
-app.message(/^:.*[^:]$/, async ({ context, say },) => {
+app.message(/^:.*[^:]$/, async ({ context, say }) => {
     // RegExp matches are inside of context.matches
     try {
         const command = context.matches[0].toLowerCase();
@@ -34,23 +34,22 @@ app.command('/create', async ({ command, ack, say }) => {
         const args = regex.exec(command.text);
         if (args) {
             const [, commandName, values] = args; // ignoring full match (first element)
-            const value = values.includes(' ')? values.split(' ') : values;
+            const value = values.includes(' ') ? values.split(' ') : values;
             await setValue(`:${commandName}`.toLowerCase(), value);
             await say(`You can now use the command writing :${commandName}`);
         } else {
             await say('Invalid command pattern');
         }
-    } catch (err){
+    } catch (err) {
         await say('Something went wrong');
     }
 });
 
 app.message('pokedolar', async () => {
-  
     const client = new Twitter({
         consumer_key: process.env.TWITTER_API_KEY ?? '',
         consumer_secret: process.env.TWITTER_API_SECRET_KEY ?? '',
-        bearer_token: process.env.TWITTER_BEARER_TOKEN ?? ''
+        bearer_token: process.env.TWITTER_BEARER_TOKEN ?? '',
     });
 
     const params = { screen_name: 'PokeDolar', count: 1 };
