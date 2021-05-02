@@ -1,4 +1,5 @@
 import redis, { ClientOpts, RedisClient } from 'redis';
+import { safeJSONParser } from './utils';
 
 const PORT = Number(process.env.REDIS_PORT) || 3333;
 const redisUrl = process.env.REDIS_URL || '';
@@ -32,7 +33,7 @@ class StorageImplementation implements Storage {
                 if (error) {
                     reject(error);
                 }
-                resolve(JSON.parse(reply ?? JSON.stringify(null)));
+                resolve(safeJSONParser(reply));
             });
         });
         return promiseRedis;

@@ -1,3 +1,5 @@
+export type Maybe<T> = T | null;
+
 export function getRandomElement<T>(array: Array<T>): T {
     return array[Math.floor(Math.random() * array.length)];
 }
@@ -5,4 +7,10 @@ export function getRandomElement<T>(array: Array<T>): T {
 export const isUrl = (text: string): boolean =>
     text.startsWith('http://') || text.startsWith('https://');
 
-export type Maybe<T> = T | null;
+/**
+ * JSON parser that doesn't break when receiving null as argument
+ */
+export const safeJSONParser = (
+    text: Maybe<string>,
+    reviver: ((this: any, key: string, value: any) => any) | undefined = undefined
+): any => (text ? JSON.parse(text, reviver) : null);
