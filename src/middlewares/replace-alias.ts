@@ -2,25 +2,36 @@ import { app } from '../app';
 import { slackCommandToCommand, createCommand, returnCommand } from '../messages';
 import { storage } from '../storage';
 
-app.command('/replace', async ({ command, ack, say }) => {
+app.command('/replace', async ({ command, ack }) => {
     try {
-        await ack();
         const botCommand = slackCommandToCommand(command.text);
         if (botCommand) {
             const isCommandRegistered = await returnCommand(botCommand.command, storage);
             if (isCommandRegistered) {
                 await createCommand(botCommand, storage);
-                await say(`Command :${botCommand.command} has been successfully replaced`);
+                await ack({
+                    text: `Command :${botCommand.command} has been successfully replaced`,
+                    response_type: 'ephemeral',
+                });
             } else {
-                await say({
+                await ack({
                     mrkdwn: true,
+                    response_type: 'ephemeral',
                     text: `Command :${botCommand.command} does not exist. You can create it using \`/create\`.`,
                 });
             }
         } else {
-            await say('Invalid command pattern');
+            await ack({
+                mrkdwn: true,
+                response_type: 'ephemeral',
+                text: `Invalid command pattern.`,
+            });
         }
     } catch (err) {
-        await say('Something went wrong');
+        await ack({
+            mrkdwn: true,
+            response_type: 'ephemeral',
+            text: `Something went wrong`,
+        });
     }
 });
