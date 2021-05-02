@@ -31,9 +31,9 @@ export function tweetToSlackMessage(tweet: string, mediaUrl: string): string | S
             blocks: [
                 {
                     type: 'image',
-                    text: {
-                        type: 'mrkdwn',
-                        text: `*${tweet}*`,
+                    title: {
+                        type: 'plain_text',
+                        text: tweet,
                     },
                     block_id: 'twitter_image',
                     image_url: mediaUrl,
