@@ -12,13 +12,13 @@ const app = new App({
 (async () => {
     const PORT = Number(process.env.PORT) || 3000;
     await app.start(PORT);
-    console.log(`🍊 Orange Bot started on port ${PORT}`);
+    console.log(`⚡️ Orange Bot started on port ${PORT}`);
 })();
 
 app.message(/^:.*[^:]$/, async ({ context, say },) => {
     // RegExp matches are inside of context.matches
     try {
-        const command = context.matches[0];
+        const command = context.matches[0].toLowerCase();
         await say(`getting ${command}`);
         await say(await returnValue(command));
     } catch (error) {
@@ -35,7 +35,7 @@ app.command('/create', async ({ command, ack, say }) => {
         if (args) {
             const [, commandName, values] = args; // ignoring full match (first element)
             const value = values.includes(' ')? values.split(' ') : values;
-            await setValue(`:${commandName}`, value);
+            await setValue(`:${commandName}`.toLowerCase(), value);
             await say(`You can now use the command writing :${commandName}`);
         } else {
             await say('Invalid command pattern');
