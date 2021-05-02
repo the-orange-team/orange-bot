@@ -12,7 +12,10 @@ app.message('pokedolar', async ({ say }) => {
 
     client.get('statuses/user_timeline', params, async function (error, tweets) {
         if (!error) {
-            await say(tweets[0]?.entities?.urls[0]?.url);
+            console.log(tweets[0]?.entities);
+            console.log(tweets[0]?.entities.urls[0]);
+            console.log(tweets[0]?.entities?.urls[0]?.url);
+            //await say();
         }
     });
 });
