@@ -1,4 +1,4 @@
-import redis, {ClientOpts} from 'redis';
+import redis, { ClientOpts } from 'redis';
 
 const PORT = Number(process.env.REDIS_PORT) || 3333;
 const redisUrl = process.env.REDIS_URL || '';
@@ -10,8 +10,8 @@ const client = redis.createClient(PORT, redisUrl, configClient);
 
 type ReturnTypeRedis = string | string[] | null
 
-export async function getValue(key: string): Promise<ReturnTypeRedis>{
-    const promiseRedis = new Promise<ReturnTypeRedis>((resolve, reject)=>{
+export async function getValue(key: string): Promise<ReturnTypeRedis> {
+    const promiseRedis = new Promise<ReturnTypeRedis>((resolve, reject) => {
         client.get(key, (error, reply) => {
             if (error) {
                 reject(error);

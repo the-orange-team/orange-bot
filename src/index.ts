@@ -54,7 +54,7 @@ app.command('/create', async ({ command, ack, say }) => {
         await ack();
         const args = regex.exec(command.text);
         if (args) {
-            const [ , commandName, values ] = args; // ignoring full match (first element)
+            const [, commandName, values] = args; // ignoring full match (first element)
             const value = values.includes(' ')? values.split(' ') : values;
             await setValue(`:${commandName}`, value);
             await say(`You can now use the command writing :${commandName}`);
@@ -84,9 +84,9 @@ app.message('pokedolar', async () => {
         bearer_token: process.env.TWITTER_BEARER_TOKEN ?? ''
     });
 
-    const params = {screen_name: 'PokeDolar', count: 1};
+    const params = { screen_name: 'PokeDolar', count: 1 };
 
-    client.get('statuses/user_timeline', params, function(error, tweets) {
+    client.get('statuses/user_timeline', params, function (error, tweets) {
         if (!error) {
             console.log(tweets);
         }
