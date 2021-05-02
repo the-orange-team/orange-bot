@@ -12,6 +12,7 @@ type ReturnTypeRedis = string | string[] | null;
 export interface Storage {
     getValue: (key: string) => Promise<ReturnTypeRedis>;
     setValue: (key: string, value: string | string[]) => Promise<void>;
+    listAllValues(): Promise<string[]>;
 }
 
 class StorageImplementation implements Storage {
@@ -37,6 +38,17 @@ class StorageImplementation implements Storage {
             });
         });
         return promiseRedis;
+    }
+
+    async listAllValues(): Promise<string[]> {
+        return new Promise<string[]>((resolve, reject) => {
+            this.client.hkeys(':*', (error, result) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(result);
+            });
+        });
     }
 }
 
