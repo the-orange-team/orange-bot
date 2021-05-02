@@ -1,7 +1,7 @@
 import { App } from '@slack/bolt';
-import { getValue, setValue } from './storage';
+import { setValue } from './storage';
 import Twitter from 'twitter';
-import { getRandomElement, isUrl } from './utils';
+import { returnValue } from './messages/messages';
 
 const app = new App({
     token: process.env.SLACK_TOKEN, 
@@ -12,51 +12,16 @@ const app = new App({
 (async () => {
     const PORT = Number(process.env.PORT) || 3000;
     await app.start(PORT);
-    console.log(`⚡️ Bolt app started on port ${PORT}`);
+    console.log(`🍊 Orange Bot started on port ${PORT}`);
 })();
 
-app.message('getvalue', async ({ event, context, client, say }) => {
-    try {
-        await say('getting value');
-        console.log(await getValue('teste'));
-    }
-    catch (error) {
-        app.error(error);
-    }
-});
-
-app.message(/^:.*[^:]$/, async ({ context, say }) => {
+app.message(/^:.*[^:]$/, async ({ context, say },) => {
     // RegExp matches are inside of context.matches
-    const command = context.matches[0];
     try {
+        const command = context.matches[0];
         await say(`getting ${command}`);
-        const response = await getValue(command);
-        if (response) { 
-            const selectedResponse = response instanceof Array? getRandomElement(response) : response;
-
-            if (isUrl(selectedResponse)){
-                await say({
-                    text: selectedResponse,
-                    blocks: [{
-                        type: 'image',
-                        title: {
-                            type: 'plain_text',
-                            text: command
-                        },
-                        block_id: 'orange_image',
-                        image_url: selectedResponse,
-                        alt_text: 'piece of shit'
-                    }]
-                });
-            } else {
-                await say(selectedResponse);
-            }
-        }
-        else { 
-            await say("command doesn't exist");
-        }
-    }
-    catch (error) {
+        await say(await returnValue(command));
+    } catch (error) {
         await say('command failed');
         app.error(error);
     }
@@ -77,16 +42,6 @@ app.command('/create', async ({ command, ack, say }) => {
         }
     } catch (err){
         await say('Something went wrong');
-    }
-});
-
-app.command('/echo', async ({ command, ack, say }) => {
-    try {
-        await ack();
-        await say(`${command.text}`);
-        await setValue('test', command.text);
-    } catch (err){
-        await say('MANDA O TEXTO FDP');
     }
 });
 
