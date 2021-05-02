@@ -5,6 +5,7 @@ import { Command } from './types';
 export const messageStartingWithColonRegex = /^:.*[^:]$/;
 
 export async function returnCommand(command: string, storage: Storage): Promise<string | null> {
+    if (!command.startsWith(':')) command = ':' + command;
     const response = await storage.getValue(command);
     if (!response) return null;
 
