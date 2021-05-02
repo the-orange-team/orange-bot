@@ -19,7 +19,7 @@ app.message('getvalue', async ({ event, context, client, say }) => {
     const command = context.matches[0];
     try {
         await say(`getting ${command.text}`);
-        let response = await getValue(command.text);
+        const response = await getValue(command.text);
         if(response) { await say(response.toString()) }
         else { await say("command doesn't exist") }
       }
@@ -36,10 +36,6 @@ app.message('getvalue', async ({ event, context, client, say }) => {
       } catch(err){
         await say("MANDA O TEXTO FDP");
       }
-  });
-
-  app.command('/list', async ({ command, ack, say }) => {
-
   });
   
   app.command('/echo', async ({ command, ack, say }) => {
