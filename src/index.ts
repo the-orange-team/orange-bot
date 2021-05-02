@@ -24,7 +24,7 @@ app.message('getvalue', async ({ event, context, client, say }) => {
   }
 });
 
-app.message(/^:.*$/, async ({ context, say }) => {
+app.message(/^:.*[^:]$/, async ({ context, say }) => {
   // RegExp matches are inside of context.matches
   const command = context.matches[0];
   try {
