@@ -41,12 +41,12 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
 
 app.command('/add', async ({ command, ack, say }) => {
   try{
-    const regex = /^[^:](.*) returning (.*)$/;
+    const regex = /^(.*) returning (.*)$/;
       await ack();
       const args = regex.test(command.text) ? regex.exec(command.text) : null
       if(args) {
-        const commandName = args?.groups[0]?.toString();
-        const value = args?.groups[1]?.toString();
+        const commandName = args[1]?.toString();
+        const value = args[2]?.toString();
         await setValue(`:${commandName}`, value);
         await say(`You can now use the command writing :${commandName}`)
       } else {
