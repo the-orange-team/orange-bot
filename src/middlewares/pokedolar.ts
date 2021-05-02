@@ -8,11 +8,11 @@ app.message('pokedolar', async ({ say }) => {
         bearer_token: process.env.TWITTER_BEARER_TOKEN ?? '',
     });
 
-    const params = { screen_name: 'PokeDolar', count: 1 };
+    const params = { screen_name: 'PokeDolar', count: 1, exclude_replies: true };
 
     client.get('statuses/user_timeline', params, async function (error, tweets) {
         if (!error) {
-            await say(tweets[0].text);
+            await say(tweets[0]?.entities?.urls[0]?.url);
         }
     });
 });
