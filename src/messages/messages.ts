@@ -3,6 +3,11 @@ import { Storage } from '../storage';
 
 export const messageStartingWithColonRegex = /^:.*[^:]$/;
 
+export type Command = {
+    command: string;
+    values: string | string[];
+};
+
 export async function returnCommand(command: string, storage: Storage): Promise<string> {
     const response = await storage.getValue(command);
     if (response) {
@@ -13,11 +18,6 @@ export async function returnCommand(command: string, storage: Storage): Promise<
     }
 }
 
-export async function createCommand(
-    command: string,
-    values: string,
-    storage: Storage
-): Promise<void> {
-    const value = values.includes(' ') ? values.split(' ') : values;
-    await storage.setValue(`:${command}`.toLowerCase(), value);
+export async function createCommand({ command, values }: Command, storage: Storage): Promise<void> {
+    await storage.setValue(`:${command}`.toLowerCase(), values);
 }

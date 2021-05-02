@@ -2,7 +2,7 @@ import { App } from '@slack/bolt';
 import { storage } from './storage';
 import Twitter from 'twitter';
 import { returnCommand, createCommand, messageStartingWithColonRegex } from './messages/messages';
-import { textToSlackMessage } from './messages/slackAdapter';
+import { textToSlackMessage, slackCommandToCommand } from './messages/slackAdapter';
 
 const app = new App({
     token: process.env.SLACK_TOKEN,
@@ -31,13 +31,11 @@ app.message(messageStartingWithColonRegex, async ({ context, say }) => {
 
 app.command('/create', async ({ command, ack, say }) => {
     try {
-        const regex = /^(.*) returning (.*)$/;
         await ack();
-        const args = regex.exec(command.text);
-        if (args) {
-            const [, commandName, values] = args; // ignoring full match (first element)
-            createCommand(commandName, values, storage);
-            await say(`You can now use the command writing :${commandName}`);
+        const botCommand = slackCommandToCommand(command.text);
+        if (botCommand) {
+            createCommand(botCommand, storage);
+            await say(`You can now use the command writing :${botCommand.command}`);
         } else {
             await say('Invalid command pattern');
         }
