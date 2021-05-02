@@ -10,7 +10,9 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "indent": ["error", 4]
+    "indent": ["error", 4],
+    "quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+    "semi": ["error", "always"]
   },
   "overrides": [
     {
