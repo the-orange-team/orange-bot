@@ -1,5 +1,6 @@
 import Twitter from 'twitter';
 import { app } from '../app';
+import { textToSlackMessage } from '../messages';
 
 app.message('pokedolar', async ({ say }) => {
     const client = new Twitter({
@@ -12,12 +13,30 @@ app.message('pokedolar', async ({ say }) => {
 
     client.get('statuses/user_timeline', params, async function (error, tweets) {
         if (!error) {
-            try {
-                await say(tweets[0]?.entities?.media[0]?.url);
-            } catch (error) {
-                await say('Failed to fetch last tweet.');
-                app.error(error);
-            }
+            const tweet = tweets[0]?.text;
+            const mediaUrl = tweets[0]?.entities?.media[0]?.media_url_https;
+
+            const payload = {
+                text: tweet,
+                blocks: [
+                    {
+                        type: 'image',
+                        title: {
+                            type: 'plain_text',
+                            text: tweet,
+                        },
+                        block_id: 'twitter_image',
+                        image_url: mediaUrl,
+                        alt_text: 'piece of pokemon',
+                    },
+                ],
+            };
+
+            await say(payload);
+            // } catch (error) {
+            //     await say('Failed to fetch last tweet.');
+            //     app.error(error);
+            // }
         }
     });
 });
