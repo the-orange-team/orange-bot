@@ -2,7 +2,7 @@ import { App } from '@slack/bolt';
 import { getValue, setValue } from './storage';
 import Twitter from 'twitter'
 
-export const app = new App({
+const app = new App({
   token: process.env.SLACK_TOKEN, 
   appToken: process.env.SLACK_APP_TOKEN,
   socketMode: true,
@@ -41,10 +41,19 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
 
 app.command('/add', async ({ command, ack, say }) => {
   try{
+    const regex = /^[^:](.*) returning (.*)$/;
       await ack();
-      await setValue(`:${command.text}`, command.text);
+      const args = regex.test(command.text) ? regex.exec(command.text) : null
+      if(args) {
+        const commandName = args?.groups[0]?.toString();
+        const value = args?.groups[1]?.toString();
+        await setValue(`:${commandName}`, value);
+        await say(`You can now use the command writing :${commandName}`)
+      } else {
+        await say("Invalid command pattern")
+      }
     } catch(err){
-      await say("MANDA O TEXTO FDP");
+      await say("Something went wrong");
     }
 });
 
