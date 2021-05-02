@@ -38,17 +38,15 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
                 await say({
                     text: selectedResponse,
                     blocks: [{
-                        type: 'section',
-                        text: {
-                            type: 'mrkdwn',
-                            text: selectedResponse,
+                        type: "image",
+                        title: {
+                          type: "plain_text",
+                          text: command
                         },
-                        accessory: {
-                            type: 'image',
-                            image_url: selectedResponse,
-                            alt_text: selectedResponse,
-                        }
-                    }]
+                        block_id: "orange_image",
+                        image_url: selectedResponse,
+                        alt_text: "An incredibly cute kitten."
+                      }]
                 });
             } else {
                 await say(selectedResponse);
