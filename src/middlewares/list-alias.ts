@@ -1,7 +1,7 @@
 import { app } from '../app';
 import { storage } from '../storage';
 
-app.command('/list', async ({ command, ack }) => {
+app.command('/list', async ({ ack }) => {
     try {
         const keys = await storage.listAllValues();
         if (keys) {
