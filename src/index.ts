@@ -2,6 +2,7 @@ import { App } from '@slack/bolt';
 import { storage } from './storage';
 import Twitter from 'twitter';
 import { returnValue } from './messages/messages';
+import { textToSlackMessage } from './messages/slackAdapter';
 
 const app = new App({
     token: process.env.SLACK_TOKEN,
@@ -20,7 +21,8 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
     try {
         const command = context.matches[0].toLowerCase();
         await say(`getting ${command}`);
-        await say(await returnValue(command, storage));
+        const value = await returnValue(command, storage);
+        await say(textToSlackMessage(command, value));
     } catch (error) {
         await say('command failed');
         app.error(error);
