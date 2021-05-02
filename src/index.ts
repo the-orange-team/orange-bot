@@ -1,7 +1,7 @@
 import { App } from '@slack/bolt';
 import { getValue, setValue } from './storage';
 import Twitter from 'twitter';
-import { getRandomElement } from './utils';
+import { getRandomElement, isUrl } from './utils';
 
 const app = new App({
     token: process.env.SLACK_TOKEN, 
@@ -32,18 +32,26 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
         await say(`getting ${command}`);
         const response = await getValue(command);
         if (response) { 
-            if (response instanceof Array){
+            const selectedResponse = response instanceof Array? getRandomElement(response) : response;
+
+            if (isUrl(selectedResponse)){
                 await say({
-                    text: getRandomElement(response),
-                    unfurl_media: true,
-                    unfurl_links: true,
+                    text: selectedResponse,
+                    blocks: [{
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: selectedResponse,
+                        },
+                        accessory: {
+                            type: 'image',
+                            image_url: selectedResponse,
+                            alt_text: selectedResponse,
+                        }
+                    }]
                 });
             } else {
-                await say({
-                    text: response,
-                    unfurl_media: true,
-                    unfurl_links: true,
-                });
+                await say(selectedResponse);
             }
         }
         else { 
