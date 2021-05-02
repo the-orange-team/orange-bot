@@ -39,7 +39,7 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
     }
 });
 
-app.command('/add', async ({ command, ack, say }) => {
+app.command('/create', async ({ command, ack, say }) => {
   try{
     const regex = /^(.*) returning (.*)$/;
       await ack();
