@@ -2,7 +2,7 @@ import { app } from '../app';
 import { slackCommandToCommand, createCommand, returnCommand } from '../messages';
 import { storage } from '../storage';
 
-app.command('/replace2', async ({ command, ack, say }) => {
+app.command('/replace', async ({ command, ack, say }) => {
     try {
         await ack();
         const botCommand = slackCommandToCommand(command.text);
