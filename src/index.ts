@@ -1,7 +1,7 @@
 import { App } from '@slack/bolt';
 import { storage } from './storage';
 import Twitter from 'twitter';
-import { returnValue, messageStartingWithColonRegex } from './messages/messages';
+import { returnCommand, createCommand, messageStartingWithColonRegex } from './messages/messages';
 import { textToSlackMessage } from './messages/slackAdapter';
 
 const app = new App({
@@ -21,7 +21,7 @@ app.message(messageStartingWithColonRegex, async ({ context, say }) => {
     try {
         const command = context.matches[0].toLowerCase();
         await say(`getting ${command}`);
-        const value = await returnValue(command, storage);
+        const value = await returnCommand(command, storage);
         await say(textToSlackMessage(command, value));
     } catch (error) {
         await say('command failed');
@@ -36,8 +36,7 @@ app.command('/create', async ({ command, ack, say }) => {
         const args = regex.exec(command.text);
         if (args) {
             const [, commandName, values] = args; // ignoring full match (first element)
-            const value = values.includes(' ') ? values.split(' ') : values;
-            await storage.setValue(`:${commandName}`.toLowerCase(), value);
+            createCommand(commandName, values, storage);
             await say(`You can now use the command writing :${commandName}`);
         } else {
             await say('Invalid command pattern');
