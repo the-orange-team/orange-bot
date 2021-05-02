@@ -44,7 +44,8 @@ app.message(/^:.*[^:]$/, async ({ context, say }) => {
                             text: command
                         },
                         block_id: 'orange_image',
-                        image_url: selectedResponse
+                        image_url: selectedResponse,
+                        alt_text: 'piece of shit'
                     }]
                 });
             } else {
