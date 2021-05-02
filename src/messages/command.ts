@@ -1,12 +1,8 @@
 import { getRandomElement } from '../utils';
 import { Storage } from '../storage';
+import { Command } from './types';
 
 export const messageStartingWithColonRegex = /^:.*[^:]$/;
-
-export type Command = {
-    command: string;
-    values: string | string[];
-};
 
 export async function returnCommand(command: string, storage: Storage): Promise<string> {
     const response = await storage.getValue(command);

@@ -1,6 +1,5 @@
 import { app } from '../app';
-import { createCommand } from '../messages/messages';
-import { slackCommandToCommand } from '../messages/slackAdapter';
+import { slackCommandToCommand, createCommand } from '../messages';
 import { storage } from '../storage';
 
 app.command('/create', async ({ command, ack, say }) => {

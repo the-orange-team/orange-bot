@@ -1,6 +1,6 @@
 import { SayArguments } from '@slack/bolt';
 import { isUrl, Maybe } from '../utils';
-import { Command } from './messages';
+import { Command } from './types';
 
 export function textToSlackMessage(command: string, response: string): string | SayArguments {
     if (isUrl(response)) {

@@ -1,6 +1,5 @@
 import { app } from '../app';
-import { messageStartingWithColonRegex, returnCommand } from '../messages/messages';
-import { textToSlackMessage } from '../messages/slackAdapter';
+import { messageStartingWithColonRegex, returnCommand, textToSlackMessage } from '../messages';
 import { storage } from '../storage';
 
 app.message(messageStartingWithColonRegex, async ({ context, say }) => {
