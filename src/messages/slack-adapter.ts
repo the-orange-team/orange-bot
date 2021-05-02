@@ -24,6 +24,28 @@ export function textToSlackMessage(command: string, response: string): string | 
     }
 }
 
+export function tweetToSlackMessage(tweet: string, mediaUrl: string): string | SayArguments {
+    if (isUrl(mediaUrl)) {
+        return {
+            text: tweet,
+            blocks: [
+                {
+                    type: 'image',
+                    text: {
+                        type: 'mrkdwn',
+                        text: `*${tweet}*`,
+                    },
+                    block_id: 'twitter_image',
+                    image_url: mediaUrl,
+                    alt_text: 'piece of pokemon',
+                },
+            ],
+        };
+    } else {
+        return mediaUrl;
+    }
+}
+
 export function slackCommandToCommand(slackCommand: string): Maybe<Command> {
     const regex = /^(.*) returning (.*)$/;
     const args = regex.exec(slackCommand);
