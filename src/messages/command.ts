@@ -4,14 +4,12 @@ import { Command } from './types';
 
 export const messageStartingWithColonRegex = /^:.*[^:]$/;
 
-export async function returnCommand(command: string, storage: Storage): Promise<string> {
+export async function returnCommand(command: string, storage: Storage): Promise<string | null> {
     const response = await storage.getValue(command);
-    if (response) {
-        const selectedResponse = response instanceof Array ? getRandomElement(response) : response;
-        return selectedResponse;
-    } else {
-        return "command doesn't exist";
-    }
+    if (!response) return null;
+
+    const selectedResponse = response instanceof Array ? getRandomElement(response) : response;
+    return selectedResponse;
 }
 
 export async function createCommand({ command, values }: Command, storage: Storage): Promise<void> {
