@@ -6,6 +6,7 @@ app.command('/reset', async ({ command, ack }) => {
     try {
         const storedHash = process.env.RESET_HASH;
         const digestedArg = Base64.stringify(sha256(command.text));
+        console.log(digestedArg);
         if (storedHash === digestedArg) {
             console.log('password matches');
         } else {
