@@ -50,7 +50,7 @@ export function tweetToSlackMessage(tweet: string, mediaUrl: string): string | S
 }
 
 export function slackCommandToCommand(slackCommand: string): Maybe<Command> {
-    const regex = /^(.*) returning (.*)$/;
+    const regex = /^([^: ]*[^: ]) returning (.*)$/;
     const args = regex.exec(slackCommand);
 
     if (!args) return null;
