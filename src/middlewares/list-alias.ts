@@ -3,15 +3,21 @@ import { storage } from '../storage';
 
 app.command('/list', async ({ ack }) => {
     try {
-        const keys = await storage.listAllValues();
+        let cursor = '0';
+        let keys: string[] = [];
+
+        do {
+            const result = await storage.listAllKeysStartingFrom(cursor);
+            cursor = result[0];
+            keys = keys.concat(result[1]);
+        } while (cursor != '0');
+
         if (keys) {
-            console.log(keys);
             await ack({
                 text: keys.join(' \n '),
                 response_type: 'ephemeral',
             });
         } else {
-            console.log('empty key list');
             await ack({
                 mrkdwn: true,
                 text: `Couldn't fetch the command list`,
