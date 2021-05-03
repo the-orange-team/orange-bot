@@ -1,7 +1,7 @@
 import { app } from '../app';
 import { storage } from '../storage';
 
-app.command('/list', async ({ ack }) => {
+app.command('/list', async ({ ack, logger }) => {
     try {
         let cursor = '0';
         let keys: string[] = [];
@@ -24,8 +24,7 @@ app.command('/list', async ({ ack }) => {
             });
         }
     } catch (err) {
-        console.log(err);
-        app.error(err);
+        logger.error(err);
         await ack({
             response_type: 'ephemeral',
             text: `Something went wrong`,

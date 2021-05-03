@@ -2,7 +2,7 @@ import { app } from '../app';
 import { slackCommandToCommand, createCommand, returnCommand } from '../messages';
 import { storage } from '../storage';
 
-app.command('/replace', async ({ command, ack }) => {
+app.command('/replace', async ({ command, ack, logger }) => {
     try {
         const botCommand = slackCommandToCommand(command.text);
         if (botCommand) {
@@ -26,8 +26,7 @@ app.command('/replace', async ({ command, ack }) => {
             });
         }
     } catch (err) {
-        console.log(err);
-        app.error(err);
+        logger.error(err);
         await ack({
             response_type: 'ephemeral',
             text: `Something went wrong`,
