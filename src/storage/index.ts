@@ -9,9 +9,14 @@ const configClient: ClientOpts = {
 
 type ReturnTypeRedis = string | string[] | null;
 
+interface OperationResult {
+    success: boolean;
+    error?: string;
+}
 export interface Storage {
     getValue: (key: string) => Promise<ReturnTypeRedis>;
     setValue: (key: string, value: string | string[]) => Promise<void>;
+    deleteValue: (key: string) => Promise<OperationResult>;
     listAllKeysStartingFrom: (cursor: string) => Promise<[string, string[]]>;
     deleteAllKeys: () => Promise<void>;
 }
@@ -39,6 +44,19 @@ class StorageImplementation implements Storage {
             });
         });
         return promiseRedis;
+    }
+
+    async deleteValue(key: string): Promise<OperationResult> {
+        return new Promise<OperationResult>((resolve, reject) => {
+            this.client.del(key, function (err, result) {
+                // result: 0 - not successful, 1 - successful
+                if (err) reject({ error: err, success: false });
+
+                resolve({
+                    success: Boolean(result),
+                });
+            });
+        });
     }
 
     async listAllKeysStartingFrom(cursor: string): Promise<[string, string[]]> {

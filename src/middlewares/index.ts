@@ -1,3 +1,4 @@
+import './delete-alias';
 import './create-alias';
 import './replace-alias';
 import './get-alias';
