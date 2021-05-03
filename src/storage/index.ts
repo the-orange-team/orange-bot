@@ -42,7 +42,7 @@ class StorageImplementation implements Storage {
 
     async listAllValues(): Promise<string[]> {
         return new Promise<string[]>((resolve, reject) => {
-            this.client.hkeys(':*', (error, result) => {
+            this.client.hkeys('KEYS *', (error, result) => {
                 if (error) {
                     reject(error);
                 }
