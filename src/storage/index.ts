@@ -42,11 +42,11 @@ class StorageImplementation implements Storage {
 
     async listAllValues(): Promise<string[]> {
         return new Promise<string[]>((resolve, reject) => {
-            this.client.scan('*', (error, result) => {
-                if (error) {
-                    reject(error);
-                }
-                resolve(result);
+            let cursor = '0';
+            this.client.scan(cursor, 'MATCH', '*', (error, result) => {
+                if (error) reject(error);
+                cursor = result[0];
+                resolve(result[1]);
             });
         });
     }
