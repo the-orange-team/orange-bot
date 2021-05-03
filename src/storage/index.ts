@@ -41,17 +41,28 @@ class StorageImplementation implements Storage {
     }
 
     async listAllValues(): Promise<string[]> {
-        return new Promise<string[]>((resolve, reject) => {
-            let cursor = '0';
-            let keys: string[] = [];
-            do {
-                this.client.scan(cursor, 'MATCH', '*', (error, result) => {
-                    if (error) reject(error);
+        return new Promise<string[]>(async (resolve, reject) => {
+            try {
+                let cursor = '0';
+                let keys: string[] = [];
+                do {
+                    const result = await this.fetchStartingFrom(cursor);
                     cursor = result[0];
                     keys = keys.concat(result[1]);
-                });
-            } while (cursor != '0');
-            resolve(keys);
+                } while (cursor != '0');
+                resolve(keys);
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
+    async fetchStartingFrom(cursor: string): Promise<[string, string[]]> {
+        return new Promise<[string, string[]]>((resolve, reject) => {
+            this.client.scan(cursor, 'MATCH', '*', (error, result) => {
+                if (error) reject(error);
+                resolve(result);
+            });
         });
     }
 }
