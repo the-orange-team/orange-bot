@@ -45,7 +45,7 @@ class StorageImplementation implements Storage {
             let cursor = '0';
             let keys: string[] = [];
             do {
-                this.client.scan(cursor, (error, result) => {
+                this.client.scan(cursor, 'MATCH', '*', (error, result) => {
                     if (error) reject(error);
                     cursor = result[0];
                     keys = keys.concat(result[1]);
