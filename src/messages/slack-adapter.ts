@@ -33,7 +33,7 @@ export function tweetToSlackMessage(tweet: string, mediaUrl: string): string | S
                     type: 'section',
                     text: {
                         type: 'mrkdwn',
-                        text: `*${tweet}*`,
+                        text: `${tweet}`,
                     },
                 },
                 {
