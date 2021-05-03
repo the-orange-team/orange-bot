@@ -2,7 +2,7 @@ import { getRandomElement } from '../utils';
 import { Storage } from '../storage';
 import { Command } from './types';
 
-export const messageStartingWithColonRegex = /^:.*[^:]$/;
+export const messageStartingWithColonRegex = /^:[^: ]*[^: ]$/;
 
 export async function returnCommand(command: string, storage: Storage): Promise<string | null> {
     if (!command.startsWith(':')) command = ':' + command;
