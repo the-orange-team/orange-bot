@@ -22,5 +22,7 @@ app.command('/create', async ({ command, ack }) => {
             response_type: 'ephemeral',
             text: 'Something went wrong',
         });
+        console.error(err);
+        app.error(err);
     }
 });

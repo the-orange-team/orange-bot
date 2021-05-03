@@ -26,6 +26,8 @@ app.command('/replace', async ({ command, ack }) => {
             });
         }
     } catch (err) {
+        console.log(err);
+        app.error(err);
         await ack({
             response_type: 'ephemeral',
             text: `Something went wrong`,
