@@ -11,11 +11,11 @@ export function textToSlackMessage(command: string, response: string): string | 
                     type: 'image',
                     title: {
                         type: 'plain_text',
-                        text: command,
+                        text: response,
                     },
                     block_id: 'orange_image',
                     image_url: response,
-                    alt_text: 'piece of shit',
+                    alt_text: command,
                 },
             ],
         };
