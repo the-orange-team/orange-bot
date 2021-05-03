@@ -12,7 +12,8 @@ type ReturnTypeRedis = string | string[] | null;
 export interface Storage {
     getValue: (key: string) => Promise<ReturnTypeRedis>;
     setValue: (key: string, value: string | string[]) => Promise<void>;
-    listAllKeysStartingFrom(cursor: string): Promise<[string, string[]]>;
+    listAllKeysStartingFrom: (cursor: string) => Promise<[string, string[]]>;
+    deleteAllKeys: () => Promise<void>;
 }
 
 class StorageImplementation implements Storage {
@@ -45,6 +46,15 @@ class StorageImplementation implements Storage {
             this.client.scan(cursor, 'MATCH', '*', (error, result) => {
                 if (error) reject(error);
                 resolve(result);
+            });
+        });
+    }
+
+    async deleteAllKeys(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.client.flushdb((error, result) => {
+                if (error) reject(error);
+                resolve();
             });
         });
     }
