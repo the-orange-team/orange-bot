@@ -24,7 +24,11 @@ export function textToSlackMessage(command: string, response: string): string | 
     }
 }
 
-export function tweetToSlackMessage(tweet: string, mediaUrl: string): string | SayArguments {
+export function tweetToSlackMessage(
+    tweet: string,
+    mediaUrl: string,
+    userName: string
+): string | SayArguments {
     if (isUrl(mediaUrl)) {
         return {
             text: tweet,
@@ -40,7 +44,7 @@ export function tweetToSlackMessage(tweet: string, mediaUrl: string): string | S
                     type: 'image',
                     block_id: 'twitter_image',
                     image_url: mediaUrl,
-                    alt_text: 'piece of pokemon',
+                    alt_text: `Requested by: ${userName}`,
                 },
             ],
         };
