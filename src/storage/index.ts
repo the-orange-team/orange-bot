@@ -12,7 +12,7 @@ type ReturnTypeRedis = string | string[] | null;
 export interface Storage {
     getValue: (key: string) => Promise<ReturnTypeRedis>;
     setValue: (key: string, value: string | string[]) => Promise<void>;
-    listAllValues(): string[];
+    listAllKeysStartingFrom(cursor: string): Promise<[string, string[]]>;
 }
 
 class StorageImplementation implements Storage {
@@ -40,19 +40,7 @@ class StorageImplementation implements Storage {
         return promiseRedis;
     }
 
-    async listAllValues(): string[] {
-        try {
-            let cursor = '0';
-            let keys: string[] = [];
-            do {
-                const result = await this.fetchStartingFrom(cursor);
-                cursor = result[0];
-                keys = keys.concat(result[1]);
-            } while (cursor != '0');
-        } catch (err) {}
-    }
-
-    private async fetchStartingFrom(cursor: string): Promise<[string, string[]]> {
+    async listAllKeysStartingFrom(cursor: string): Promise<[string, string[]]> {
         return new Promise<[string, string[]]>((resolve, reject) => {
             this.client.scan(cursor, 'MATCH', '*', (error, result) => {
                 if (error) reject(error);
