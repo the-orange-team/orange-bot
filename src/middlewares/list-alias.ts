@@ -19,7 +19,6 @@ app.command('/list', async ({ ack }) => {
             });
         } else {
             await ack({
-                mrkdwn: true,
                 text: `Couldn't fetch the command list`,
                 response_type: 'ephemeral',
             });
@@ -27,7 +26,6 @@ app.command('/list', async ({ ack }) => {
     } catch (err) {
         console.log(err);
         await ack({
-            mrkdwn: true,
             response_type: 'ephemeral',
             text: `Something went wrong`,
         });

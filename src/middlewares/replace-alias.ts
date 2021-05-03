@@ -15,21 +15,18 @@ app.command('/replace', async ({ command, ack }) => {
                 });
             } else {
                 await ack({
-                    mrkdwn: true,
                     response_type: 'ephemeral',
                     text: `Command :${botCommand.command} does not exist. You can create it using \`/create\`.`,
                 });
             }
         } else {
             await ack({
-                mrkdwn: true,
                 response_type: 'ephemeral',
                 text: `Invalid command pattern.`,
             });
         }
     } catch (err) {
         await ack({
-            mrkdwn: true,
             response_type: 'ephemeral',
             text: `Something went wrong`,
         });
