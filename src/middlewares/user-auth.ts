@@ -10,21 +10,26 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
 }) => {
     if (devModeActive == false || (devModeActive && userIsDev(rest.payload.user_id))) {
         await next?.();
+    } else {
+        await ack({
+            text: "Dev mode is active, and I can't do much right now, try again later",
+            response_type: 'ephemeral',
+        });
     }
 };
 
-app.command('/devmode', async ({ payload, ack }) => {
+app.command('/devmode', async ({ payload, ack, logger }) => {
     try {
         if (userIsDev(payload.user_id)) {
             devModeActive = !devModeActive;
-            let output: string;
+            logger.info(`[user auth] dev mode is now set to: ${devModeActive}.`);
             await ack({
                 text: generateDevModeMessage(),
                 response_type: 'ephemeral',
             });
         } else {
             await ack({
-                text: `You don't have credentials to activate dev mode :no_good:`,
+                text: `You don't have credentials to change dev mode :no_good:`,
                 response_type: 'ephemeral',
             });
         }
@@ -48,6 +53,6 @@ function generateDevModeMessage(): string {
     if (devModeActive) {
         return 'dev mode activated, all hail the code supremacy. Now go fix that shit and :shipit:';
     } else {
-        return "I don't know who you are, I don't know what you want, but if there's any bug left, I will hunt you, and I will find you";
+        return "dev mode deactivated. I don't know who you are, I don't know what you want, but if there's any bug left, I will hunt you, and I will find you";
     }
 }

@@ -1,9 +1,10 @@
 import { app } from '../app';
+import { callAuthorized } from './user-auth';
 import { storage } from '../storage';
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
 
-app.command('/reset', async ({ command, ack }) => {
+app.command('/reset', callAuthorized, async ({ command, ack }) => {
     try {
         const storedHash = process.env.RESET_HASH;
         const digestedArg = Base64.stringify(sha256(command.text));

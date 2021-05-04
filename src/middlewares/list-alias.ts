@@ -1,12 +1,13 @@
 import { Block } from '@slack/bolt';
 import { app } from '../app';
+import { callAuthorized } from './user-auth';
 import { Alias } from '../messages/types';
 import { storage } from '../storage';
 import { addTextSectionToBlocks, groupArrayByKey, Maybe } from '../utils';
 
 const getAliasesText = (aliases: Alias[]) => aliases.map((alias) => `:${alias.text}`);
 
-app.command('/list', async ({ ack, logger, command }) => {
+app.command('/list', callAuthorized, async ({ ack, logger, command }) => {
     try {
         const aliasesKeys = await storage.getAllAliasesKeys();
         logger.info("[list] retrieved aliases' keys.");

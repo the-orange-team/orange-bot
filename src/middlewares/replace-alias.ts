@@ -1,8 +1,9 @@
 import { app } from '../app';
+import { callAuthorized } from './user-auth';
 import { slackCommandToCommand, createCommand, getCommandResponse } from '../messages';
 import { storage } from '../storage';
 
-app.command('/replace', async ({ command, ack, logger }) => {
+app.command('/replace', callAuthorized, async ({ command, ack, logger }) => {
     try {
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {

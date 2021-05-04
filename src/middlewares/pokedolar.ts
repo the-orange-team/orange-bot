@@ -1,8 +1,9 @@
 import { app } from '../app';
+import { callAuthorized } from './user-auth';
 import { tweetToSlackMessage } from '../messages';
 import { getLastPokeDolarTweet } from '../apis/twitter/twitter';
 
-app.command('/pokedolar', async ({ say, ack, payload, logger }) => {
+app.command('/pokedolar', callAuthorized, async ({ say, ack, payload, logger }) => {
     try {
         logger.info(`[pokedolar] fetching last tweet`);
         const { tweet, mediaUrl } = await getLastPokeDolarTweet();
