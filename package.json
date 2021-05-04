@@ -13,6 +13,7 @@
   "author": "romulogmp <romulogmp@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@sentry/node": "^6.3.5",
     "@slack/bolt": "^3.3.0",
     "@types/crypto-js": "^4.0.1",
     "crypto-js": "^4.0.0",
