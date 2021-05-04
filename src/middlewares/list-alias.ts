@@ -3,7 +3,7 @@ import { app } from '../app';
 import { callAuthorized } from './user-auth';
 import { Alias } from '../messages/types';
 import { storage } from '../storage';
-import { addTextSectionToBlocks, groupArrayByKey, Maybe } from '../utils';
+import { addTextSectionToBlocks, groupArrayByKey } from '../utils';
 
 const getAliasesText = (aliases: Alias[]) => aliases.map((alias) => `:${alias.text}`);
 

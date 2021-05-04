@@ -102,7 +102,7 @@ class StorageImplementation implements Storage<Alias> {
     //TODO: should avoid deleting keys that are not aliases
     async deleteAllKeys(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.client.flushdb((error, result) => {
+            this.client.flushdb((error) => {
                 if (error) reject(error);
                 resolve();
             });

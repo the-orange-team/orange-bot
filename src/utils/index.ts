@@ -1,4 +1,4 @@
-import { Block, PlainTextElement, SectionBlock } from '@slack/bolt';
+import { Block } from '@slack/bolt';
 
 export type Maybe<T> = T | null;
 
