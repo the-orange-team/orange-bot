@@ -48,15 +48,6 @@ class StorageImplementation implements Storage<Alias> {
         return promiseRedis;
     }
 
-    async getDevMode(): Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => {
-            this.client.get(devModeKey, (error, reply) => {
-                if (error) reject(error);
-                resolve(reply);
-            });
-        });
-    }
-
     async getAliasesByKeys(keys: string[]): Promise<Map<string, Alias>> {
         return new Promise<Map<string, Alias>>((resolve, reject) => {
             if (!keys.length) resolve(new Map());
@@ -114,6 +105,24 @@ class StorageImplementation implements Storage<Alias> {
             this.client.flushdb((error, result) => {
                 if (error) reject(error);
                 resolve();
+            });
+        });
+    }
+
+    async getDevMode(): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            this.client.get(devModeKey, (error, reply) => {
+                if (error) resolve(false);
+                resolve(safeJSONParser(reply));
+            });
+        });
+    }
+
+    async setDevModeTo(value: boolean): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            this.client.set(devModeKey, JSON.stringify(value), (error) => {
+                if (error) reject(error);
+                resolve(value);
             });
         });
     }
