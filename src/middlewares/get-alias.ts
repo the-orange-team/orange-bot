@@ -7,10 +7,10 @@ app.message(messageStartingWithColonRegex, async ({ context, say, logger }) => {
     try {
         const command = context.matches[0].toLowerCase();
         logger.info(`[get-alias] fetching ${command}`);
-        const value = (await getCommandResponse(command, storage)) ?? "command doesn't exist";
+        const value = (await getCommandResponse(command, storage)) ?? "alias doesn't exist";
         await say(textToSlackMessage(command, value));
     } catch (error) {
-        await say('Command failed');
+        await say('alias call failed, @orangebotdevs');
         logger.error(error);
     }
 });

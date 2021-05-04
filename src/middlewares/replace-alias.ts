@@ -10,13 +10,13 @@ app.command('/replace', async ({ command, ack, logger }) => {
             if (isCommandRegistered) {
                 await createCommand(botCommand, storage);
                 await ack({
-                    text: `Command :${botCommand.text} has been successfully replaced`,
+                    text: `Alias ${botCommand.text} has been successfully replaced`,
                     response_type: 'ephemeral',
                 });
             } else {
                 await ack({
                     response_type: 'ephemeral',
-                    text: `Command :${botCommand.text} does not exist. You can create it using \`/create\`.`,
+                    text: `Alias ${botCommand.text} does not exist. You can create it using \`/create\`.`,
                 });
             }
         } else {
