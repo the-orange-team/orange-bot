@@ -4,5 +4,6 @@ import './replace-alias';
 import './get-alias';
 import './list-alias';
 import './reset-alias';
+import './user-help';
 import './user-auth';
 import './pokedolar';
