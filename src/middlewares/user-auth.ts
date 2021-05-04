@@ -9,9 +9,12 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
     await next?.();
 };
 
-app.command('/devMode', async ({ payload, ack }) => {
+app.command('/devmode', async ({ payload, ack }) => {
+    const devIds = process.env.DEV_USER_GROUP;
+    const devList: string[] = devIds?.substring(1, devIds.length - 1).split(',') ?? [];
+    const devUser = devList.find((str) => str == payload.user_id);
     try {
-        if (payload.user_id === 'U03RG3GSB') {
+        if (devUser) {
             await ack({
                 text: `dev mode activated, all hail the code supremacy. Now go fix that shit and :shipit:`,
                 response_type: 'ephemeral',
