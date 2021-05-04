@@ -25,7 +25,7 @@ app.command('/devmode', async ({ payload, ack, logger }) => {
             await storage.setDevModeTo(!devModeActive);
             logger.info(`[user auth] dev mode is now set to: ${devModeActive}.`);
             await ack({
-                text: generateDevModeMessage(),
+                text: generateDevModeMessage(devModeActive),
                 response_type: 'ephemeral',
             });
         } else {
@@ -50,7 +50,7 @@ function userIsDev(userId: string): boolean {
     else return false;
 }
 
-function generateDevModeMessage(): string {
+function generateDevModeMessage(devModeActive: boolean): string {
     if (devModeActive) {
         return 'dev mode activated, all hail the code supremacy. Now go fix that shit and :shipit:';
     } else {
