@@ -1,8 +1,5 @@
 import { app } from '../app';
-import { storage } from '../storage';
 import { SlackCommandMiddlewareArgs, Middleware } from '@slack/bolt';
-
-let devModeActivated: boolean = false;
 
 export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
     next,
@@ -12,9 +9,9 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
     await next?.();
 };
 
-app.command('/devMode', async ({ payload, command, ack }) => {
+app.command('/devMode', async ({ payload, ack }) => {
     try {
-        if (true) {
+        if (payload.user_id === 'U03RG3GSB') {
             await ack({
                 text: `dev mode activated, all hail the code supremacy. Now go fix that shit and :shipit:`,
                 response_type: 'ephemeral',
