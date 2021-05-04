@@ -12,17 +12,10 @@ app.command('/list', async ({ ack, logger }) => {
             keys = keys.concat(result[1]);
         } while (cursor != '0');
 
-        if (keys.length > 0) {
-            await ack({
-                text: keys.join(' \n '),
-                response_type: 'ephemeral',
-            });
-        } else {
-            await ack({
-                text: `Couldn't fetch the commands list`,
-                response_type: 'ephemeral',
-            });
-        }
+        await ack({
+            text: keys.length ? keys.join(' \n ') : 'No commands were created yet.',
+            response_type: 'ephemeral',
+        });
     } catch (err) {
         logger.error(err);
         await ack({
