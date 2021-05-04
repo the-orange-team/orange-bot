@@ -7,6 +7,7 @@ const redisUrl = process.env.REDIS_URL || '';
 const configClient: ClientOpts = {
     auth_pass: process.env.REDIS_PASSWORD,
 };
+const devModeKey = 'devMode';
 
 interface OperationResult {
     success: boolean;
@@ -45,6 +46,15 @@ class StorageImplementation implements Storage<Alias> {
             });
         });
         return promiseRedis;
+    }
+
+    async getDevMode(): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            this.client.get(devModeKey, (error, reply) => {
+                if (error) reject(error);
+                resolve(reply);
+            });
+        });
     }
 
     async getAliasesByKeys(keys: string[]): Promise<Map<string, Alias>> {

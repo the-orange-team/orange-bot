@@ -1,13 +1,13 @@
 import { app } from '../app';
 import { SlackCommandMiddlewareArgs, Middleware } from '@slack/bolt';
-
-let devModeActive = true;
+import { storage } from '../storage';
 
 export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
     next,
     ack,
     ...rest
 }) => {
+    const devModeActive = await storage.getDevMode();
     if (devModeActive == false || (devModeActive && userIsDev(rest.payload.user_id))) {
         await next?.();
     } else {
@@ -20,8 +20,9 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
 
 app.command('/devmode', async ({ payload, ack, logger }) => {
     try {
+        const devModeActive = await storage.getDevMode();
         if (userIsDev(payload.user_id)) {
-            devModeActive = !devModeActive;
+            await storage.setDevModeTo(!devModeActive);
             logger.info(`[user auth] dev mode is now set to: ${devModeActive}.`);
             await ack({
                 text: generateDevModeMessage(),
