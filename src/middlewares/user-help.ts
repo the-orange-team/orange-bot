@@ -1,8 +1,7 @@
 import { app } from '../app';
 
 app.command('/help', async ({ ack, say }) => {
-    await ack();
-    await say({
+    await ack({
         text: 'You asked for help?',
         blocks: [
             {
