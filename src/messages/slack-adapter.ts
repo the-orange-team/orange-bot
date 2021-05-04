@@ -1,6 +1,6 @@
 import { SayArguments, SlashCommand } from '@slack/bolt';
 import { isUrl, Maybe } from '../utils';
-import { Command } from './types';
+import { Alias } from './types';
 
 export function textToSlackMessage(command: string, response: string): string | SayArguments {
     if (isUrl(response)) {
@@ -53,7 +53,7 @@ export function tweetToSlackMessage(
     }
 }
 
-export function slackCommandToCommand(slackCommand: SlashCommand): Maybe<Command> {
+export function slackCommandToCommand(slackCommand: SlashCommand): Maybe<Alias> {
     const regex = /^([^: ]*[^: ]) returning (.*)$/;
     const args = regex.exec(slackCommand.text);
 

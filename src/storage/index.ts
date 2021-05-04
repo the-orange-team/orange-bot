@@ -1,5 +1,5 @@
 import redis, { ClientOpts, RedisClient } from 'redis';
-import { Command } from '../messages/types';
+import { Alias } from '../messages/types';
 import { Maybe, safeJSONParser } from '../utils';
 
 const PORT = Number(process.env.REDIS_PORT) || 3333;
@@ -14,17 +14,17 @@ interface OperationResult {
 }
 export interface Storage<T> {
     getValue: (key: string) => Promise<Maybe<T>>;
-    setValue: (key: string, value: T) => Promise<Command>;
+    setValue: (key: string, value: T) => Promise<Alias>;
     listAllKeysStartingFrom: (cursor: string) => Promise<[string, string[]]>;
     deleteAllKeys: () => Promise<void>;
     deleteValue: (key: string) => Promise<OperationResult>;
 }
 
-class StorageImplementation implements Storage<Command> {
+class StorageImplementation implements Storage<Alias> {
     constructor(private client: RedisClient) {}
 
-    async setValue(key: string, value: Command): Promise<Command> {
-        const promiseRedis = new Promise<Command>((resolve, reject) => {
+    async setValue(key: string, value: Alias): Promise<Alias> {
+        const promiseRedis = new Promise<Alias>((resolve, reject) => {
             this.client.set(key, JSON.stringify(value), (error) => {
                 if (error) reject(error);
                 resolve(value);
@@ -33,8 +33,8 @@ class StorageImplementation implements Storage<Command> {
         return promiseRedis;
     }
 
-    async getValue(key: string): Promise<Maybe<Command>> {
-        const promiseRedis = new Promise<Command>((resolve, reject) => {
+    async getValue(key: string): Promise<Maybe<Alias>> {
+        const promiseRedis = new Promise<Alias>((resolve, reject) => {
             this.client.get(key, (error, reply) => {
                 if (error) {
                     reject(error);

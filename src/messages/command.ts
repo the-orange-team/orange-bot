@@ -1,12 +1,12 @@
 import { getRandomElement, Maybe } from '../utils';
 import { Storage } from '../storage';
-import { Command } from './types';
+import { Alias } from './types';
 
 export const messageStartingWithColonRegex = /^:[^: ]*[^: ]$/;
 
 export async function getCommandResponse(
     commandKey: string,
-    storage: Storage<Command>
+    storage: Storage<Alias>
 ): Promise<Maybe<string>> {
     if (!commandKey.startsWith(':')) commandKey = ':' + commandKey;
     const command = await storage.getValue(commandKey);
@@ -18,19 +18,19 @@ export async function getCommandResponse(
 
 export async function getCommand(
     commandKey: string,
-    storage: Storage<Command>
-): Promise<Maybe<Command>> {
+    storage: Storage<Alias>
+): Promise<Maybe<Alias>> {
     return await storage.getValue(commandKey);
 }
 
-export async function createCommand(command: Command, storage: Storage<Command>): Promise<void> {
+export async function createCommand(command: Alias, storage: Storage<Alias>): Promise<void> {
     const commandKey = command.command.startsWith(':') ? command.command : ':' + command.command;
     await storage.setValue(commandKey.toLowerCase(), command);
 }
 
 export async function deleteCommand(
-    { command }: Pick<Command, 'command'>,
-    storage: Storage<Command>
+    { command }: Pick<Alias, 'command'>,
+    storage: Storage<Alias>
 ): Promise<boolean> {
     if (!command.startsWith(':')) command = ':' + command;
 
