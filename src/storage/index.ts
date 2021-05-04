@@ -112,8 +112,8 @@ class StorageImplementation implements Storage<Alias> {
     async getDevMode(): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             this.client.get(devModeKey, (error, reply) => {
-                if (error) resolve(false);
-                resolve(safeJSONParser(reply));
+                if (error) reject(error);
+                resolve(safeJSONParser(reply) ?? true);
             });
         });
     }
