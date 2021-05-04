@@ -1,8 +1,9 @@
 import { app } from '../app';
+import { callAuthorized } from './user-auth';
 import { deleteCommand } from '../messages';
 import { storage } from '../storage';
 
-app.command('/delete', async ({ command, ack, logger }) => {
+app.command('/delete', callAuthorized, async ({ command, ack, logger }) => {
     try {
         logger.info(`[delete] deleting command invoked.`);
         const [aliasToDelete] = command.text.trim().split(' ');
