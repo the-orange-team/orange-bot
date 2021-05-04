@@ -23,14 +23,14 @@ export async function getCommand(
     return await storage.getValue(commandKey);
 }
 
-export async function createCommand(command: Command, storage: Storage): Promise<void> {
+export async function createCommand(command: Command, storage: Storage<Command>): Promise<void> {
     const commandKey = command.command.startsWith(':') ? command.command : ':' + command.command;
     await storage.setValue(commandKey.toLowerCase(), command);
 }
 
 export async function deleteCommand(
     { command }: Pick<Command, 'command'>,
-    storage: Storage
+    storage: Storage<Command>
 ): Promise<boolean> {
     if (!command.startsWith(':')) command = ':' + command;
 
