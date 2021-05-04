@@ -1,5 +1,5 @@
 import { app } from '../app';
-import { callAuthorized } from '../middlewares/user-alias';
+import { callAuthorized } from './user-auth';
 import { slackCommandToCommand, createCommand } from '../messages';
 import { storage } from '../storage';
 
@@ -10,7 +10,7 @@ app.command('/create', callAuthorized, async ({ command, ack }) => {
             createCommand(botCommand, storage);
             await ack({
                 response_type: 'ephemeral',
-                text: `You can now use the command writing :${botCommand.text}`,
+                text: `You can now use the alias writing :${botCommand.text}`,
             });
         } else {
             await ack({
