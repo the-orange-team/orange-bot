@@ -1,7 +1,7 @@
 import { app } from '../app';
 import { SlackCommandMiddlewareArgs, Middleware } from '@slack/bolt';
 
-let devModeActive = false;
+let devModeActive = true;
 
 export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
     next,
