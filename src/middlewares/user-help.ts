@@ -1,6 +1,7 @@
 import { app } from '../app';
 
-app.command('/help', async ({ say }) => {
+app.command('/help', async ({ ack, say }) => {
+    await ack();
     await say({
         text: 'You asked for help?',
         blocks: [
@@ -53,7 +54,7 @@ app.command('/help', async ({ say }) => {
                     {
                         type: 'mrkdwn',
                         text:
-                            'Esse bot foi feito com o puro suco do ódio por :guribadass:,:brabo:,:romulold: e :smoked-thomaz:, usem o `@orangebotdevs` se precisarem de ajuda \n\n\n つづく',
+                            'Esse bot foi feito com o puro suco do ódio por :guribadass:,:brabo:,:romulold: e :smoked-thomaz:, usem o `@ orangebotdevs` se precisarem de ajuda \n\n\n つづく',
                     },
                 ],
             },
