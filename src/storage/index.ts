@@ -17,7 +17,7 @@ export interface Storage<T> {
     setValue: (key: string, value: T) => Promise<T>;
     getAllKeys: () => Promise<string[]>;
     getAllAliasesKeys: () => Promise<string[]>;
-    getAliasesByKeys: (keys: string[]) => Promise<[string, Maybe<T>][]>;
+    getAliasesByKeys: (keys: string[]) => Promise<Map<string, Maybe<T>>>;
     deleteAllKeys: () => Promise<void>;
     deleteValue: (key: string) => Promise<OperationResult>;
 }
@@ -47,15 +47,22 @@ class StorageImplementation implements Storage<Alias> {
         return promiseRedis;
     }
 
-    async getAliasesByKeys(keys: string[]): Promise<[string, Maybe<Alias>][]> {
-        return new Promise<[string, Maybe<Alias>][]>((resolve, reject) => {
+    async getAliasesByKeys(keys: string[]): Promise<Map<string, Alias>> {
+        return new Promise<Map<string, Alias>>((resolve, reject) => {
+            if (!keys.length) resolve(new Map());
             this.client.mget(keys, (error, values) => {
                 if (error) reject(error);
 
-                const valuesParsed = values.map((value) => safeJSONParser(value));
-                const final = zip<string, Maybe<Alias>>(keys, valuesParsed);
+                const valuesParsed =
+                    values?.map((value) => safeJSONParser(value)) ?? Array(keys.length).fill(null);
+                const aliasKeyValuePair = zip<string, Maybe<Alias>>(keys, valuesParsed);
 
-                resolve(final);
+                const validAliasesPairs = aliasKeyValuePair.filter((pair) => {
+                    const [, alias] = pair;
+                    return alias != null;
+                }) as [string, Alias][];
+
+                resolve(new Map(validAliasesPairs));
             });
         });
     }
