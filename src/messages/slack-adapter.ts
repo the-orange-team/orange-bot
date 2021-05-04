@@ -1,4 +1,4 @@
-import { SayArguments } from '@slack/bolt';
+import { SayArguments, SlashCommand } from '@slack/bolt';
 import { isUrl, Maybe } from '../utils';
 import { Command } from './types';
 
@@ -53,15 +53,16 @@ export function tweetToSlackMessage(
     }
 }
 
-export function slackCommandToCommand(slackCommand: string): Maybe<Command> {
+export function slackCommandToCommand(slackCommand: SlashCommand): Maybe<Command> {
     const regex = /^([^: ]*[^: ]) returning (.*)$/;
-    const args = regex.exec(slackCommand);
+    const args = regex.exec(slackCommand.text);
 
     if (!args) return null;
 
     const [, commandName, values] = args; // ignoring full match (first element)
     return {
-        command: commandName,
-        values: values.includes(' ') ? values.split(' ') : values,
+        command: commandName.toLocaleLowerCase(),
+        userId: slackCommand.user_id,
+        values: values.includes(' ') ? values.split(' ') : [values],
     };
 }

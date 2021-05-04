@@ -1,5 +1,6 @@
 import redis, { ClientOpts, RedisClient } from 'redis';
-import { safeJSONParser } from '../utils';
+import { Command } from '../messages/types';
+import { Maybe, safeJSONParser } from '../utils';
 
 const PORT = Number(process.env.REDIS_PORT) || 3333;
 const redisUrl = process.env.REDIS_URL || '';
@@ -7,35 +8,33 @@ const configClient: ClientOpts = {
     auth_pass: process.env.REDIS_PASSWORD,
 };
 
-type ReturnTypeRedis = string | string[] | null;
-
 interface OperationResult {
     success: boolean;
     error?: string;
 }
-export interface Storage {
-    getValue: (key: string) => Promise<ReturnTypeRedis>;
-    setValue: (key: string, value: string | string[]) => Promise<void>;
-    deleteValue: (key: string) => Promise<OperationResult>;
+export interface Storage<T> {
+    getValue: (key: string) => Promise<Maybe<T>>;
+    setValue: (key: string, value: T) => Promise<Command>;
     listAllKeysStartingFrom: (cursor: string) => Promise<[string, string[]]>;
     deleteAllKeys: () => Promise<void>;
+    deleteValue: (key: string) => Promise<OperationResult>;
 }
 
-class StorageImplementation implements Storage {
+class StorageImplementation implements Storage<Command> {
     constructor(private client: RedisClient) {}
 
-    async setValue(key: string, value: string | string[]): Promise<void> {
-        const promiseRedis = new Promise<void>((resolve, reject) => {
+    async setValue(key: string, value: Command): Promise<Command> {
+        const promiseRedis = new Promise<Command>((resolve, reject) => {
             this.client.set(key, JSON.stringify(value), (error) => {
                 if (error) reject(error);
-                resolve();
+                resolve(value);
             });
         });
         return promiseRedis;
     }
 
-    async getValue(key: string): Promise<ReturnTypeRedis> {
-        const promiseRedis = new Promise<ReturnTypeRedis>((resolve, reject) => {
+    async getValue(key: string): Promise<Maybe<Command>> {
+        const promiseRedis = new Promise<Command>((resolve, reject) => {
             this.client.get(key, (error, reply) => {
                 if (error) {
                     reject(error);

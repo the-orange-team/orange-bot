@@ -1,21 +1,31 @@
-import { getRandomElement } from '../utils';
+import { getRandomElement, Maybe } from '../utils';
 import { Storage } from '../storage';
 import { Command } from './types';
 
 export const messageStartingWithColonRegex = /^:[^: ]*[^: ]$/;
 
-export async function returnCommand(command: string, storage: Storage): Promise<string | null> {
-    if (!command.startsWith(':')) command = ':' + command;
-    const response = await storage.getValue(command);
-    if (!response) return null;
+export async function getCommandResponse(
+    commandKey: string,
+    storage: Storage<Command>
+): Promise<Maybe<string>> {
+    if (!commandKey.startsWith(':')) commandKey = ':' + commandKey;
+    const command = await storage.getValue(commandKey);
+    if (!command) return null;
 
-    const selectedResponse = response instanceof Array ? getRandomElement(response) : response;
+    const selectedResponse = getRandomElement(command.values);
     return selectedResponse;
 }
 
-export async function createCommand({ command, values }: Command, storage: Storage): Promise<void> {
-    if (!command.startsWith(':')) command = ':' + command;
-    await storage.setValue(`${command}`.toLowerCase(), values);
+export async function getCommand(
+    commandKey: string,
+    storage: Storage<Command>
+): Promise<Maybe<Command>> {
+    return await storage.getValue(commandKey);
+}
+
+export async function createCommand(command: Command, storage: Storage): Promise<void> {
+    const commandKey = command.command.startsWith(':') ? command.command : ':' + command.command;
+    await storage.setValue(commandKey.toLowerCase(), command);
 }
 
 export async function deleteCommand(

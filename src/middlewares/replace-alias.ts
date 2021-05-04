@@ -1,12 +1,12 @@
 import { app } from '../app';
-import { slackCommandToCommand, createCommand, returnCommand } from '../messages';
+import { slackCommandToCommand, createCommand, getCommandResponse } from '../messages';
 import { storage } from '../storage';
 
 app.command('/replace', async ({ command, ack, logger }) => {
     try {
-        const botCommand = slackCommandToCommand(command.text);
+        const botCommand = slackCommandToCommand(command);
         if (botCommand) {
-            const isCommandRegistered = await returnCommand(botCommand.command, storage);
+            const isCommandRegistered = await getCommandResponse(botCommand.command, storage);
             if (isCommandRegistered) {
                 await createCommand(botCommand, storage);
                 await ack({

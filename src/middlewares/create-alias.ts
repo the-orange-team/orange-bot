@@ -5,7 +5,7 @@ import { storage } from '../storage';
 
 app.command('/create', callAuthorized, async ({ command, ack }) => {
     try {
-        const botCommand = slackCommandToCommand(command.text);
+        const botCommand = slackCommandToCommand(command);
         if (botCommand) {
             createCommand(botCommand, storage);
             await ack({
