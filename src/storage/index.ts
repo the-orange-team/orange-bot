@@ -1,6 +1,6 @@
 import redis, { ClientOpts, RedisClient } from 'redis';
 import { Alias } from '../messages/types';
-import { Maybe, safeJSONParser } from '../utils';
+import { Maybe, safeJSONParser, zip } from '../utils';
 
 const PORT = Number(process.env.REDIS_PORT) || 3333;
 const redisUrl = process.env.REDIS_URL || '';
@@ -14,9 +14,10 @@ interface OperationResult {
 }
 export interface Storage<T> {
     getValue: (key: string) => Promise<Maybe<T>>;
-    setValue: (key: string, value: T) => Promise<Alias>;
+    setValue: (key: string, value: T) => Promise<T>;
     getAllKeys: () => Promise<string[]>;
-    getAllAliases: () => Promise<string[]>;
+    getAllAliasesKeys: () => Promise<string[]>;
+    getAliasesByKeys: (keys: string[]) => Promise<[string, Maybe<T>][]>;
     deleteAllKeys: () => Promise<void>;
     deleteValue: (key: string) => Promise<OperationResult>;
 }
@@ -46,6 +47,19 @@ class StorageImplementation implements Storage<Alias> {
         return promiseRedis;
     }
 
+    async getAliasesByKeys(keys: string[]): Promise<[string, Maybe<Alias>][]> {
+        return new Promise<[string, Maybe<Alias>][]>((resolve, reject) => {
+            this.client.mget(keys, (error, values) => {
+                if (error) reject(error);
+
+                const valuesParsed = values.map((value) => safeJSONParser(value));
+                const final = zip<string, Maybe<Alias>>(keys, valuesParsed);
+
+                resolve(final);
+            });
+        });
+    }
+
     async deleteValue(key: string): Promise<OperationResult> {
         return new Promise<OperationResult>((resolve, reject) => {
             this.client.del(key, function (err, result) {
@@ -68,7 +82,7 @@ class StorageImplementation implements Storage<Alias> {
         });
     }
 
-    async getAllAliases(): Promise<string[]> {
+    async getAllAliasesKeys(): Promise<string[]> {
         return new Promise<string[]>((resolve, reject) => {
             this.client.keys(':*', function (error, keys) {
                 if (error) reject(error);
@@ -77,6 +91,7 @@ class StorageImplementation implements Storage<Alias> {
         });
     }
 
+    //TODO: should avoid deleting keys that are not aliases
     async deleteAllKeys(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.client.flushdb((error, result) => {

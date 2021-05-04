@@ -14,3 +14,6 @@ export const safeJSONParser = (
     text: Maybe<string>,
     reviver: ((this: any, key: string, value: any) => any) | undefined = undefined
 ): any => (text ? JSON.parse(text, reviver) : null);
+
+export const zip = <X, Y>(a: Array<X>, b: Array<Y>): Array<[X, Y]> =>
+    a.map((element, index) => [element, b[index]]);
