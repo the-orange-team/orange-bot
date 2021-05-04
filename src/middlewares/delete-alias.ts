@@ -14,20 +14,22 @@ app.command('/delete', callAuthorized, async ({ command, ack, logger }) => {
                 text: `Invalid command pattern.`,
             });
         }
-        logger.info(`[delete] target alias ${aliasToDelete}. trying to delete...`);
+        logger.info(`[delete] target alias :${aliasToDelete}. trying to delete...`);
 
-        const wasCommandDeleted = await deleteCommand({ text: aliasToDelete }, storage);
-        if (wasCommandDeleted) {
+        const operationResult = await deleteCommand({ text: aliasToDelete }, storage, command);
+        if (operationResult.success) {
             logger.info(`[delete] ${aliasToDelete} deleted.`);
             await ack({
                 response_type: 'ephemeral',
                 text: `Alias ${aliasToDelete} has been successfully deleted`,
             });
         } else {
-            logger.info(`[delete] ${aliasToDelete} does not exist.`);
+            logger.info(
+                `[delete] :${aliasToDelete} was not deleted. Error: ${operationResult.error}.`
+            );
             await ack({
                 response_type: 'ephemeral',
-                text: `The alias :${aliasToDelete} does not exist. No-op.`,
+                text: `${operationResult.error}. No-op.`,
             });
         }
     } catch (err) {

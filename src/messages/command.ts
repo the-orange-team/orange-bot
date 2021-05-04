@@ -1,5 +1,6 @@
+import { SlashCommand } from '@slack/bolt';
+import { OperationResult, Storage } from '../storage';
 import { getRandomElement, Maybe } from '../utils';
-import { Storage } from '../storage';
 import { Alias } from './types';
 
 export const messageStartingWithColonRegex = /^:[^: ]*[^: ]$/;
@@ -30,11 +31,21 @@ export async function createCommand(command: Alias, storage: Storage<Alias>): Pr
 
 export async function deleteCommand(
     { text: command }: Pick<Alias, 'text'>,
-    storage: Storage<Alias>
-): Promise<boolean> {
+    storage: Storage<Alias>,
+    commandContext: SlashCommand
+): Promise<OperationResult> {
     if (!command.startsWith(':')) command = ':' + command;
 
+    const alias = await storage.getValue(command);
+
+    if (!alias || alias.userId !== commandContext.user_id)
+        return { error: 'You can only delete the aliases you created', success: false };
+
     const result = await storage.deleteValue(`${command}`.toLowerCase());
+
+    // this one should be rethrowed since it should be handled on the caller method:
+    // it's a redis exception that will be thrown if the key can't be deleted for some reason.
     if (result.error) throw new Error(result.error);
-    return result.success;
+
+    return { success: result.success };
 }
