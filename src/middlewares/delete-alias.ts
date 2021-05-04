@@ -15,7 +15,7 @@ app.command('/delete', async ({ command, ack, logger }) => {
         }
         logger.info(`[delete] target alias: ${aliasToDelete}. trying to delete...`);
 
-        const wasCommandDeleted = await deleteCommand({ command: aliasToDelete }, storage);
+        const wasCommandDeleted = await deleteCommand({ text: aliasToDelete }, storage);
         if (wasCommandDeleted) {
             logger.info(`[delete] ${aliasToDelete} deleted.`);
             await ack({

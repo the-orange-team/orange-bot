@@ -10,7 +10,7 @@ app.command('/create', callAuthorized, async ({ command, ack }) => {
             createCommand(botCommand, storage);
             await ack({
                 response_type: 'ephemeral',
-                text: `You can now use the command writing :${botCommand.command}`,
+                text: `You can now use the command writing :${botCommand.text}`,
             });
         } else {
             await ack({

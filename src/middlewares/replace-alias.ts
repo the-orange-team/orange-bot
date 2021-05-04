@@ -6,17 +6,17 @@ app.command('/replace', async ({ command, ack, logger }) => {
     try {
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {
-            const isCommandRegistered = await getCommandResponse(botCommand.command, storage);
+            const isCommandRegistered = await getCommandResponse(botCommand.text, storage);
             if (isCommandRegistered) {
                 await createCommand(botCommand, storage);
                 await ack({
-                    text: `Command :${botCommand.command} has been successfully replaced`,
+                    text: `Command :${botCommand.text} has been successfully replaced`,
                     response_type: 'ephemeral',
                 });
             } else {
                 await ack({
                     response_type: 'ephemeral',
-                    text: `Command :${botCommand.command} does not exist. You can create it using \`/create\`.`,
+                    text: `Command :${botCommand.text} does not exist. You can create it using \`/create\`.`,
                 });
             }
         } else {

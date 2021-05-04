@@ -61,7 +61,7 @@ export function slackCommandToCommand(slackCommand: SlashCommand): Maybe<Alias> 
 
     const [, commandName, values] = args; // ignoring full match (first element)
     return {
-        command: commandName.toLocaleLowerCase(),
+        text: commandName.toLocaleLowerCase(),
         userId: slackCommand.user_id,
         values: values.includes(' ') ? values.split(' ') : [values],
     };

@@ -1,5 +1,5 @@
 export type Alias = {
-    command: string;
+    text: string;
     userId: string;
     values: string[];
 };

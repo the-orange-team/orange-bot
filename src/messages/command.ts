@@ -24,12 +24,12 @@ export async function getCommand(
 }
 
 export async function createCommand(command: Alias, storage: Storage<Alias>): Promise<void> {
-    const commandKey = command.command.startsWith(':') ? command.command : ':' + command.command;
+    const commandKey = command.text.startsWith(':') ? command.text : ':' + command.text;
     await storage.setValue(commandKey.toLowerCase(), command);
 }
 
 export async function deleteCommand(
-    { command }: Pick<Alias, 'command'>,
+    { text: command }: Pick<Alias, 'text'>,
     storage: Storage<Alias>
 ): Promise<boolean> {
     if (!command.startsWith(':')) command = ':' + command;
