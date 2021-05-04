@@ -3,10 +3,10 @@ import { storage } from '../storage';
 
 app.command('/list', async ({ ack, logger }) => {
     try {
-        const keys = await storage.getAllKeys();
+        const aliases = await storage.getAllAliases();
 
         await ack({
-            text: keys.length ? keys.join(' \n ') : 'No commands were created yet.',
+            text: aliases.length ? aliases.join(' \n ') : 'No commands were created yet.',
             response_type: 'ephemeral',
         });
     } catch (err) {

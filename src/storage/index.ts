@@ -16,6 +16,7 @@ export interface Storage<T> {
     getValue: (key: string) => Promise<Maybe<T>>;
     setValue: (key: string, value: T) => Promise<Alias>;
     getAllKeys: () => Promise<string[]>;
+    getAllAliases: () => Promise<string[]>;
     deleteAllKeys: () => Promise<void>;
     deleteValue: (key: string) => Promise<OperationResult>;
 }
@@ -59,6 +60,15 @@ class StorageImplementation implements Storage<Alias> {
     }
 
     async getAllKeys(): Promise<string[]> {
+        return new Promise<string[]>((resolve, reject) => {
+            this.client.keys('*', function (error, keys) {
+                if (error) reject(error);
+                resolve(keys);
+            });
+        });
+    }
+
+    async getAllAliases(): Promise<string[]> {
         return new Promise<string[]>((resolve, reject) => {
             this.client.keys(':*', function (error, keys) {
                 if (error) reject(error);
