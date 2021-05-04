@@ -3,14 +3,7 @@ import { storage } from '../storage';
 
 app.command('/list', async ({ ack, logger }) => {
     try {
-        let cursor = '0';
-        let keys: string[] = [];
-
-        do {
-            const result = await storage.listAllKeysStartingFrom(cursor);
-            cursor = result[0];
-            keys = keys.concat(result[1]);
-        } while (cursor != '0');
+        const keys = await storage.getAllKeys();
 
         await ack({
             text: keys.length ? keys.join(' \n ') : 'No commands were created yet.',
