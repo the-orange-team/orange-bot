@@ -10,17 +10,16 @@ export class StorageImplementation implements Storage<Alias> {
     constructor(private client: RedisClient) {}
 
     async setValue(key: string, value: Alias): Promise<Alias> {
-        const promiseRedis = new Promise<Alias>((resolve, reject) => {
+        return new Promise<Alias>((resolve, reject) => {
             this.client.set(key, JSON.stringify(value), (error) => {
                 if (error) reject(error);
                 resolve(value);
             });
         });
-        return promiseRedis;
     }
 
     async getValue(key: string): Promise<Maybe<Alias>> {
-        const promiseRedis = new Promise<Alias>((resolve, reject) => {
+        return new Promise<Alias>((resolve, reject) => {
             this.client.get(key, (error, reply) => {
                 if (error) {
                     reject(error);
@@ -28,7 +27,6 @@ export class StorageImplementation implements Storage<Alias> {
                 resolve(safeJSONParser(reply));
             });
         });
-        return promiseRedis;
     }
 
     async getAliasesByKeys(keys: string[]): Promise<Map<string, Alias>> {

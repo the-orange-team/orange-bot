@@ -5,7 +5,7 @@ import { callAuthorized } from './user-auth';
 
 const tag = 'delete-alias';
 
-app.command('/delete', callAuthorized, async ({ payload, command, context, logger }) => {
+app.command('/delete', callAuthorized, async ({ command, context, logger }) => {
     try {
         context.logStep(tag, 'received');
         const [aliasToDelete] = command.text.trim().split(' ');
@@ -28,6 +28,6 @@ app.command('/delete', callAuthorized, async ({ payload, command, context, logge
     } catch (err) {
         logger.error(err);
         await context.sendEphemeral(`Something went wrong`);
-        context.logError(err, payload);
+        context.logError(err);
     }
 });

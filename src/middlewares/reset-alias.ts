@@ -6,7 +6,7 @@ import { callAuthorized } from './user-auth';
 
 const tag = 'reset-alias';
 
-app.command('/reset', callAuthorized, async ({ payload, command, context }) => {
+app.command('/reset', callAuthorized, async ({ command, context }) => {
     try {
         context.logStep(tag, 'received');
         const storedHash = process.env.RESET_HASH;
@@ -28,6 +28,6 @@ app.command('/reset', callAuthorized, async ({ payload, command, context }) => {
         await context.sendEphemeral(
             `Something went wrong, contact @orangebotdevs and don't try this command again`
         );
-        context.logError(err, payload);
+        context.logError(err);
     }
 });

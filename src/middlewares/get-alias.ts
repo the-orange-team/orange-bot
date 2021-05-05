@@ -2,7 +2,7 @@ import { app } from '../app';
 import { getCommandResponse, messageStartingWithColonRegex, textToSlackMessage } from '../messages';
 import { storage } from '../storage';
 
-app.message(messageStartingWithColonRegex, async ({ payload, context, say, logger }) => {
+app.message(messageStartingWithColonRegex, async ({ context, say, logger }) => {
     // RegExp matches are inside of context.matches
     try {
         const command = context.matches[0].toLowerCase();

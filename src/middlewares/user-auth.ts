@@ -44,10 +44,9 @@ app.command('/devmode', async ({ payload, context }) => {
 
 function userIsDev(userId: string): boolean {
     const devIds = process.env.DEV_USER_GROUP;
-    const devList: string[] = devIds?.substring(1, devIds.length - 1).split(',') ?? [];
+    const devList = devIds?.substring(1, devIds.length - 1).split(',') ?? [];
     const devUser = devList.find((str) => str == userId);
-    if (devUser) return true;
-    else return false;
+    return Boolean(devUser);
 }
 
 function generateDevModeMessage(devModeActive: boolean): string {
