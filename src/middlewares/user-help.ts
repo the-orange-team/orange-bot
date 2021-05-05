@@ -3,9 +3,9 @@ import { orangeLogger } from '../logger';
 
 const tag = 'user-help';
 
-app.command('/help', async ({ payload, logger, ack, say }) => {
+app.command('/help', async ({ payload, logger, context }) => {
     orangeLogger.logStep(logger, tag, 'received', payload);
-    await ack({
+    await context.sendComposedEphemeral({
         text: 'You asked for help?',
         blocks: [
             {

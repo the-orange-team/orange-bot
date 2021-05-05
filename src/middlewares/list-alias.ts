@@ -10,7 +10,7 @@ const tag = 'list-alias';
 
 const getAliasesText = (aliases: Alias[]) => aliases.map((alias) => `:${alias.text}`);
 
-app.command('/list', callAuthorized, async ({ ack, logger, command, payload }) => {
+app.command('/list', callAuthorized, async ({ context, logger, command, payload }) => {
     try {
         orangeLogger.logStep(logger, tag, 'received', payload);
         const aliasesKeys = await storage.getAllAliasesKeys();
@@ -53,13 +53,13 @@ app.command('/list', callAuthorized, async ({ ack, logger, command, payload }) =
             addTextSectionToBlocks(`No aliases were created yet.`, commandResultBlocks);
         }
 
-        await ack({
+        await context.sendComposedEphemeral({
             blocks: commandResultBlocks,
             response_type: 'ephemeral',
         });
     } catch (err) {
         orangeLogger.logError(err, payload);
-        await ack({
+        await context.sendComposedEphemeral({
             response_type: 'ephemeral',
             text: `Something went wrong`,
         });

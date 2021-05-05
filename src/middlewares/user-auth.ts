@@ -7,7 +7,7 @@ const tag = 'user-auth';
 
 export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
     next,
-    ack,
+    context,
     ...rest
 }) => {
     const devModeActive = await storage.getDevMode();
@@ -16,14 +16,13 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
         await next?.();
     } else {
         orangeLogger.logStep(rest.logger, tag, 'user access denied', rest.payload);
-        await ack({
-            text: "Dev mode is active, and I can't do much right now, try again later",
-            response_type: 'ephemeral',
-        });
+        await context.sendEphemeral(
+            "Dev mode is active, and I can't do much right now, try again later"
+        );
     }
 };
 
-app.command('/devmode', async ({ payload, ack, logger }) => {
+app.command('/devmode', async ({ payload, context, logger }) => {
     try {
         orangeLogger.logStep(logger, tag, 'received', payload);
         const devModeActive = await storage.getDevMode();
@@ -31,22 +30,15 @@ app.command('/devmode', async ({ payload, ack, logger }) => {
             orangeLogger.logStep(logger, tag, `dev mode changes allowed`, payload);
             await storage.setDevModeTo(!devModeActive);
             orangeLogger.logStep(logger, tag, `dev mode changed to: ${devModeActive}`, payload);
-            await ack({
-                text: generateDevModeMessage(!devModeActive),
-                response_type: 'ephemeral',
-            });
+            await context.sendEphemeral(generateDevModeMessage(!devModeActive));
         } else {
             orangeLogger.logStep(logger, tag, `dev mode changes denied`, payload);
-            await ack({
-                text: `You don't have credentials to change dev mode :no_good:`,
-                response_type: 'ephemeral',
-            });
+            await context.sendEphemeral(`You don't have credentials to change dev mode :no_good:`);
         }
     } catch (err) {
-        await ack({
-            response_type: 'ephemeral',
-            text: `Something went wrong, contact @orangebotdevs and don't try this command again`,
-        });
+        await context.sendEphemeral(
+            `Something went wrong, contact @orangebotdevs and don't try this command again`
+        );
         orangeLogger.logError(err, payload);
     }
 });

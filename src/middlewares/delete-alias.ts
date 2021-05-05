@@ -6,17 +6,14 @@ import { orangeLogger } from '../logger';
 
 const tag = 'delete-alias';
 
-app.command('/delete', callAuthorized, async ({ payload, command, ack, logger }) => {
+app.command('/delete', callAuthorized, async ({ payload, command, context, logger }) => {
     try {
         orangeLogger.logStep(logger, tag, 'received', payload);
         const [aliasToDelete] = command.text.trim().split(' ');
 
         if (!aliasToDelete) {
             orangeLogger.logStep(logger, tag, 'invalidated', payload);
-            await ack({
-                response_type: 'ephemeral',
-                text: `Invalid command pattern.`,
-            });
+            await context.sendEphemeral(`Invalid command pattern.`);
         } else orangeLogger.logStep(logger, tag, 'validated', payload);
 
         orangeLogger.logStep(logger, tag, 'deleting', payload);
@@ -24,23 +21,14 @@ app.command('/delete', callAuthorized, async ({ payload, command, ack, logger })
         const operationResult = await deleteCommand({ text: aliasToDelete }, storage, command);
         if (operationResult.success) {
             orangeLogger.logStep(logger, tag, 'deleted', payload);
-            await ack({
-                response_type: 'ephemeral',
-                text: `Alias ${aliasToDelete} has been successfully deleted`,
-            });
+            await context.sendEphemeral(`Alias ${aliasToDelete} has been successfully deleted`);
         } else {
             orangeLogger.logStep(logger, tag, 'no-op', payload);
-            await ack({
-                response_type: 'ephemeral',
-                text: `${operationResult.error}. No-op.`,
-            });
+            await context.sendEphemeral(`${operationResult.error}. No-op.`);
         }
     } catch (err) {
         logger.error(err);
-        await ack({
-            response_type: 'ephemeral',
-            text: `Something went wrong`,
-        });
+        await context.sendEphemeral(`Something went wrong`);
         orangeLogger.logError(err, payload);
     }
 });

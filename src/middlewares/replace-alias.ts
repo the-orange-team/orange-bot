@@ -6,7 +6,7 @@ import { orangeLogger } from '../logger';
 
 const tag = 'replace-alias';
 
-app.command('/replace', callAuthorized, async ({ payload, command, ack, logger }) => {
+app.command('/replace', callAuthorized, async ({ payload, command, context, logger }) => {
     try {
         orangeLogger.logStep(logger, tag, 'received', payload);
         const botCommand = slackCommandToCommand(command);
@@ -17,29 +17,21 @@ app.command('/replace', callAuthorized, async ({ payload, command, ack, logger }
                 orangeLogger.logStep(logger, tag, 'found', payload);
                 await createCommand(botCommand, storage);
                 orangeLogger.logStep(logger, tag, 'updated', payload);
-                await ack({
-                    text: `Alias ${botCommand.text} has been successfully replaced`,
-                    response_type: 'ephemeral',
-                });
+                await context.sendEphemeral(
+                    `Alias ${botCommand.text} has been successfully replaced`
+                );
             } else {
                 orangeLogger.logStep(logger, tag, 'not found', payload);
-                await ack({
-                    response_type: 'ephemeral',
-                    text: `Alias ${botCommand.text} does not exist. You can create it using \`/create\`.`,
-                });
+                await context.sendEphemeral(
+                    `Alias ${botCommand.text} does not exist. You can create it using \`/create\`.`
+                );
             }
         } else {
             orangeLogger.logStep(logger, tag, 'invalidated', payload);
-            await ack({
-                response_type: 'ephemeral',
-                text: `Invalid command pattern.`,
-            });
+            await context.sendEphemeral(`Invalid command pattern.`);
         }
     } catch (err) {
-        await ack({
-            response_type: 'ephemeral',
-            text: `Something went wrong`,
-        });
+        await context.sendEphemeral(`Something went wrong`);
         orangeLogger.logError(err, payload);
     }
 });

@@ -7,7 +7,7 @@ import { orangeLogger } from '../logger';
 
 const tag = 'reset-alias';
 
-app.command('/reset', callAuthorized, async ({ logger, payload, command, ack }) => {
+app.command('/reset', callAuthorized, async ({ logger, payload, command, context }) => {
     try {
         orangeLogger.logStep(logger, tag, 'received', payload);
         const storedHash = process.env.RESET_HASH;
@@ -16,22 +16,19 @@ app.command('/reset', callAuthorized, async ({ logger, payload, command, ack }) 
             orangeLogger.logStep(logger, tag, 'authorized', payload);
             await storage.deleteAllKeys();
             orangeLogger.logStep(logger, tag, 'database flushed', payload);
-            await ack({
-                text: `Bot storage flushed, this was his final words: I'll be back :fire::fire::thumbsup::fire::fire:`,
-                response_type: 'ephemeral',
-            });
+            await context.sendEphemeral(
+                `Bot storage flushed, this was his final words: I'll be back :fire::fire::thumbsup::fire::fire:`
+            );
         } else {
             orangeLogger.logStep(logger, tag, 'denied', payload);
-            await ack({
-                text: `You don't know the password and you shouldn't play with this command`,
-                response_type: 'ephemeral',
-            });
+            await context.sendEphemeral(
+                `You don't know the password and you shouldn't play with this command`
+            );
         }
     } catch (err) {
-        await ack({
-            response_type: 'ephemeral',
-            text: `Something went wrong, contact @orangebotdevs and don't try this command again`,
-        });
+        await context.sendEphemeral(
+            `Something went wrong, contact @orangebotdevs and don't try this command again`
+        );
         orangeLogger.logError(err, payload);
     }
 });
