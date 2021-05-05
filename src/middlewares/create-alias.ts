@@ -8,6 +8,16 @@ const tag = 'create-alias';
 app.command('/create', callAuthorized, async ({ command, context }) => {
     try {
         context.logStep(tag, 'received');
+        await context.sendEphemeral('Not implemented yet');
+    } catch (err) {
+        await context.sendEphemeral('Something went wrong');
+        context.logError(err);
+    }
+});
+
+app.command('/cmdcrt', callAuthorized, async ({ command, context }) => {
+    try {
+        context.logStep(tag, 'received');
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {
             context.logStep(tag, 'validated');
