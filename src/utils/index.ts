@@ -34,7 +34,7 @@ export const addTextSectionToBlocks = (text: string, blocks: Array<Block>): void
     const textSection = {
         type: 'section',
         text: {
-            type: 'plain_text',
+            type: 'mrkdwn',
             text,
         },
     };
