@@ -1,5 +1,5 @@
-import './add-ephemeral-ack';
-import './add-sentry-logger';
+import './ephemeral-ack';
+import './sentry-logger';
 
 import './user-auth';
 
