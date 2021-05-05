@@ -8,27 +8,27 @@ const tag = 'delete-alias';
 
 app.command('/delete', callAuthorized, async ({ payload, command, context, logger }) => {
     try {
-        orangeLogger.logStep(logger, tag, 'received', payload);
+        context.logStep(tag, 'received');
         const [aliasToDelete] = command.text.trim().split(' ');
 
         if (!aliasToDelete) {
-            orangeLogger.logStep(logger, tag, 'invalidated', payload);
+            context.logStep(tag, 'invalidated');
             await context.sendEphemeral(`Invalid command pattern.`);
-        } else orangeLogger.logStep(logger, tag, 'validated', payload);
+        } else context.logStep(tag, 'validated');
 
-        orangeLogger.logStep(logger, tag, 'deleting', payload);
+        context.logStep(tag, 'deleting');
 
         const operationResult = await deleteCommand({ text: aliasToDelete }, storage, command);
         if (operationResult.success) {
-            orangeLogger.logStep(logger, tag, 'deleted', payload);
+            context.logStep(tag, 'deleted');
             await context.sendEphemeral(`Alias ${aliasToDelete} has been successfully deleted`);
         } else {
-            orangeLogger.logStep(logger, tag, 'no-op', payload);
+            context.logStep(tag, 'no-op');
             await context.sendEphemeral(`${operationResult.error}. No-op.`);
         }
     } catch (err) {
         logger.error(err);
         await context.sendEphemeral(`Something went wrong`);
-        orangeLogger.logError(err, payload);
+        context.logError(err, payload);
     }
 });

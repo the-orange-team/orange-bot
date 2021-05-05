@@ -1,7 +1,6 @@
 import { app } from '../app';
 import { SlackCommandMiddlewareArgs, Middleware } from '@slack/bolt';
 import { storage } from '../storage';
-import { orangeLogger } from '../logger';
 
 const tag = 'user-auth';
 
@@ -12,34 +11,34 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
 }) => {
     const devModeActive = await storage.getDevMode();
     if (devModeActive === false || (devModeActive && userIsDev(rest.payload.user_id))) {
-        orangeLogger.logStep(rest.logger, tag, 'user access granted', rest.payload);
+        context.logStep(tag, 'user access granted');
         await next?.();
     } else {
-        orangeLogger.logStep(rest.logger, tag, 'user access denied', rest.payload);
+        context.logStep(tag, 'user access denied');
         await context.sendEphemeral(
             "Dev mode is active, and I can't do much right now, try again later"
         );
     }
 };
 
-app.command('/devmode', async ({ payload, context, logger }) => {
+app.command('/devmode', async ({ payload, context }) => {
     try {
-        orangeLogger.logStep(logger, tag, 'received', payload);
+        context.logStep(tag, 'received');
         const devModeActive = await storage.getDevMode();
         if (userIsDev(payload.user_id)) {
-            orangeLogger.logStep(logger, tag, `dev mode changes allowed`, payload);
+            context.logStep(tag, `dev mode changes allowed`);
             await storage.setDevModeTo(!devModeActive);
-            orangeLogger.logStep(logger, tag, `dev mode changed to: ${devModeActive}`, payload);
+            context.logStep(tag, `dev mode changed to: ${devModeActive}`);
             await context.sendEphemeral(generateDevModeMessage(!devModeActive));
         } else {
-            orangeLogger.logStep(logger, tag, `dev mode changes denied`, payload);
+            context.logStep(tag, `dev mode changes denied`);
             await context.sendEphemeral(`You don't have credentials to change dev mode :no_good:`);
         }
     } catch (err) {
         await context.sendEphemeral(
             `Something went wrong, contact @orangebotdevs and don't try this command again`
         );
-        orangeLogger.logError(err, payload);
+        context.logError(err);
     }
 });
 

@@ -12,6 +12,6 @@ app.message(messageStartingWithColonRegex, async ({ payload, context, say, logge
         await say(textToSlackMessage(command, value));
     } catch (error) {
         await say('alias call failed, @orangebotdevs');
-        orangeLogger.logError(error);
+        context.logError(error);
     }
 });

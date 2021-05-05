@@ -9,18 +9,18 @@ const tag = 'reset-alias';
 
 app.command('/reset', callAuthorized, async ({ logger, payload, command, context }) => {
     try {
-        orangeLogger.logStep(logger, tag, 'received', payload);
+        context.logStep(tag, 'received');
         const storedHash = process.env.RESET_HASH;
         const digestedArg = Base64.stringify(sha256(command.text));
         if (storedHash === digestedArg) {
-            orangeLogger.logStep(logger, tag, 'authorized', payload);
+            context.logStep(tag, 'authorized');
             await storage.deleteAllKeys();
-            orangeLogger.logStep(logger, tag, 'database flushed', payload);
+            context.logStep(tag, 'database flushed');
             await context.sendEphemeral(
                 `Bot storage flushed, this was his final words: I'll be back :fire::fire::thumbsup::fire::fire:`
             );
         } else {
-            orangeLogger.logStep(logger, tag, 'denied', payload);
+            context.logStep(tag, 'denied');
             await context.sendEphemeral(
                 `You don't know the password and you shouldn't play with this command`
             );
@@ -29,6 +29,6 @@ app.command('/reset', callAuthorized, async ({ logger, payload, command, context
         await context.sendEphemeral(
             `Something went wrong, contact @orangebotdevs and don't try this command again`
         );
-        orangeLogger.logError(err, payload);
+        context.logError(err, payload);
     }
 });

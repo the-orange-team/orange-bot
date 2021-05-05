@@ -8,30 +8,30 @@ const tag = 'replace-alias';
 
 app.command('/replace', callAuthorized, async ({ payload, command, context, logger }) => {
     try {
-        orangeLogger.logStep(logger, tag, 'received', payload);
+        context.logStep(tag, 'received');
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {
-            orangeLogger.logStep(logger, tag, 'validated', payload);
+            context.logStep(tag, 'validated');
             const isCommandRegistered = await getCommandResponse(botCommand.text, storage);
             if (isCommandRegistered) {
-                orangeLogger.logStep(logger, tag, 'found', payload);
+                context.logStep(tag, 'found');
                 await createCommand(botCommand, storage);
-                orangeLogger.logStep(logger, tag, 'updated', payload);
+                context.logStep(tag, 'updated');
                 await context.sendEphemeral(
                     `Alias ${botCommand.text} has been successfully replaced`
                 );
             } else {
-                orangeLogger.logStep(logger, tag, 'not found', payload);
+                context.logStep(tag, 'not found');
                 await context.sendEphemeral(
                     `Alias ${botCommand.text} does not exist. You can create it using \`/create\`.`
                 );
             }
         } else {
-            orangeLogger.logStep(logger, tag, 'invalidated', payload);
+            context.logStep(tag, 'invalidated');
             await context.sendEphemeral(`Invalid command pattern.`);
         }
     } catch (err) {
         await context.sendEphemeral(`Something went wrong`);
-        orangeLogger.logError(err, payload);
+        context.logError(err);
     }
 });

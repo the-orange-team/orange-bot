@@ -6,15 +6,15 @@ import { orangeLogger } from '../logger';
 
 const tag = 'pokedolar';
 
-app.command('/pokedolar', callAuthorized, async ({ say, ack, payload, logger }) => {
+app.command('/pokedolar', callAuthorized, async ({ say, ack, context, logger, payload }) => {
     try {
-        orangeLogger.logStep(logger, tag, 'received', payload);
+        context.logStep(logger, tag, 'received');
         const { tweet, mediaUrl } = await getLastPokeDolarTweet();
-        orangeLogger.logStep(logger, tag, 'fetched', payload);
+        context.logStep(logger, tag, 'fetched');
         await say(tweetToSlackMessage(tweet, mediaUrl, payload.user_name));
         await ack();
     } catch (error) {
         await say('Failed to fetch last tweet.');
-        orangeLogger.logError(error, payload);
+        context.logError(error);
     }
 });

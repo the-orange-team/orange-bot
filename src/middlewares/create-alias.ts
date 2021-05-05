@@ -6,21 +6,21 @@ import { orangeLogger } from '../logger';
 
 const tag = 'create-alias';
 
-app.command('/create', callAuthorized, async ({ payload, command, logger, context }) => {
+app.command('/create', callAuthorized, async ({ command, context }) => {
     try {
-        orangeLogger.logStep(logger, tag, 'received', payload);
+        context.logStep(tag, 'received');
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {
-            orangeLogger.logStep(logger, tag, 'validated', payload);
+            context.logStep(tag, 'validated');
             createCommand(botCommand, storage);
-            orangeLogger.logStep(logger, tag, 'created', payload);
+            context.logStep(tag, 'created');
             await context.sendEphemeral(`You can now use the alias writing :${botCommand.text}`);
         } else {
-            orangeLogger.logStep(logger, tag, 'invalidated', payload);
+            context.logStep(tag, 'invalidated');
             await context.sendEphemeral('Invalid command pattern');
         }
     } catch (err) {
         await context.sendEphemeral('Something went wrong');
-        orangeLogger.logError(err, payload);
+        context.logError(err);
     }
 });
