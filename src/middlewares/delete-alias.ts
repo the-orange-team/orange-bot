@@ -1,5 +1,5 @@
 import { app } from '../app';
-import { deleteCommand } from '../messages';
+import { deleteAlias } from '../messages';
 import { storage } from '../storage';
 import { callAuthorized } from './user-auth';
 
@@ -17,7 +17,7 @@ app.command('/delete', callAuthorized, async ({ command, context, logger }) => {
 
         context.logStep(tag, 'deleting');
 
-        const operationResult = await deleteCommand({ text: aliasToDelete }, storage, command);
+        const operationResult = await deleteAlias({ text: aliasToDelete }, storage, command);
         if (operationResult.success) {
             context.logStep(tag, 'deleted');
             await context.sendEphemeral(`Alias ${aliasToDelete} has been successfully deleted`);

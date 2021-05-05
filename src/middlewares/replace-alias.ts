@@ -1,5 +1,5 @@
 import { app } from '../app';
-import { createCommand, getCommandResponse, slackCommandToCommand } from '../messages';
+import { createAlias, getAliasResponse, slackCommandToCommand } from '../messages';
 import { storage } from '../storage';
 import { callAuthorized } from './user-auth';
 
@@ -11,10 +11,10 @@ app.command('/replace', callAuthorized, async ({ command, context }) => {
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {
             context.logStep(tag, 'validated');
-            const isCommandRegistered = await getCommandResponse(botCommand.text, storage);
+            const isCommandRegistered = await getAliasResponse(botCommand.text, storage);
             if (isCommandRegistered) {
                 context.logStep(tag, 'found');
-                await createCommand(botCommand, storage);
+                await createAlias(botCommand, storage);
                 context.logStep(tag, 'updated');
                 await context.sendEphemeral(
                     `Alias ${botCommand.text} has been successfully replaced`

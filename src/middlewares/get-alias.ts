@@ -1,5 +1,5 @@
 import { app } from '../app';
-import { getCommandResponse, messageStartingWithColonRegex, textToSlackMessage } from '../messages';
+import { getAliasResponse, messageStartingWithColonRegex, textToSlackMessage } from '../messages';
 import { storage } from '../storage';
 
 app.message(messageStartingWithColonRegex, async ({ context, say, logger }) => {
@@ -7,7 +7,7 @@ app.message(messageStartingWithColonRegex, async ({ context, say, logger }) => {
     try {
         const command = context.matches[0].toLowerCase();
         logger.info(`[get-alias] fetching ${command}`);
-        const value = (await getCommandResponse(command, storage)) ?? "alias doesn't exist";
+        const value = (await getAliasResponse(command, storage)) ?? "alias doesn't exist";
         await say(textToSlackMessage(command, value));
     } catch (error) {
         await say('alias call failed, @orangebotdevs');

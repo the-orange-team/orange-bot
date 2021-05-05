@@ -1,5 +1,5 @@
 import { app } from '../app';
-import { createCommand, slackCommandToCommand } from '../messages';
+import { createAlias, slackCommandToCommand } from '../messages';
 import { storage } from '../storage';
 import { callAuthorized } from './user-auth';
 
@@ -11,7 +11,7 @@ app.command('/create', callAuthorized, async ({ command, context }) => {
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {
             context.logStep(tag, 'validated');
-            createCommand(botCommand, storage);
+            createAlias(botCommand, storage);
             context.logStep(tag, 'created');
             await context.sendEphemeral(`You can now use the alias writing :${botCommand.text}`);
         } else {
