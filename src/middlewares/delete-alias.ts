@@ -9,7 +9,6 @@ const tag = 'delete-alias';
 app.command('/delete', callAuthorized, async ({ payload, command, ack, logger }) => {
     try {
         orangeLogger.logStep(logger, tag, 'received', payload);
-        logger.info(`[delete] deleting command invoked.`);
         const [aliasToDelete] = command.text.trim().split(' ');
 
         if (!aliasToDelete) {

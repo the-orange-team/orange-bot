@@ -1,6 +1,10 @@
 import { app } from '../app';
+import { orangeLogger } from '../logger';
 
-app.command('/help', async ({ ack, say }) => {
+const tag = 'user-help';
+
+app.command('/help', async ({ payload, logger, ack, say }) => {
+    orangeLogger.logStep(logger, tag, 'received', payload);
     await ack({
         text: 'You asked for help?',
         blocks: [

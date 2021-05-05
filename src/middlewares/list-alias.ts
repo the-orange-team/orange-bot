@@ -4,16 +4,20 @@ import { callAuthorized } from './user-auth';
 import { Alias } from '../messages/types';
 import { storage } from '../storage';
 import { addTextSectionToBlocks, groupArrayByKey } from '../utils';
+import { orangeLogger } from '../logger';
+
+const tag = 'list-alias';
 
 const getAliasesText = (aliases: Alias[]) => aliases.map((alias) => `:${alias.text}`);
 
-app.command('/list', callAuthorized, async ({ ack, logger, command }) => {
+app.command('/list', callAuthorized, async ({ ack, logger, command, payload }) => {
     try {
+        orangeLogger.logStep(logger, tag, 'received', payload);
         const aliasesKeys = await storage.getAllAliasesKeys();
-        logger.info("[list] retrieved aliases' keys.");
+        orangeLogger.logStep(logger, tag, 'retrieved keys', payload);
 
         const allAliases = await storage.getAliasesByKeys(aliasesKeys);
-        logger.info('[list] retrieved aliases using keys.');
+        orangeLogger.logStep(logger, tag, 'retrieved aliases', payload);
 
         const aliasesGroupedByUser = groupArrayByKey<Alias, string>(
             Array.from(allAliases.values()),
@@ -29,6 +33,7 @@ app.command('/list', callAuthorized, async ({ ack, logger, command }) => {
         const commandResultBlocks: Block[] = [];
 
         if (userAliases.length) {
+            orangeLogger.logStep(logger, tag, 'user aliases loaded', payload);
             addTextSectionToBlocks(
                 `Your aliases:\n${getAliasesText(userAliases).join('\n')}`,
                 commandResultBlocks
@@ -36,6 +41,7 @@ app.command('/list', callAuthorized, async ({ ack, logger, command }) => {
         }
 
         if (otherAliases.length) {
+            orangeLogger.logStep(logger, tag, 'others aliases loaded', payload);
             addTextSectionToBlocks(
                 `Others' aliases:\n${getAliasesText(otherAliases).join('\n')}`,
                 commandResultBlocks
@@ -43,6 +49,7 @@ app.command('/list', callAuthorized, async ({ ack, logger, command }) => {
         }
 
         if (!commandResultBlocks.length) {
+            orangeLogger.logStep(logger, tag, 'no alias loaded', payload);
             addTextSectionToBlocks(`No aliases were created yet.`, commandResultBlocks);
         }
 
@@ -51,7 +58,7 @@ app.command('/list', callAuthorized, async ({ ack, logger, command }) => {
             response_type: 'ephemeral',
         });
     } catch (err) {
-        logger.error(err);
+        orangeLogger.logError(err, payload);
         await ack({
             response_type: 'ephemeral',
             text: `Something went wrong`,

@@ -1,6 +1,9 @@
 import { app } from '../app';
 import { SlackCommandMiddlewareArgs, Middleware } from '@slack/bolt';
 import { storage } from '../storage';
+import { orangeLogger } from '../logger';
+
+const tag = 'user-auth';
 
 export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
     next,
@@ -9,8 +12,10 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
 }) => {
     const devModeActive = await storage.getDevMode();
     if (devModeActive == false || (devModeActive && userIsDev(rest.payload.user_id))) {
+        orangeLogger.logStep(rest.logger, tag, 'user access granted', rest.payload);
         await next?.();
     } else {
+        orangeLogger.logStep(rest.logger, tag, 'user access denied', rest.payload);
         await ack({
             text: "Dev mode is active, and I can't do much right now, try again later",
             response_type: 'ephemeral',
@@ -20,15 +25,18 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
 
 app.command('/devmode', async ({ payload, ack, logger }) => {
     try {
+        orangeLogger.logStep(logger, tag, 'received', payload);
         const devModeActive = await storage.getDevMode();
         if (userIsDev(payload.user_id)) {
+            orangeLogger.logStep(logger, tag, `dev mode changes allowed`, payload);
             await storage.setDevModeTo(!devModeActive);
-            logger.info(`[user auth] dev mode is now set to: ${devModeActive}.`);
+            orangeLogger.logStep(logger, tag, `dev mode changed to: ${devModeActive}`, payload);
             await ack({
                 text: generateDevModeMessage(devModeActive),
                 response_type: 'ephemeral',
             });
         } else {
+            orangeLogger.logStep(logger, tag, `dev mode changes denied`, payload);
             await ack({
                 text: `You don't have credentials to change dev mode :no_good:`,
                 response_type: 'ephemeral',
@@ -39,6 +47,7 @@ app.command('/devmode', async ({ payload, ack, logger }) => {
             response_type: 'ephemeral',
             text: `Something went wrong, contact @orangebotdevs and don't try this command again`,
         });
+        orangeLogger.logError(err, payload);
     }
 });
 
