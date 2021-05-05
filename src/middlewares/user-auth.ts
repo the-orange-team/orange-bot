@@ -12,7 +12,7 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
 }) => {
     const devModeActive = await storage.getDevMode();
     console.log(`devMode: ${devModeActive}`);
-    if (devModeActive == false || (devModeActive && userIsDev(rest.payload.user_id))) {
+    if (devModeActive === false || (devModeActive && userIsDev(rest.payload.user_id))) {
         orangeLogger.logStep(rest.logger, tag, 'user access granted', rest.payload);
         await next?.();
     } else {
@@ -33,7 +33,7 @@ app.command('/devmode', async ({ payload, ack, logger }) => {
             await storage.setDevModeTo(!devModeActive);
             orangeLogger.logStep(logger, tag, `dev mode changed to: ${devModeActive}`, payload);
             await ack({
-                text: generateDevModeMessage(devModeActive),
+                text: generateDevModeMessage(!devModeActive),
                 response_type: 'ephemeral',
             });
         } else {
