@@ -1,10 +1,9 @@
 import { Block } from '@slack/bolt';
 import { app } from '../app';
-import { callAuthorized } from './user-auth';
 import { Alias } from '../messages/types';
 import { storage } from '../storage';
 import { addTextSectionToBlocks, groupArrayByKey } from '../utils';
-import { orangeLogger } from '../logger';
+import { callAuthorized } from './user-auth';
 
 const tag = 'list-alias';
 
@@ -35,7 +34,7 @@ app.command('/list', callAuthorized, async ({ context, command }) => {
         if (userAliases.length) {
             context.logStep(tag, 'user aliases loaded');
             addTextSectionToBlocks(
-                `Your aliases:\n${getAliasesText(userAliases).join('\n')}`,
+                `*Your aliases:*\n${getAliasesText(userAliases).join('\n')}`,
                 commandResultBlocks
             );
         }
@@ -43,7 +42,7 @@ app.command('/list', callAuthorized, async ({ context, command }) => {
         if (otherAliases.length) {
             context.logStep(tag, 'others aliases loaded');
             addTextSectionToBlocks(
-                `Others' aliases:\n${getAliasesText(otherAliases).join('\n')}`,
+                `*Others' aliases:*\n${getAliasesText(otherAliases).join('\n')}`,
                 commandResultBlocks
             );
         }

@@ -1,13 +1,12 @@
-import { app } from '../app';
-import { callAuthorized } from './user-auth';
-import { storage } from '../storage';
-import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
-import { orangeLogger } from '../logger';
+import sha256 from 'crypto-js/sha256';
+import { app } from '../app';
+import { storage } from '../storage';
+import { callAuthorized } from './user-auth';
 
 const tag = 'reset-alias';
 
-app.command('/reset', callAuthorized, async ({ logger, payload, command, context }) => {
+app.command('/reset', callAuthorized, async ({ payload, command, context }) => {
     try {
         context.logStep(tag, 'received');
         const storedHash = process.env.RESET_HASH;

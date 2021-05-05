@@ -1,12 +1,11 @@
 import { app } from '../app';
-import { callAuthorized } from './user-auth';
-import { slackCommandToCommand, createCommand, getCommandResponse } from '../messages';
+import { createCommand, getCommandResponse, slackCommandToCommand } from '../messages';
 import { storage } from '../storage';
-import { orangeLogger } from '../logger';
+import { callAuthorized } from './user-auth';
 
 const tag = 'replace-alias';
 
-app.command('/replace', callAuthorized, async ({ payload, command, context, logger }) => {
+app.command('/replace', callAuthorized, async ({ command, context }) => {
     try {
         context.logStep(tag, 'received');
         const botCommand = slackCommandToCommand(command);

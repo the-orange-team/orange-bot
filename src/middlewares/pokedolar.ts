@@ -1,8 +1,7 @@
-import { app } from '../app';
-import { callAuthorized } from './user-auth';
-import { tweetToSlackMessage } from '../messages';
 import { getLastPokeDolarTweet } from '../apis/twitter/twitter';
-import { orangeLogger } from '../logger';
+import { app } from '../app';
+import { tweetToSlackMessage } from '../messages';
+import { callAuthorized } from './user-auth';
 
 const tag = 'pokedolar';
 

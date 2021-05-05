@@ -1,4 +1,4 @@
-import { Logger, RespondArguments, SlackCommandMiddlewareArgs, SlashCommand } from '@slack/bolt';
+import { RespondArguments, SlackCommandMiddlewareArgs } from '@slack/bolt';
 import { app } from '../app';
 import { orangeLogger } from '../logger';
 

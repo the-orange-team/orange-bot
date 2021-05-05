@@ -1,7 +1,6 @@
 import { app } from '../app';
-import { messageStartingWithColonRegex, getCommandResponse, textToSlackMessage } from '../messages';
+import { getCommandResponse, messageStartingWithColonRegex, textToSlackMessage } from '../messages';
 import { storage } from '../storage';
-import { orangeLogger } from '../logger';
 
 app.message(messageStartingWithColonRegex, async ({ payload, context, say, logger }) => {
     // RegExp matches are inside of context.matches

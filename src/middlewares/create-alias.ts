@@ -1,8 +1,7 @@
 import { app } from '../app';
-import { callAuthorized } from './user-auth';
-import { slackCommandToCommand, createCommand } from '../messages';
+import { createCommand, slackCommandToCommand } from '../messages';
 import { storage } from '../storage';
-import { orangeLogger } from '../logger';
+import { callAuthorized } from './user-auth';
 
 const tag = 'create-alias';
 

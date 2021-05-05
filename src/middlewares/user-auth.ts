@@ -1,5 +1,5 @@
+import { Middleware, SlackCommandMiddlewareArgs } from '@slack/bolt';
 import { app } from '../app';
-import { SlackCommandMiddlewareArgs, Middleware } from '@slack/bolt';
 import { storage } from '../storage';
 
 const tag = 'user-auth';

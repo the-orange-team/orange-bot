@@ -1,8 +1,7 @@
 import { app } from '../app';
-import { callAuthorized } from './user-auth';
 import { deleteCommand } from '../messages';
 import { storage } from '../storage';
-import { orangeLogger } from '../logger';
+import { callAuthorized } from './user-auth';
 
 const tag = 'delete-alias';
 
