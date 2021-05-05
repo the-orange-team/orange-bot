@@ -45,7 +45,9 @@ class LoggerImplementation implements OrangeLogger {
                 text: payload.text,
             },
         });
-        logger.info(`[${category}] ${message} ${payload.text}`);
+        logger.info(
+            `[${category}] ${message} ${payload.text} [by ${payload.user_name} at ${payload.channel_name}]`
+        );
     }
 }
 
