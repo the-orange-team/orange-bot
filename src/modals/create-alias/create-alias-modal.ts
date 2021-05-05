@@ -55,7 +55,7 @@ function getModalSchema(payload: SlashCommand): ViewsOpenArguments {
                     ],
                 },
             ],
-            callback_id: 'view_1',
+            callback_id: 'create_alias_view',
             submit: {
                 type: 'plain_text',
                 text: 'Submit',

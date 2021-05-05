@@ -7,7 +7,7 @@ const tag = 'create-alias';
 
 app.command('/create', callAuthorized, async ({ client, context, payload }) => {
     try {
-        const result = client.views.open(getModalSchema(payload));
+        const result = await client.views.open(getModalSchema(payload));
         console.log(result);
         context.logStep(tag, 'received');
         await context.sendEphemeral('Not implemented yet');
