@@ -45,8 +45,8 @@ class LoggerImplementation implements OrangeLogger {
                 text: payload.text,
             },
         });
-        logger.info(message);
+        logger.info(`[${category}] ${message} ${payload.text}`);
     }
 }
 
-export const logger = new LoggerImplementation();
+export const orangeLogger = new LoggerImplementation();
