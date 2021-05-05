@@ -96,7 +96,6 @@ export class StorageImplementation implements Storage<Alias> {
         return new Promise<boolean>((resolve, reject) => {
             this.client.get(devModeKey, (error, reply) => {
                 if (error) reject(error);
-                console.log(`redis reply devmode: ${reply}`);
                 resolve(safeJSONParser(reply) ?? true);
             });
         });
