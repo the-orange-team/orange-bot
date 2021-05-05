@@ -11,6 +11,7 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
     ...rest
 }) => {
     const devModeActive = await storage.getDevMode();
+    console.log(`devMode: ${devModeActive}`);
     if (devModeActive == false || (devModeActive && userIsDev(rest.payload.user_id))) {
         orangeLogger.logStep(rest.logger, tag, 'user access granted', rest.payload);
         await next?.();
