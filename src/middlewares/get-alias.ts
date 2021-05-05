@@ -1,8 +1,9 @@
 import { app } from '../app';
 import { messageStartingWithColonRegex, getCommandResponse, textToSlackMessage } from '../messages';
 import { storage } from '../storage';
+import { orangeLogger } from '../logger';
 
-app.message(messageStartingWithColonRegex, async ({ context, say, logger }) => {
+app.message(messageStartingWithColonRegex, async ({ payload, context, say, logger }) => {
     // RegExp matches are inside of context.matches
     try {
         const command = context.matches[0].toLowerCase();
@@ -11,6 +12,6 @@ app.message(messageStartingWithColonRegex, async ({ context, say, logger }) => {
         await say(textToSlackMessage(command, value));
     } catch (error) {
         await say('alias call failed, @orangebotdevs');
-        logger.error(error);
+        orangeLogger.logError(error);
     }
 });
