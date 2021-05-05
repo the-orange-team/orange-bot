@@ -1,6 +1,6 @@
-import { SayArguments, SlashCommand } from '@slack/bolt';
+import { Block, SayArguments, SlashCommand } from '@slack/bolt';
 import { isUrl, Maybe } from '../utils';
-import { Alias } from './types';
+import { Alias, AliasList } from './types';
 
 export function textToSlackMessage(command: string, response: string): string | SayArguments {
     if (isUrl(response)) {
@@ -65,4 +65,41 @@ export function slackCommandToCommand(slackCommand: SlashCommand): Maybe<Alias> 
         userId: slackCommand.user_id,
         values: values.includes(' ') ? values.split(' ') : [values],
     };
+}
+
+export const addTextSectionToBlocks = (text: string, blocks: Array<Block>): void => {
+    const textSection = {
+        type: 'section',
+        text: {
+            type: 'mrkdwn',
+            text,
+        },
+    };
+
+    if (blocks.length) {
+        textSection.text.text = '\n' + textSection.text.text; // textSection.text.text... not my fault.
+    }
+
+    blocks.push(textSection);
+};
+
+export function aliasListToSlackBlock({ userAliases, otherAliases }: AliasList): Block[] {
+    const commandResultBlocks: Block[] = [];
+    const getAliasesText = (aliases: Alias[]) => aliases.map((alias) => `:${alias.text}`);
+
+    if (userAliases.length) {
+        addTextSectionToBlocks(
+            `*Your aliases:*\n${getAliasesText(userAliases).join('\n')}`,
+            commandResultBlocks
+        );
+    }
+
+    if (otherAliases.length) {
+        addTextSectionToBlocks(
+            `*Others' aliases:*\n${getAliasesText(otherAliases).join('\n')}`,
+            commandResultBlocks
+        );
+    }
+
+    return commandResultBlocks;
 }

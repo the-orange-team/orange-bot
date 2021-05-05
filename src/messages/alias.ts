@@ -1,7 +1,7 @@
 import { SlashCommand } from '@slack/bolt';
 import { OperationResult, Storage } from '../storage';
-import { getRandomElement, Maybe } from '../utils';
-import { Alias } from './types';
+import { getRandomElement, groupArrayByKey, Maybe } from '../utils';
+import { Alias, AliasList } from './types';
 
 export const messageStartingWithColonRegex = /^:[^: ]*[^: ]$/;
 
@@ -45,4 +45,25 @@ export async function deleteAlias(
     if (result.error) throw new Error(result.error);
 
     return { success: result.success };
+}
+
+export async function listAlias(userId: string, storage: Storage<Alias>): Promise<AliasList> {
+    const aliasesKeys = await storage.getAllAliasesKeys();
+    const allAliases = await storage.getAliasesByKeys(aliasesKeys);
+
+    const aliasesGroupedByUser = groupArrayByKey<Alias, string>(
+        Array.from(allAliases.values()),
+        (alias) => alias.userId
+    );
+
+    const userAliases = aliasesGroupedByUser[userId] ?? [];
+    const otherAliases = Object.entries(aliasesGroupedByUser)
+        .filter(([key]) => key !== userId)
+        .map(([, aliases]) => aliases)
+        .flat();
+
+    return {
+        userAliases,
+        otherAliases,
+    };
 }

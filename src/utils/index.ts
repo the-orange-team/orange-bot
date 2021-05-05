@@ -29,19 +29,3 @@ export const groupArrayByKey = <T, K extends string>(
         (grouped[key] = grouped[key] || []).push(item);
         return grouped;
     }, {} as Record<K, T[]>);
-
-export const addTextSectionToBlocks = (text: string, blocks: Array<Block>): void => {
-    const textSection = {
-        type: 'section',
-        text: {
-            type: 'mrkdwn',
-            text,
-        },
-    };
-
-    if (blocks.length) {
-        textSection.text.text = '\n' + textSection.text.text; // textSection.text.text... not my fault.
-    }
-
-    blocks.push(textSection);
-};

@@ -1,51 +1,19 @@
-import { Block } from '@slack/bolt';
 import { app } from '../app';
-import { Alias } from '../messages/types';
+import { aliasListToSlackBlock, listAlias, addTextSectionToBlocks } from '../messages';
 import { storage } from '../storage';
-import { addTextSectionToBlocks, groupArrayByKey } from '../utils';
 import { callAuthorized } from './user-auth';
 
 const tag = 'list-alias';
 
-const getAliasesText = (aliases: Alias[]) => aliases.map((alias) => `:${alias.text}`);
-
 app.command('/list', callAuthorized, async ({ context, command }) => {
     try {
         context.logStep(tag, 'received');
-        const aliasesKeys = await storage.getAllAliasesKeys();
-        context.logStep(tag, 'retrieved keys');
 
-        const allAliases = await storage.getAliasesByKeys(aliasesKeys);
+        const aliasList = await listAlias(command.user_id, storage);
+
+        const commandResultBlocks = aliasListToSlackBlock(aliasList);
+
         context.logStep(tag, 'retrieved aliases');
-
-        const aliasesGroupedByUser = groupArrayByKey<Alias, string>(
-            Array.from(allAliases.values()),
-            (alias) => alias.userId
-        );
-
-        const userAliases = aliasesGroupedByUser[command.user_id] ?? [];
-        const otherAliases = Object.entries(aliasesGroupedByUser)
-            .filter(([key]) => key !== command.user_id)
-            .map(([, aliases]) => aliases)
-            .flat();
-
-        const commandResultBlocks: Block[] = [];
-
-        if (userAliases.length) {
-            context.logStep(tag, 'user aliases loaded');
-            addTextSectionToBlocks(
-                `*Your aliases:*\n${getAliasesText(userAliases).join('\n')}`,
-                commandResultBlocks
-            );
-        }
-
-        if (otherAliases.length) {
-            context.logStep(tag, 'others aliases loaded');
-            addTextSectionToBlocks(
-                `*Others' aliases:*\n${getAliasesText(otherAliases).join('\n')}`,
-                commandResultBlocks
-            );
-        }
 
         if (!commandResultBlocks.length) {
             context.logStep(tag, 'no alias loaded');

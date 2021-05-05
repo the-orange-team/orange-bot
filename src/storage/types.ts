@@ -10,7 +10,7 @@ export interface Storage<T> {
     setValue: (key: string, value: T) => Promise<T>;
     getAllKeys: () => Promise<string[]>;
     getAllAliasesKeys: () => Promise<string[]>;
-    getAliasesByKeys: (keys: string[]) => Promise<Map<string, Maybe<T>>>;
+    getAliasesByKeys: (keys: string[]) => Promise<Map<string, T>>;
     deleteAllKeys: () => Promise<void>;
     deleteValue: (key: string) => Promise<OperationResult>;
 }
