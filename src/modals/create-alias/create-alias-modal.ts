@@ -1,5 +1,6 @@
 import { SlashCommand } from '@slack/bolt';
 import { ViewsOpenArguments } from '@slack/web-api';
+
 function getModalSchema(payload: SlashCommand): ViewsOpenArguments {
     return {
         trigger_id: payload.trigger_id,
