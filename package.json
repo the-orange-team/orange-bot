@@ -17,6 +17,7 @@
     "@slack/bolt": "^3.3.0",
     "@types/crypto-js": "^4.0.1",
     "crypto-js": "^4.0.0",
+    "firebase": "^8.5.0",
     "redis": "^3.1.2",
     "twitter": "^1.7.1"
   },
