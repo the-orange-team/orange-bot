@@ -29,9 +29,12 @@ class FirebaseFileSystem implements FileSystem {
     async uploadAlias(alias: Alias): Promise<Alias> {
         const uploadedValues: string[] = [];
         for (const originalUrl in alias.values) {
+            console.log(originalUrl);
             const uploadedUrl = await this.uploadAliasValue(originalUrl, alias.text);
+            console.log(uploadedUrl);
             uploadedValues.push(uploadedUrl);
         }
+        console.log(uploadedValues);
         return {
             text: alias.text,
             userId: alias.userId,
@@ -40,9 +43,8 @@ class FirebaseFileSystem implements FileSystem {
     }
 
     private async uploadAliasValue(originalUrl: string, aliasName: string): Promise<string> {
-        const contentUrl = new URL(originalUrl);
-        const urlBaseName = `${aliasName}${path.basename(contentUrl.pathname)}`;
-        const filePath = (await this.urlToFile(originalUrl, urlBaseName)) as string;
+        const fileName = this.generateFileName(originalUrl, aliasName);
+        const filePath = (await this.urlToFile(originalUrl, fileName)) as string;
         return filePath ? await this.uploadToFirebase(filePath) : originalUrl;
     }
 
@@ -74,6 +76,12 @@ class FirebaseFileSystem implements FileSystem {
         const upload = await this.bucket.upload(filePath);
         await upload[0].makePublic();
         return upload[0].publicUrl();
+    }
+
+    private generateFileName(url: string, aliasName: string): string {
+        const contentUrl = new URL(url);
+        const randomNumber = Math.floor(Math.random() * 1000);
+        return `${aliasName}${randomNumber}${path.basename(contentUrl.pathname)}`;
     }
 }
 
