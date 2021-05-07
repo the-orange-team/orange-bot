@@ -1,4 +1,4 @@
-orbs: 
+orbs:
   node: circleci/node@2.0.2
   slack: circleci/slack@4.0
 
@@ -16,17 +16,19 @@ jobs:
       - run:
           name: Lint
           command: yarn run lint
+      - run:
+          name: Test
+          command: yarn run jest
       - slack/notify:
           event: fail
           template: basic_fail_1
-          mentions: "@orangebotdevs"
+          mentions: '@orangebotdevs'
       - slack/notify:
           event: pass
           template: success_tagged_deploy_1
 
-
 workflows:
-  "Orangebot deploy checklist":
+  'Orangebot deploy checklist':
     jobs:
       - Build:
           context: slack-secrets
