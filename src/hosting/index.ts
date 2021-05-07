@@ -8,7 +8,7 @@ import { URL } from 'url';
 import path from 'path';
 
 export interface FileSystem {
-    uploadURL: (alias: Alias) => Promise<string>;
+    uploadAlias: (alias: Alias) => Promise<Alias>;
 }
 
 class FirebaseFileSystem implements FileSystem {
@@ -26,18 +26,24 @@ class FirebaseFileSystem implements FileSystem {
         this.bucket = admin.storage().bucket();
     }
 
-    async uploadURL(alias: Alias): Promise<string> {
-        const originalUrl = alias.values[0];
-        const contentUrl = new URL(originalUrl);
-        const urlBaseName = `${alias.text}${path.basename(contentUrl.pathname)}`;
-        const filePath = (await this.urlToFile(alias.values[0], urlBaseName)) as string;
-        if (filePath) {
-            const upload = await this.bucket.upload(filePath);
-            await upload[0].makePublic();
-            return upload[0].publicUrl();
-        } else {
-            return originalUrl;
+    async uploadAlias(alias: Alias): Promise<Alias> {
+        const uploadedValues: string[] = [];
+        for (let originalUrl in alias.values) {
+            const uploadedUrl = await this.uploadAliasValue(originalUrl, alias.text);
+            uploadedValues.push(uploadedUrl);
         }
+        return {
+            text: alias.text,
+            userId: alias.userId,
+            values: uploadedValues,
+        };
+    }
+
+    private async uploadAliasValue(originalUrl: string, aliasName: string): Promise<string> {
+        const contentUrl = new URL(originalUrl);
+        const urlBaseName = `${aliasName}${path.basename(contentUrl.pathname)}`;
+        const filePath = (await this.urlToFile(originalUrl, urlBaseName)) as string;
+        return filePath ? await this.uploadToFirebase(filePath) : originalUrl;
     }
 
     private async urlToFile(url: string, fileName: string): Promise<string | Buffer> {
@@ -62,6 +68,12 @@ class FirebaseFileSystem implements FileSystem {
                     reject(err);
                 });
         });
+    }
+
+    private async uploadToFirebase(filePath: string): Promise<string> {
+        const upload = await this.bucket.upload(filePath);
+        await upload[0].makePublic();
+        return upload[0].publicUrl();
     }
 }
 

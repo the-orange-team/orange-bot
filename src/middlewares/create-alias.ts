@@ -23,16 +23,11 @@ app.command('/cmdcrt', callAuthorized, async ({ command, context }) => {
         context.logStep(tag, 'received');
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {
-            const uploadedUrl = await fileSystem.uploadURL(botCommand);
-            const testAlias = {
-                text: botCommand.text,
-                userId: botCommand.userId,
-                values: [uploadedUrl],
-            };
-            console.log(uploadedUrl);
             context.logStep(tag, 'validated');
-            createAlias(testAlias, storage);
-            context.logStep(tag, 'created');
+            const uploadedCommand = await fileSystem.uploadAlias(botCommand);
+            context.logStep(tag, 'uploaded');
+            createAlias(uploadedCommand, storage);
+            context.logStep(tag, 'stored');
             await context.sendEphemeral(`You can now use the alias writing :${botCommand.text}`);
         } else {
             context.logStep(tag, 'invalidated');
