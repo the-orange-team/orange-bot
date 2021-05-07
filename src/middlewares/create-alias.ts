@@ -3,6 +3,7 @@ import { createAlias, slackCommandToCommand } from '../messages';
 import { storage } from '../storage';
 import { callAuthorized } from './user-auth';
 import { getModalSchema } from '../modals/create-alias/create-alias-modal';
+import { fileSystem } from '../hosting';
 const tag = 'create-alias';
 
 app.command('/create', callAuthorized, async ({ client, context, payload }) => {
@@ -23,6 +24,7 @@ app.command('/cmdcrt', callAuthorized, async ({ command, context }) => {
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {
             context.logStep(tag, 'validated');
+            fileSystem.uploadURL(botCommand);
             createAlias(botCommand, storage);
             context.logStep(tag, 'created');
             await context.sendEphemeral(`You can now use the alias writing :${botCommand.text}`);
