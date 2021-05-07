@@ -10,6 +10,7 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
     ...rest
 }) => {
     const devModeActive = await storage.getDevMode();
+    context.logStep(tag, 'user request intercepted');
     if (devModeActive === false || (devModeActive && userIsDev(rest.payload.user_id))) {
         context.logStep(tag, 'user access granted');
         await next?.();
@@ -23,12 +24,12 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
 
 app.command('/devmode', async ({ payload, context }) => {
     try {
-        context.logStep(tag, 'received');
+        context.logStep(tag, 'devmode change request received');
         const devModeActive = await storage.getDevMode();
         if (userIsDev(payload.user_id)) {
-            context.logStep(tag, `dev mode changes allowed`);
+            context.logStep(tag, `dev mode switch allowed`);
             await storage.setDevModeTo(!devModeActive);
-            context.logStep(tag, `dev mode changed to: ${devModeActive}`);
+            context.logStep(tag, `dev mode changed to: ${!devModeActive}`);
             await context.sendEphemeral(generateDevModeMessage(!devModeActive));
         } else {
             context.logStep(tag, `dev mode changes denied`);
