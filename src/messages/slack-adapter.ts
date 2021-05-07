@@ -1,4 +1,4 @@
-import { Block, SayArguments, SlashCommand } from '@slack/bolt';
+import { SayArguments, SectionBlock, SlashCommand } from '@slack/bolt';
 import { isUrl, Maybe } from '../utils';
 import { Alias, AliasList } from './types';
 
@@ -67,7 +67,7 @@ export function slackCommandToCommand(slackCommand: SlashCommand): Maybe<Alias> 
     };
 }
 
-export const addTextSectionToBlocks = (text: string, blocks: Array<Block>): void => {
+export const addTextSectionToBlocks = (text: string, blocks: Array<SectionBlock>): void => {
     const textSection = {
         type: 'section',
         text: {
@@ -77,14 +77,14 @@ export const addTextSectionToBlocks = (text: string, blocks: Array<Block>): void
     };
 
     if (blocks.length) {
-        textSection.text.text = '\n' + textSection.text.text; // textSection.text.text... not my fault.
+        textSection.text.text = '\n' + textSection.text.text;
     }
 
-    blocks.push(textSection);
+    blocks.push(textSection as SectionBlock);
 };
 
-export function aliasListToSlackBlock({ userAliases, otherAliases }: AliasList): Block[] {
-    const commandResultBlocks: Block[] = [];
+export function aliasListToSlackBlock({ userAliases, otherAliases }: AliasList): SectionBlock[] {
+    const commandResultBlocks: SectionBlock[] = [];
     const getAliasesText = (aliases: Alias[]) => aliases.map((alias) => `:${alias.text}`);
 
     if (userAliases.length) {
