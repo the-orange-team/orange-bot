@@ -28,7 +28,7 @@ class FirebaseFileSystem implements FileSystem {
 
     async uploadAlias(alias: Alias): Promise<Alias> {
         const uploadedValues: string[] = [];
-        for (let originalUrl in alias.values) {
+        for (const originalUrl in alias.values) {
             const uploadedUrl = await this.uploadAliasValue(originalUrl, alias.text);
             uploadedValues.push(uploadedUrl);
         }
