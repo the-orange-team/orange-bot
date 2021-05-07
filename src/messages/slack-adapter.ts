@@ -54,7 +54,7 @@ export function tweetToSlackMessage(
 }
 
 export function slackCommandToCommand(slackCommand: SlashCommand): Maybe<Alias> {
-    const regex = /^([^: ]*[^: ]) returning ([^:]*)$/;
+    const regex = /^([^: ]*[^: ]) returning (.*)$/;
     const trimmedString = removeStringExtraSpaces(slackCommand.text);
     const args = regex.exec(trimmedString);
 

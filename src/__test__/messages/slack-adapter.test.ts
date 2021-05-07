@@ -84,6 +84,18 @@ describe('slackCommandToCommand', () => {
         });
     });
 
+    test('given a correct command returning url', () => {
+        const slashCommand = buildSlashcommand(
+            'cat returning https://media.giphy.com/media/BzyTuYCmvSORqs1ABM/giphy.gif',
+            '123'
+        );
+        expect(adapter.slackCommandToCommand(slashCommand)).toEqual<Alias>({
+            text: 'cat',
+            userId: '123',
+            values: ['https://media.giphy.com/media/BzyTuYCmvSORqs1ABM/giphy.gif'],
+        });
+    });
+
     test('given a command with multiple values and extra spaces', () => {
         expect(
             adapter.slackCommandToCommand(
@@ -101,14 +113,6 @@ describe('slackCommandToCommand', () => {
             expect(
                 adapter.slackCommandToCommand(
                     buildSlashcommand('flipcoin: returning tails heads   draw', '123')
-                )
-            ).toBeNull();
-        });
-
-        test('return starting with :', () => {
-            expect(
-                adapter.slackCommandToCommand(
-                    buildSlashcommand('flipcoin returning tails heads   :draw', '123')
                 )
             ).toBeNull();
         });
