@@ -20,6 +20,7 @@
     "crypto-js": "^4.0.0",
     "firebase-admin": "^9.7.0",
     "redis": "^3.1.2",
+    "requests": "^0.3.0",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
