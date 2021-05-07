@@ -4,7 +4,8 @@ import fs from 'fs';
 import axios from 'axios';
 import { AxiosResponse } from 'axios';
 import { Alias } from '../messages/types';
-import { response } from 'express';
+import { URL } from 'url';
+import path from 'path';
 
 export interface FileSystem {
     uploadURL: (alias: Alias) => void;
@@ -26,7 +27,9 @@ class FirebaseFileSystem implements FileSystem {
     }
 
     async uploadURL(alias: Alias): Promise<void> {
-        const filePath = (await this.urlToFile(alias.values[0], alias.text)) as string;
+        const contentUrl = new URL(alias.values[0]);
+        const urlBaseName = path.basename(contentUrl.pathname);
+        const filePath = (await this.urlToFile(alias.values[0], urlBaseName)) as string;
         if (filePath) {
             const upload = await this.bucket.upload(filePath);
         }
@@ -44,6 +47,7 @@ class FirebaseFileSystem implements FileSystem {
         fileName: string
     ): Promise<string | Buffer> {
         return new Promise((resolve, reject) => {
+            const type = response.headers['content-type'];
             const file = fs.createWriteStream(fileName);
             response.data
                 .pipe(file)
