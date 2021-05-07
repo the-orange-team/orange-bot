@@ -29,7 +29,7 @@ app.command('/cmdcrt', callAuthorized, async ({ command, context }) => {
                 userId: botCommand.userId,
                 values: [uploadedUrl],
             };
-
+            console.log(uploadedUrl);
             context.logStep(tag, 'validated');
             createAlias(testAlias, storage);
             context.logStep(tag, 'created');
