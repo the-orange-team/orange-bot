@@ -75,7 +75,7 @@ describe('slackCommandToCommand', () => {
         });
     });
 
-    test.skip('given a correct command with multiple values', () => {
+    test('given a correct command with multiple values', () => {
         const slashCommand = buildSlashcommand('flipcoin returning tails heads', '123');
         expect(adapter.slackCommandToCommand(slashCommand)).toEqual<Alias>({
             text: 'flipcoin',
@@ -84,17 +84,43 @@ describe('slackCommandToCommand', () => {
         });
     });
 
-    test('given a incorrect command return null', () => {
-        buildSlashcommand('flipcoin returning tails heads', '123');
+    test('given a command with multiple values and extra spaces', () => {
         expect(
             adapter.slackCommandToCommand(
                 buildSlashcommand('flipcoin returning tails heads   draw', '123')
             )
-        ).toBeNull();
-        expect(
-            adapter.slackCommandToCommand(buildSlashcommand('flipcoin tails heads   draw', '123'))
-        ).toBeNull();
-        expect(adapter.slackCommandToCommand(buildSlashcommand('', '123'))).toBeNull();
+        ).toEqual<Alias>({
+            text: 'flipcoin',
+            userId: '123',
+            values: ['tails', 'heads', 'draw'],
+        });
+    });
+
+    describe('given a incorrect command return null', () => {
+        test('command starting with :', () => {
+            expect(
+                adapter.slackCommandToCommand(
+                    buildSlashcommand('flipcoin: returning tails heads   draw', '123')
+                )
+            ).toBeNull();
+        });
+
+        test('return starting with :', () => {
+            expect(
+                adapter.slackCommandToCommand(
+                    buildSlashcommand('flipcoin returning tails heads   :draw', '123')
+                )
+            ).toBeNull();
+        });
+
+        test('Command without returning', () => {
+            expect(
+                adapter.slackCommandToCommand(
+                    buildSlashcommand('flipcoin tails heads   draw', '123')
+                )
+            ).toBeNull();
+            expect(adapter.slackCommandToCommand(buildSlashcommand('', '123'))).toBeNull();
+        });
     });
 });
 

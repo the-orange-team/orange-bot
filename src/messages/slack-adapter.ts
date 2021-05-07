@@ -1,5 +1,5 @@
 import { SayArguments, SectionBlock, SlashCommand } from '@slack/bolt';
-import { isUrl, Maybe } from '../utils';
+import { isUrl, Maybe, removeStringExtraSpaces } from '../utils';
 import { Alias, AliasList } from './types';
 
 export function textToSlackMessage(command: string, response: string): string | SayArguments {
@@ -54,8 +54,9 @@ export function tweetToSlackMessage(
 }
 
 export function slackCommandToCommand(slackCommand: SlashCommand): Maybe<Alias> {
-    const regex = /^([^: ]*[^: ]) returning ([^: ][^ ]*)$/;
-    const args = regex.exec(slackCommand.text);
+    const regex = /^([^: ]*[^: ]) returning ([^:]*)$/;
+    const trimmedString = removeStringExtraSpaces(slackCommand.text);
+    const args = regex.exec(trimmedString);
 
     if (!args) return null;
 

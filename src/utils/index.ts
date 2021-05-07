@@ -29,3 +29,7 @@ export const groupArrayByKey = <T, K extends string>(
         (grouped[key] = grouped[key] || []).push(item);
         return grouped;
     }, {} as Record<K, T[]>);
+
+export const removeStringExtraSpaces = (value: string): string => {
+    return value.replace(/\s+/g, ' ').trim();
+};
