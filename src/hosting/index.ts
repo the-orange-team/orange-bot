@@ -33,6 +33,7 @@ class FirebaseFileSystem implements FileSystem {
         const filePath = (await this.urlToFile(alias.values[0], urlBaseName)) as string;
         if (filePath) {
             const upload = await this.bucket.upload(filePath);
+            await upload[0].makePublic();
             return upload[0].publicUrl();
         } else {
             return originalUrl;
