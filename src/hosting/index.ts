@@ -8,7 +8,7 @@ import { URL } from 'url';
 import path from 'path';
 
 export interface FileSystem {
-    uploadURL: (alias: Alias) => void;
+    uploadURL: (alias: Alias) => Promise<string>;
 }
 
 class FirebaseFileSystem implements FileSystem {
@@ -26,12 +26,16 @@ class FirebaseFileSystem implements FileSystem {
         this.bucket = admin.storage().bucket();
     }
 
-    async uploadURL(alias: Alias): Promise<void> {
-        const contentUrl = new URL(alias.values[0]);
-        const urlBaseName = path.basename(contentUrl.pathname);
+    async uploadURL(alias: Alias): Promise<string> {
+        const originalUrl = alias.values[0];
+        const contentUrl = new URL(originalUrl);
+        const urlBaseName = `${alias.text}${path.basename(contentUrl.pathname)}`;
         const filePath = (await this.urlToFile(alias.values[0], urlBaseName)) as string;
         if (filePath) {
             const upload = await this.bucket.upload(filePath);
+            return upload[0].publicUrl();
+        } else {
+            return originalUrl;
         }
     }
 
@@ -47,7 +51,6 @@ class FirebaseFileSystem implements FileSystem {
         fileName: string
     ): Promise<string | Buffer> {
         return new Promise((resolve, reject) => {
-            const type = response.headers['content-type'];
             const file = fs.createWriteStream(fileName);
             response.data
                 .pipe(file)
