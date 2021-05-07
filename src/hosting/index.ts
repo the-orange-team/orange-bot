@@ -1,11 +1,12 @@
 import { Bucket } from '@google-cloud/storage';
-import admin from 'firebase-admin';
-import fs from 'fs';
-import axios from 'axios';
-import { AxiosResponse } from 'axios';
 import { Alias } from '../messages/types';
+import { AxiosResponse } from 'axios';
+import { isUrl } from '../utils';
 import { URL } from 'url';
+import admin from 'firebase-admin';
+import axios from 'axios';
 import path from 'path';
+import fs from 'fs';
 
 export interface FileSystem {
     uploadAlias: (alias: Alias) => Promise<Alias>;
@@ -40,9 +41,13 @@ class FirebaseFileSystem implements FileSystem {
     }
 
     private async uploadAliasValue(originalUrl: string, aliasName: string): Promise<string> {
-        const fileName = this.generateFileName(originalUrl, aliasName);
-        const filePath = (await this.urlToFile(originalUrl, fileName)) as string;
-        return filePath ? await this.uploadToFirebase(filePath) : originalUrl;
+        if (isUrl(originalUrl)) {
+            const fileName = this.generateFileName(originalUrl, aliasName);
+            const filePath = (await this.urlToFile(originalUrl, fileName)) as string;
+            return filePath ? await this.uploadToFirebase(filePath) : originalUrl;
+        } else {
+            return originalUrl;
+        }
     }
 
     private async urlToFile(url: string, fileName: string): Promise<string | Buffer> {

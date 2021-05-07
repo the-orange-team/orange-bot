@@ -18,11 +18,12 @@ app.command('/create', callAuthorized, async ({ client, context, payload }) => {
     }
 });
 
-app.command('/cmdcrt', callAuthorized, async ({ command, context }) => {
+app.command('/cmdcrt', callAuthorized, async ({ command, context, ack }) => {
     try {
         context.logStep(tag, 'received');
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {
+            await ack();
             context.logStep(tag, 'validated');
             const uploadedCommand = await fileSystem.uploadAlias(botCommand);
             context.logStep(tag, 'uploaded');
