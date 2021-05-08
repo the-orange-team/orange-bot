@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from 'axios';
 import { mocked } from 'ts-jest/utils';
 import * as utils from '../utils';
 jest.mock('axios');
