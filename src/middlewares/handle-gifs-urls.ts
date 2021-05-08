@@ -31,13 +31,19 @@ async function giphyUrlParser(nodeURL: URL): Promise<string> {
 }
 
 async function giphyShortUrlParser(nodeURL: URL): Promise<string> {
-    const url = nodeURL.href;
-    const config = {
-        maxRedirects: 1,
-    };
-    if (!url.includes(GIPHY_SHORTLINK_ORIGIN)) return url;
-    const response = await axios.get(url, config);
-    console.log(response.request.path);
-
-    return '';
+    try {
+        const url = nodeURL.href;
+        if (!url.includes(GIPHY_SHORTLINK_ORIGIN)) return url;
+        const config = { maxRedirects: 1 };
+        const response = await axios.get(url, config);
+        const pathParams = response.request.path.split('-');
+        const gifId = pathParams[pathParams.length - 1];
+        if (!gifId) return url;
+        const giphyUrl = await searchGiphyById(gifId);
+        if (!giphyUrl) return url;
+        return giphyUrl;
+    } catch (err) {
+        console.error(err);
+        return nodeURL.href;
+    }
 }
