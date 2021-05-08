@@ -1,18 +1,30 @@
 import { URL } from 'url';
 import { GIPHY_BY_NAME_ENDPOINT, GIPHY_SHORTLINK_ORIGIN } from '../utils/constants';
 import axios from 'axios';
+import {
+    GIPHY_SHORLINK_HTTPS,
+    GIPHY_SHORTLINK_HTTP,
+    GIPHY_HTTP,
+    GIPHY_HTTPS,
+} from '../utils/constants';
 
 export async function urlParser(url: string): Promise<string> {
     const nodeURL = new URL(url);
-    const functionsMap: Record<string, Promise<string | undefined> | string | undefined> = {
-        'https://giphy.com': giphyUrlParser(nodeURL),
-        'http://giphy.com': giphyUrlParser(nodeURL),
-        'https://gph.is': giphyShortUrlParser(nodeURL),
-        'http://gph.is': giphyShortUrlParser(nodeURL),
-    };
-    const parsedUrl = await functionsMap[nodeURL.origin];
-    if (!parsedUrl) return url;
+    const parsedUrl = (await runProviderParser(nodeURL)) ?? url;
     return parsedUrl;
+}
+
+async function runProviderParser(nodeURL: URL): Promise<string | undefined> {
+    switch (nodeURL.origin) {
+        case GIPHY_HTTP:
+        case GIPHY_HTTPS:
+            console.log('YEEEEEEEEEEEEES');
+            return giphyUrlParser(nodeURL);
+        case GIPHY_SHORTLINK_HTTP:
+        case GIPHY_SHORLINK_HTTPS:
+            console.log('YEEEEEEEEEEEEES');
+            return await giphyShortUrlParser(nodeURL);
+    }
 }
 
 function giphyUrlParser(nodeURL: URL): string | undefined {
@@ -23,7 +35,6 @@ function giphyUrlParser(nodeURL: URL): string | undefined {
         if (gifId) return `https://media.giphy.com/media/${gifId}/giphy.gif`;
     } catch (err) {
         console.error(err);
-        return nodeURL.href;
     }
 }
 
@@ -36,7 +47,6 @@ async function giphyShortUrlParser(nodeURL: URL): Promise<string | undefined> {
         if (gifId) return `https://media.giphy.com/media/${gifId}/giphy.gif`;
     } catch (err) {
         console.error(err);
-        return nodeURL.href;
     }
 }
 
