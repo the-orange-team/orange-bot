@@ -32,8 +32,11 @@ async function giphyUrlParser(nodeURL: URL): Promise<string> {
 
 async function giphyShortUrlParser(nodeURL: URL): Promise<string> {
     const url = nodeURL.href;
+    const config = {
+        maxRedirects: 0,
+    };
     if (!url.includes(GIPHY_SHORTLINK_ORIGIN)) return url;
-    const response = await axios.get(url);
+    const response = await axios.get(url, config);
     console.log(response);
 
     return '';
