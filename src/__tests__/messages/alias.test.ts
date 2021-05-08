@@ -87,3 +87,83 @@ describe('createAlias', () => {
         });
     });
 });
+
+describe('deleteAlias', () => {
+    test('delete an owned alias', async () => {
+        const userId = 'b';
+        storageMock.getValue.mockResolvedValueOnce({
+            text: ':a',
+            userId,
+            values: ['test'],
+        });
+        storageMock.deleteValue.mockResolvedValue({
+            success: true,
+        });
+        await expect(alias.deleteAlias({ text: ':a' }, userId, storageMock)).resolves.toEqual({
+            success: true,
+        });
+        expect(storageMock.deleteValue).toBeCalledWith(':a');
+    });
+    test('delete an owned alias without comma', async () => {
+        const userId = 'b';
+        storageMock.getValue.mockResolvedValueOnce({
+            text: 'a',
+            userId,
+            values: ['test'],
+        });
+        storageMock.deleteValue.mockResolvedValue({
+            success: true,
+        });
+        await expect(alias.deleteAlias({ text: 'a' }, userId, storageMock)).resolves.toEqual({
+            success: true,
+        });
+        expect(storageMock.deleteValue).toBeCalledWith(':a');
+    });
+
+    test('can not delete alias owned by someone else', async () => {
+        const userId = 'b';
+        storageMock.getValue.mockResolvedValueOnce({
+            text: 'a',
+            userId: 'c',
+            values: ['test'],
+        });
+        storageMock.deleteValue.mockResolvedValue({
+            success: true,
+        });
+        await expect(alias.deleteAlias({ text: 'a' }, userId, storageMock)).resolves.toEqual({
+            error: 'You can only delete the aliases you created',
+            success: false,
+        });
+        expect(storageMock.deleteValue).toBeCalledTimes(0);
+    });
+
+    test('can not delete alias that does not exist', async () => {
+        const userId = 'b';
+        storageMock.getValue.mockResolvedValueOnce(null);
+        storageMock.deleteValue.mockResolvedValue({
+            success: true,
+        });
+        await expect(alias.deleteAlias({ text: 'a' }, userId, storageMock)).resolves.toEqual({
+            error: 'You can only delete the aliases you created',
+            success: false,
+        });
+        expect(storageMock.deleteValue).toBeCalledTimes(0);
+    });
+
+    test('rethrow storage error', async () => {
+        const userId = 'b';
+        storageMock.getValue.mockResolvedValueOnce({
+            text: 'a',
+            userId,
+            values: ['test'],
+        });
+        storageMock.deleteValue.mockResolvedValue({
+            success: false,
+            error: 'Error',
+        });
+        await expect(alias.deleteAlias({ text: 'a' }, userId, storageMock)).rejects.toEqual(
+            new Error('Error')
+        );
+        expect(storageMock.deleteValue).toBeCalledWith(':a');
+    });
+});

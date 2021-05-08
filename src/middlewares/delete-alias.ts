@@ -17,7 +17,11 @@ app.command('/delete', callAuthorized, async ({ command, context, logger }) => {
 
         context.logStep(tag, 'deleting');
 
-        const operationResult = await deleteAlias({ text: aliasToDelete }, storage, command);
+        const operationResult = await deleteAlias(
+            { text: aliasToDelete },
+            command.user_id,
+            storage
+        );
         if (operationResult.success) {
             context.logStep(tag, 'deleted');
             await context.sendEphemeral(`Alias ${aliasToDelete} has been successfully deleted`);

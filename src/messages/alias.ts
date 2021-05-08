@@ -1,4 +1,3 @@
-import { SlashCommand } from '@slack/bolt';
 import { OperationResult, Storage } from '../storage';
 import { getRandomElement, groupArrayByKey, Maybe } from '../utils';
 import { Alias, AliasList } from './types';
@@ -28,14 +27,14 @@ export async function createAlias(alias: Alias, storage: Storage<Alias>): Promis
 
 export async function deleteAlias(
     { text: aliasKey }: Pick<Alias, 'text'>,
-    storage: Storage<Alias>,
-    commandContext: SlashCommand
+    userId: string,
+    storage: Storage<Alias>
 ): Promise<OperationResult> {
     if (!aliasKey.startsWith(':')) aliasKey = ':' + aliasKey;
 
     const alias = await storage.getValue(aliasKey);
 
-    if (!alias || alias.userId !== commandContext.user_id)
+    if (!alias || alias.userId !== userId)
         return { error: 'You can only delete the aliases you created', success: false };
 
     const result = await storage.deleteValue(`${aliasKey}`.toLowerCase());
