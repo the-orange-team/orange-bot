@@ -8,6 +8,8 @@ import axios from 'axios';
 import path from 'path';
 import fs from 'fs';
 
+const validTypes = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/gif'];
+
 export interface FileSystem {
     uploadAlias: (alias: Alias) => Promise<Alias>;
 }
@@ -30,7 +32,7 @@ class FirebaseFileSystem implements FileSystem {
     async uploadAlias(alias: Alias): Promise<Alias> {
         const uploadedValues: string[] = [];
         for (const originalUrl of alias.values) {
-            const uploadedUrl = await this.uploadAliasValue(originalUrl, alias.text);
+            const uploadedUrl = await this.handleAliasValue(originalUrl, alias.text);
             uploadedValues.push(uploadedUrl);
         }
         return {
@@ -40,21 +42,41 @@ class FirebaseFileSystem implements FileSystem {
         };
     }
 
-    private async uploadAliasValue(originalUrl: string, aliasName: string): Promise<string> {
+    private async handleAliasValue(originalUrl: string, aliasName: string): Promise<string> {
         if (isUrl(originalUrl)) {
-            const fileName = this.generateFileName(originalUrl, aliasName);
-            const filePath = (await this.urlToFile(originalUrl, fileName)) as string;
-            return filePath ? await this.uploadToFirebase(filePath) : originalUrl;
+            return this.safelyUploadUrl(originalUrl, aliasName);
         } else {
             return originalUrl;
         }
     }
 
-    private async urlToFile(url: string, fileName: string): Promise<string | Buffer> {
+    private async safelyUploadUrl(originalUrl: string, aliasName: string): Promise<string> {
+        try {
+            const fileName = this.generateFileName(originalUrl, aliasName);
+            const filePath = await this.urlToFile(originalUrl, fileName);
+            return filePath ? await this.uploadToFirebase(filePath) : originalUrl;
+        } catch (error) {
+            return originalUrl;
+        }
+    }
+
+    private async urlToFile(url: string, fileName: string): Promise<string> {
         return axios({
             url,
             responseType: 'stream',
-        }).then((response) => this.writeIntoFileSystem(response, fileName));
+        }).then((response) => this.handleUrlResponse(url, response, fileName));
+    }
+
+    private async handleUrlResponse(
+        url: string,
+        response: AxiosResponse,
+        fileName: string
+    ): Promise<string> {
+        if (validTypes.includes(response.headers['content-type'])) {
+            return (await this.writeIntoFileSystem(response, fileName)) as string;
+        } else {
+            return url;
+        }
     }
 
     private writeIntoFileSystem(
