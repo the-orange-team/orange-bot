@@ -2,7 +2,7 @@ import { SayArguments, SectionBlock } from '@slack/bolt';
 import * as adapter from '../../messages/slack-adapter';
 import { Alias } from '../../messages/types';
 import { isMediaUrl } from '../../utils';
-import { buildSlashcommand } from '../mocks/slack-api';
+import { buildSlashcommand } from '../../__mocks__/slack-api';
 
 jest.mock('../../utils', () => ({
     ...jest.requireActual('../../utils'),
