@@ -8,12 +8,10 @@ export async function urlParser(url: string): Promise<string> {
     const nodeURL = new URL(url);
     const functionsMap: Record<string, (nodeURL: URL) => Promise<string> | string | undefined> = {
         'https://giphy.com': giphyUrlParser,
-        'https://gph.is': giphyUrlParser,
+        'https://gph.is': giphyShortUrlParser,
     };
-    const urlAdpter = await functionsMap[nodeURL.origin];
+    const parsedUrl = await functionsMap[nodeURL.origin];
     console.log(nodeURL.origin);
-    console.log(urlAdpter);
-    const parsedUrl = await urlAdpter(nodeURL);
     console.log(`giphyUrl ${parsedUrl}`);
     if (!parsedUrl) return url;
     return '';
