@@ -1011,6 +1011,11 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/giphy-api@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@types/giphy-api/-/giphy-api-2.0.2.tgz#a9ca00cce8c31ab511dd848af2244daaf7ca79f8"
+  integrity sha512-tcYC4IcFs3FG9sGhGirQLl0ahyexxFJcgN0OKtkRXjwDoLgk7Si202aupgxFlC5pPUjJVFYD0e9Hv40psI6nnQ==
+
 "@types/graceful-fs@^4.1.2":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@types/graceful-fs/-/graceful-fs-4.1.5.tgz#21ffba0d98da4350db64891f92a9e5db3cdb4e15"
@@ -2985,6 +2990,11 @@ getpass@^0.1.1:
   integrity sha1-Xv+OPmhNVprkyysSgmBOi6YhSfo=
   dependencies:
     assert-plus "^1.0.0"
+
+giphy-api@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/giphy-api/-/giphy-api-2.0.1.tgz#30ddeb68d1346a592d26878db2fbc7ba1686ef91"
+  integrity sha512-6FKx6y26W1OqPtEOohvr3MOqCcYWajmz/svrjWm6XW2eP9mHvcQoi4aFg5afCakVF2b7zVllP0aNF45CGHZn+A==
 
 glob-parent@^5.0.0, glob-parent@^5.1.0, glob-parent@~5.1.0:
   version "5.1.2"
