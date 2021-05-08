@@ -1,14 +1,23 @@
 import { SayArguments, SectionBlock } from '@slack/bolt';
 import * as adapter from '../../messages/slack-adapter';
 import { Alias } from '../../messages/types';
+import { isMediaUrl } from '../../utils';
 import { buildSlashcommand } from '../mocks/slack-api';
+
+jest.mock('../../utils', () => ({
+    ...jest.requireActual('../../utils'),
+    isMediaUrl: jest.fn(),
+}));
+
+const mockedIsMediaUrl = <jest.Mock>isMediaUrl;
 
 describe('textToSlackMessage', () => {
     test('Given a text return the text', async () => {
+        mockedIsMediaUrl.mockImplementationOnce(() => false);
         expect(await adapter.textToSlackMessage(':some-command', 'some text')).toEqual('some text');
     });
     test('Given a url return the slack say argument', async () => {
-        jest.mock('axios');
+        mockedIsMediaUrl.mockImplementationOnce(() => true);
         expect(
             await adapter.textToSlackMessage(
                 'some-command',
