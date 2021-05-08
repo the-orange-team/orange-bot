@@ -16,8 +16,6 @@
     "@google-cloud/storage": "^5.8.5",
     "@sentry/node": "^6.3.5",
     "@slack/bolt": "^3.3.0",
-    "@types/crypto-js": "^4.0.1",
-    "@types/giphy-api": "^2.0.2",
     "axios": "^0.21.1",
     "crypto-js": "^4.0.0",
     "firebase-admin": "^9.7.0",
@@ -26,6 +24,8 @@
     "twitter": "^1.7.1"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.0.1",
+    "@types/giphy-api": "^2.0.2",
     "@types/jest": "^26.0.23",
     "@types/redis": "^2.8.28",
     "@types/twitter": "^1.7.0",
