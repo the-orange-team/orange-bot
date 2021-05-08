@@ -63,9 +63,6 @@ class FirebaseFileSystem implements FileSystem {
     ): Promise<string | Buffer> {
         return new Promise((resolve, reject) => {
             const file = fs.createWriteStream(fileName);
-            console.log(fileName);
-            fileName = `${fileName}.gif`;
-            console.log(fileName);
             response.data
                 .pipe(file)
                 .on('close', () => {
