@@ -2,14 +2,17 @@ import { SayArguments, SectionBlock } from '@slack/bolt';
 import * as adapter from '../../messages/slack-adapter';
 import { Alias } from '../../messages/types';
 import { buildSlashcommand } from '../mocks/slack-api';
+import axios from 'axios';
 
 describe('textToSlackMessage', () => {
-    test('Given a text return the text', () => {
-        expect(adapter.textToSlackMessage(':some-command', 'some text')).toEqual('some text');
+    test('Given a text return the text', async () => {
+        expect(await adapter.textToSlackMessage(':some-command', 'some text')).toEqual('some text');
     });
-    test('Given a url return the slack say argument', () => {
+    test('Given a url return the slack say argument', async () => {
+        jest.mock('axios');
+        const mockedAxios = axios as jest.Mocked<typeof axios>;
         expect(
-            adapter.textToSlackMessage(
+            await adapter.textToSlackMessage(
                 'some-command',
                 'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif'
             )
