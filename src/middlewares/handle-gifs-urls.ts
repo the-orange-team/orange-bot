@@ -1,10 +1,21 @@
 import { URL } from 'url';
 import { searchGiphyById } from '../apis/giphy';
-import { GIF_DOMAIN } from '../utils/constants';
+import { GIPHY_BY_NAME_ENDPOINT } from '../utils/constants';
 const tag = 'handle-gifs-urls';
 
-export async function giphyUrlParser(url: string): Promise<string> {
-    if (!url.includes(GIF_DOMAIN)) return url;
+export async function urlParser(url: string): Promise<string> {
+    const functionsMap: Record<string, Promise<string> | undefined> = {
+        'https://giphy.com': giphyUrlParser(url),
+    };
+
+    const nodeURL = new URL(url);
+    const parsedUrl = (await functionsMap[nodeURL.origin]) ?? url;
+
+    return parsedUrl;
+}
+
+async function giphyUrlParser(url: string): Promise<string> {
+    if (!url.includes(GIPHY_BY_NAME_ENDPOINT)) return url;
 
     const nodeURL = new URL(url);
     const paths = nodeURL.pathname.split('-');
