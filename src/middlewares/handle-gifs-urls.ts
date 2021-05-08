@@ -10,7 +10,9 @@ export async function urlParser(url: string): Promise<string> {
         'https://giphy.com': giphyUrlParser(nodeURL),
         'https://gph.is/': giphyShortUrlParser(nodeURL),
     };
-    const parsedUrl = (await functionsMap[nodeURL.origin]) ?? url;
+    const parsedUrl = await functionsMap[nodeURL.origin];
+    console.log(`giphyUrl ${parsedUrl}`);
+    if (!parsedUrl) return url;
     return parsedUrl;
 }
 
@@ -42,7 +44,7 @@ async function giphyShortUrlParser(nodeURL: URL): Promise<string> {
         const gifId = pathParams[pathParams.length - 1];
         console.log(`gifId ${gifId}`);
         if (!gifId) return url;
-        const giphyUrl = await searchGiphyById(gifId);
+        const giphyUrl = `https://media.giphy.com/media/${gifId}/giphy.gif`;
         console.log(`giphyUrl ${giphyUrl}`);
         if (!giphyUrl) return url;
         return giphyUrl;
