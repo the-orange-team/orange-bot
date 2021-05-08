@@ -5,6 +5,16 @@ jest.mock('axios');
 
 const axiosMock = mocked(axios.get, true);
 
+describe('isUrl', () => {
+    test('given a url', () => {
+        expect(utils.isUrl('http://bla.com'));
+        expect(utils.isUrl('https://bla.com'));
+    });
+    test('given somethings else', () => {
+        expect(utils.isUrl('bla.com'));
+    });
+});
+
 describe('isMediaUrl', () => {
     test('given a value that is not a url', async () => {
         expect.assertions(1);
