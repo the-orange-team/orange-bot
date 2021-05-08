@@ -13,12 +13,14 @@ export const isUrl = (text: string): boolean =>
 
 export const isMediaUrl = async (url: string): Promise<boolean> => {
     if (isUrl(url)) {
-        return axios({
-            url,
-            responseType: 'stream',
-        }).then((response) => validMediaTypes.includes(response.headers['content-type']));
+        return axios
+            .get(url, { responseType: 'stream' })
+            .then((response) => {
+                return validMediaTypes.includes(response.headers['content-type']);
+            })
+            .catch(() => false);
     } else {
-        return false;
+        return Promise.resolve(false);
     }
 };
 
