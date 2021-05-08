@@ -18,11 +18,9 @@ async function runProviderParser(nodeURL: URL): Promise<string | undefined> {
     switch (nodeURL.origin) {
         case GIPHY_HTTP:
         case GIPHY_HTTPS:
-            console.log('YEEEEEEEEEEEEES');
             return giphyUrlParser(nodeURL);
         case GIPHY_SHORTLINK_HTTP:
         case GIPHY_SHORLINK_HTTPS:
-            console.log('YEEEEEEEEEEEEES');
             return await giphyShortUrlParser(nodeURL);
     }
 }
