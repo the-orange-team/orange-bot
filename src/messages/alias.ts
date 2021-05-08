@@ -58,8 +58,7 @@ export async function listAlias(userId: string, storage: Storage<Alias>): Promis
     const userAliases = aliasesGroupedByUser[userId] ?? [];
     const otherAliases = Object.entries(aliasesGroupedByUser)
         .filter(([key]) => key !== userId)
-        .map(([, aliases]) => aliases)
-        .flat();
+        .flatMap(([, aliases]) => aliases);
 
     return {
         userAliases,

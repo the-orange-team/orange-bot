@@ -1,4 +1,5 @@
 import * as alias from '../../messages/alias';
+import { Alias } from '../../messages/types';
 import { StorageMock } from '../../__mocks__/storage';
 
 jest.mock('../../utils', () => ({
@@ -165,5 +166,29 @@ describe('deleteAlias', () => {
             new Error('Error')
         );
         expect(storageMock.deleteValue).toBeCalledWith(':a');
+    });
+});
+
+describe('listAlias', () => {
+    test('list seprated between user and others', async () => {
+        const userId = '2';
+        const aliasesKeys = [':a', ':b', ':c'];
+        storageMock.getAllAliasesKeys.mockResolvedValue(aliasesKeys);
+        storageMock.getAliasesByKeys.mockResolvedValue(
+            new Map<string, Alias>([
+                [':a', { text: 'a', userId, values: ['test'] }],
+                [':b', { text: 'b', userId: '1', values: ['test2'] }],
+                [':c', { text: 'c', userId, values: ['test3'] }],
+            ])
+        );
+        await expect(alias.listAlias(userId, storageMock)).resolves.toEqual({
+            userAliases: [
+                { text: 'a', userId, values: ['test'] },
+                { text: 'c', userId, values: ['test3'] },
+            ],
+            otherAliases: [{ text: 'b', userId: '1', values: ['test2'] }],
+        });
+
+        expect(storageMock.getAliasesByKeys).toBeCalledWith(aliasesKeys);
     });
 });
