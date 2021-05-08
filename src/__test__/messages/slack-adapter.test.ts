@@ -10,7 +10,6 @@ describe('textToSlackMessage', () => {
     });
     test('Given a url return the slack say argument', async () => {
         jest.mock('axios');
-        const mockedAxios = axios as jest.Mocked<typeof axios>;
         expect(
             await adapter.textToSlackMessage(
                 'some-command',
