@@ -6,9 +6,9 @@ const tag = 'handle-gifs-urls';
 
 export async function urlParser(url: string): Promise<string> {
     const nodeURL = new URL(url);
-    const functionsMap: Record<string, (nodeURL: URL) => Promise<string> | string | undefined> = {
-        'https://giphy.com': giphyUrlParser,
-        'https://gph.is': giphyShortUrlParser,
+    const functionsMap: Record<string, Promise<string> | string | undefined> = {
+        'https://giphy.com': giphyUrlParser(nodeURL),
+        'https://gph.is': giphyShortUrlParser(nodeURL),
     };
     const parsedUrl = await functionsMap[nodeURL.origin];
     console.log(nodeURL.origin);
@@ -20,12 +20,15 @@ export async function urlParser(url: string): Promise<string> {
 function giphyUrlParser(nodeURL: URL): string {
     try {
         const url = nodeURL.href;
+        console.log(url);
         if (!url.includes(GIPHY_BY_NAME_ENDPOINT)) return url;
         const pathParams = nodeURL.pathname.split('-');
         const gifId = pathParams[pathParams.length - 1];
+        console.log(gifId);
         if (!gifId) return url;
         const giphyUrl = `https://media.giphy.com/media/${gifId}/giphy.gif`;
         if (!giphyUrl) return url;
+        console.log(giphyUrl);
         return giphyUrl;
     } catch (err) {
         console.error(err);
