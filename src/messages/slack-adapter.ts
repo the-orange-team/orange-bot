@@ -1,9 +1,12 @@
 import { SayArguments, SectionBlock, SlashCommand } from '@slack/bolt';
-import { isUrl, Maybe, removeStringExtraSpaces } from '../utils';
+import { isMediaUrl, isUrl, Maybe, removeStringExtraSpaces } from '../utils';
 import { Alias, AliasList } from './types';
 
-export function textToSlackMessage(command: string, response: string): string | SayArguments {
-    if (isUrl(response)) {
+export async function textToSlackMessage(
+    command: string,
+    response: string
+): Promise<string | SayArguments> {
+    if (await isMediaUrl(response)) {
         return {
             text: response,
             blocks: [

@@ -1,4 +1,7 @@
 import { Block } from '@slack/bolt';
+import axios from 'axios';
+
+export const validMediaTypes = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/gif'];
 
 export type Maybe<T> = T | null;
 
@@ -8,6 +11,17 @@ export function getRandomElement<T>(array: Array<T>): T {
 
 export const isUrl = (text: string): boolean =>
     text.startsWith('http://') || text.startsWith('https://');
+
+export const isMediaUrl = async (url: string): Promise<boolean> => {
+    if (isUrl(url)) {
+        return axios({
+            url,
+            responseType: 'stream',
+        }).then((response) => validMediaTypes.includes(response.headers['content-type']));
+    } else {
+        return false;
+    }
+};
 
 /**
  * JSON parser that doesn't break when receiving null as argument

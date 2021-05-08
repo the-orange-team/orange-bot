@@ -1,4 +1,5 @@
 import { Bucket } from '@google-cloud/storage';
+import { validMediaTypes } from '../utils';
 import { Alias } from '../messages/types';
 import { AxiosResponse } from 'axios';
 import { isUrl } from '../utils';
@@ -7,8 +8,6 @@ import admin from 'firebase-admin';
 import axios from 'axios';
 import path from 'path';
 import fs from 'fs';
-
-const validTypes = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/gif'];
 
 export interface FileSystem {
     uploadAlias: (alias: Alias) => Promise<Alias>;
@@ -72,7 +71,7 @@ class FirebaseFileSystem implements FileSystem {
         response: AxiosResponse,
         fileName: string
     ): Promise<string> {
-        if (validTypes.includes(response.headers['content-type'])) {
+        if (validMediaTypes.includes(response.headers['content-type'])) {
             return (await this.writeIntoFileSystem(response, fileName)) as string;
         } else {
             return url;
