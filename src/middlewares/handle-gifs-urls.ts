@@ -33,13 +33,17 @@ async function giphyUrlParser(nodeURL: URL): Promise<string> {
 async function giphyShortUrlParser(nodeURL: URL): Promise<string> {
     try {
         const url = nodeURL.href;
+        console.log(`nodeURL.href ${url}`);
         if (!url.includes(GIPHY_SHORTLINK_ORIGIN)) return url;
         const config = { maxRedirects: 1 };
         const response = await axios.get(url, config);
+        console.log(`response.request.path ${response.request.path}`);
         const pathParams = response.request.path.split('-');
         const gifId = pathParams[pathParams.length - 1];
+        console.log(`gifId ${gifId}`);
         if (!gifId) return url;
         const giphyUrl = await searchGiphyById(gifId);
+        console.log(`giphyUrl ${giphyUrl}`);
         if (!giphyUrl) return url;
         return giphyUrl;
     } catch (err) {
