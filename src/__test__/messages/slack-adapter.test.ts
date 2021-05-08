@@ -2,7 +2,6 @@ import { SayArguments, SectionBlock } from '@slack/bolt';
 import * as adapter from '../../messages/slack-adapter';
 import { Alias } from '../../messages/types';
 import { buildSlashcommand } from '../mocks/slack-api';
-import axios from 'axios';
 
 describe('textToSlackMessage', () => {
     test('Given a text return the text', async () => {

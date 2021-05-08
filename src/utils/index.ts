@@ -1,4 +1,3 @@
-import { Block } from '@slack/bolt';
 import axios from 'axios';
 
 export const validMediaTypes = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/gif'];

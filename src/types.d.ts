@@ -1,4 +1,3 @@
-import { Context } from '@slack/bolt';
 declare module '@slack/bolt' {
     interface Context {
         logError: (error: string) => void;
