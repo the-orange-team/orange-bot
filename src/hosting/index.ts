@@ -1,3 +1,4 @@
+import { giphyUrlParser } from '../middlewares/handle-gifs-urls';
 import { Bucket } from '@google-cloud/storage';
 import { validMediaTypes } from '../utils';
 import { Alias } from '../messages/types';
@@ -43,7 +44,8 @@ class FirebaseFileSystem implements FileSystem {
 
     private async handleAliasValue(originalUrl: string, aliasName: string): Promise<string> {
         if (isUrl(originalUrl)) {
-            return this.safelyUploadUrl(originalUrl, aliasName);
+            const parsedUrl = await giphyUrlParser(originalUrl);
+            return this.safelyUploadUrl(parsedUrl, aliasName);
         } else {
             return originalUrl;
         }

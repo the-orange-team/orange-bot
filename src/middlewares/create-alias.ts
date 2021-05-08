@@ -4,17 +4,15 @@ import { storage } from '../storage';
 import { callAuthorized } from './user-auth';
 import { getModalSchema } from '../modals/create-alias/create-alias-modal';
 import { fileSystem } from '../hosting';
-import { searchById } from '../apis/giphy';
+
 const tag = 'create-alias';
 
 app.command('/create', callAuthorized, async ({ client, context, payload }) => {
     try {
-        // const result = await client.views.open(getModalSchema(payload));
-        // console.log(result);
-        // context.logStep(tag, 'received');
-        // await context.sendEphemeral('Not implemented yet');
-        const gifUrl = await searchById('gJzj27CHJ67BQFXjCo');
-        console.log(gifUrl);
+        const result = await client.views.open(getModalSchema(payload));
+        console.log(result);
+        context.logStep(tag, 'received');
+        await context.sendEphemeral('Not implemented yet');
     } catch (err) {
         await context.sendEphemeral('Something went wrong');
         context.logError(err);

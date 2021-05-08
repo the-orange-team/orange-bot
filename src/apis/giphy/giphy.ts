@@ -1,6 +1,6 @@
 import { giphyClient } from './auth';
 
-export async function searchById(id: string): Promise<string> {
+export async function searchGiphyById(id: string): Promise<string> {
     const gifUrl = giphyClient
         .id(id)
         .then((res) => {
