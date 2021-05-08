@@ -59,3 +59,36 @@ describe('isMediaUrl', () => {
         ).resolves.toEqual(false);
     });
 });
+
+describe('zip', () => {
+    test('two arrays', () => {
+        expect(utils.zip(['a', 'b', 'c'], ['1', '2', '3'])).toEqual([
+            ['a', '1'],
+            ['b', '2'],
+            ['c', '3'],
+        ]);
+    });
+});
+
+test('groupByKey', () => {
+    expect(
+        utils.groupArrayByKey(
+            [
+                { a: '1', b: '2' },
+                { a: '1', b: '3' },
+                { a: '2', b: '4' },
+            ],
+            (val) => val.a
+        )
+    ).toEqual({
+        '1': [
+            { a: '1', b: '2' },
+            { a: '1', b: '3' },
+        ],
+        '2': [{ a: '2', b: '4' }],
+    });
+});
+
+test('remove extra spaces', () => {
+    expect(utils.removeStringExtraSpaces('    some     string   \n   ')).toEqual('some string');
+});
