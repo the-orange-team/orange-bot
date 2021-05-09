@@ -8,8 +8,9 @@ import { fileSystem } from '../hosting';
 
 const tag = 'create-alias';
 
-app.command('/create', callAuthorized, async ({ client, context, payload, body }) => {
+app.command('/create', callAuthorized, async ({ ack, client, context, payload, body }) => {
     try {
+        await ack();
         const result = await client.views.open(getModalSchema(body));
         console.log(result);
         context.logStep(tag, 'received');
