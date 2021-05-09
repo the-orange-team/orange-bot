@@ -1,4 +1,5 @@
 import { app } from '../app';
+import { Middleware, SlackCommandMiddlewareArgs } from '@slack/bolt';
 import { createAlias, slackCommandToCommand } from '../messages';
 import { storage } from '../storage';
 import { callAuthorized } from './user-auth';
@@ -19,23 +20,27 @@ app.command('/create', callAuthorized, async ({ client, context, payload, body }
     }
 });
 
-app.command('/cmdcrt', callAuthorized, async ({ command, context, ack }) => {
+const createAliasRequestedFromText: Middleware<SlackCommandMiddlewareArgs> = async (args) => {
     try {
-        context.logStep(tag, 'received');
-        const botCommand = slackCommandToCommand(command);
+        args.context.logStep(tag, 'received');
+        const botCommand = slackCommandToCommand(args.command);
         if (botCommand) {
-            context.logStep(tag, 'validated');
+            args.context.logStep(tag, 'validated');
             const uploadedCommand = await fileSystem.uploadAlias(botCommand);
-            context.logStep(tag, 'uploaded');
+            args.context.logStep(tag, 'uploaded');
             createAlias(uploadedCommand, storage);
-            context.logStep(tag, 'stored');
-            await context.sendEphemeral(`You can now use the alias writing :${botCommand.text}`);
+            args.context.logStep(tag, 'stored');
+            await args.context.sendEphemeral(
+                `You can now use the alias writing :${botCommand.text}`
+            );
         } else {
-            context.logStep(tag, 'invalidated');
-            await context.sendEphemeral('Invalid command pattern');
+            args.context.logStep(tag, 'invalidated');
+            await args.context.sendEphemeral('Invalid command pattern');
         }
     } catch (err) {
-        await context.sendEphemeral('Something went wrong');
-        context.logError(err);
+        await args.context.sendEphemeral('Something went wrong');
+        args.context.logError(err);
     }
-});
+};
+
+app.command('/cmdcrt', callAuthorized, createAliasRequestedFromText);
