@@ -1,24 +1,17 @@
 import { app } from '../app';
 import { v4 as uuidv4 } from 'uuid';
 
-// Listen for a button invocation with action_id `button_abc` (assume it's inside of a modal)
 app.action(
     { type: 'block_actions', action_id: 'add_option' },
     async ({ body, client, context }) => {
-        // Acknowledge the button request
         context.sendEphemeral('Adding more options');
 
         try {
-            // Call views.update with the built-in client
             const result = await client.views.update({
-                // Pass the view_id
                 view_id: body?.view?.id,
-                // Pass the current hash to avoid race conditions
                 hash: body?.view?.hash,
-                // View payload with updated blocks
                 view: {
                     type: 'modal',
-                    // View identifier
                     callback_id: 'create_alias_view',
                     title: {
                         type: 'plain_text',
