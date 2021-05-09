@@ -1,9 +1,10 @@
 import { SlashCommand } from '@slack/bolt';
 import { ViewsOpenArguments } from '@slack/web-api';
+import { v4 as uuidv4 } from 'uuid';
 
-function getModalSchema(payload: SlashCommand): ViewsOpenArguments {
+function getModalSchema(body: SlashCommand): ViewsOpenArguments {
     return {
-        trigger_id: payload.trigger_id,
+        trigger_id: body.trigger_id,
         view: {
             title: {
                 type: 'plain_text',
@@ -30,7 +31,7 @@ function getModalSchema(payload: SlashCommand): ViewsOpenArguments {
                     type: 'input',
                     element: {
                         type: 'plain_text_input',
-                        action_id: 'option_1',
+                        action_id: uuidv4(),
                         placeholder: {
                             type: 'plain_text',
                             text: 'Enter the value to be returned',

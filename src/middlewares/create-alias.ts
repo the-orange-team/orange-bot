@@ -7,9 +7,9 @@ import { fileSystem } from '../hosting';
 
 const tag = 'create-alias';
 
-app.command('/create', callAuthorized, async ({ client, context, payload }) => {
+app.command('/create', callAuthorized, async ({ client, context, payload, body }) => {
     try {
-        const result = await client.views.open(getModalSchema(payload));
+        const result = await client.views.open(getModalSchema(body));
         console.log(result);
         context.logStep(tag, 'received');
         await context.sendEphemeral('Not implemented yet');
