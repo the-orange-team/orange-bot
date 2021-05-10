@@ -22,6 +22,11 @@ app.command('/create', callAuthorized, async ({ ack, client, context, payload, b
     }
 });
 
+app.view('create_alias_view', async (args) => {
+    console.log(args);
+    args.ack();
+});
+
 const createAliasRequestedFromText: Middleware<SlackCommandMiddlewareArgs> = async (args) => {
     try {
         args.context.logStep(tag, 'received');
