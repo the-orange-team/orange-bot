@@ -1,10 +1,17 @@
 import { app } from '../app';
-import { Middleware, SlackCommandMiddlewareArgs } from '@slack/bolt';
+import {
+    Context,
+    ContextMissingPropertyError,
+    Middleware,
+    SlackCommandMiddlewareArgs,
+} from '@slack/bolt';
 import { createAlias, slackCommandToCommand } from '../messages';
 import { storage } from '../storage';
 import { callAuthorized } from './user-auth';
 import { getModalSchema } from '../modals/create-alias/create-alias-modal';
 import { fileSystem } from '../hosting';
+import { parseViewDataToAlias } from '../utils';
+import { Alias } from '../messages';
 
 const tag = 'create-alias';
 
@@ -22,9 +29,23 @@ app.command('/create', callAuthorized, async ({ ack, client, context, payload, b
     }
 });
 
-app.view('create_alias_view', async (args) => {
-    console.log(args);
-    args.ack();
+const createAliasWithContext = async (
+    alias: Alias,
+    context: Context
+): Promise<void | undefined> => {
+    context.logStep(tag, 'validated');
+    const uploadedCommand = await fileSystem.uploadAlias(alias);
+    context.logStep(tag, 'uploaded');
+    createAlias(uploadedCommand, storage);
+    context.logStep(tag, 'stored');
+    return await context.sendEphemeral(`You can now use the alias writing :${alias.text}`);
+};
+
+app.view('create_alias_view', async ({ body, context }) => {
+    const alias = parseViewDataToAlias(body);
+    if (!alias) return;
+
+    await createAliasWithContext(alias, context);
 });
 
 const createAliasRequestedFromText: Middleware<SlackCommandMiddlewareArgs> = async ({
@@ -35,12 +56,7 @@ const createAliasRequestedFromText: Middleware<SlackCommandMiddlewareArgs> = asy
         context.logStep(tag, 'received');
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {
-            context.logStep(tag, 'validated');
-            const uploadedCommand = await fileSystem.uploadAlias(botCommand);
-            context.logStep(tag, 'uploaded');
-            createAlias(uploadedCommand, storage);
-            context.logStep(tag, 'stored');
-            await context.sendEphemeral(`You can now use the alias writing :${botCommand.text}`);
+            createAliasWithContext(botCommand, context);
         } else {
             context.logStep(tag, 'invalidated');
             await context.sendEphemeral('Invalid command pattern');
