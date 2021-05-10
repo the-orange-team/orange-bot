@@ -1,8 +1,7 @@
 import axios from 'axios';
+import { Maybe } from './types';
 
 export const validMediaTypes = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/gif'];
-
-export type Maybe<T> = T | null;
 
 export function getRandomElement<T>(array: Array<T>): T {
     return array[Math.floor(Math.random() * array.length)];
@@ -48,3 +47,6 @@ export const groupArrayByKey = <T, K extends string>(
 export const removeStringExtraSpaces = (value: string): string => {
     return value.replace(/\s+/g, ' ').trim();
 };
+
+export * from './alias';
+export * from './types';
