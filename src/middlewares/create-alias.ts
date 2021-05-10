@@ -27,26 +27,27 @@ app.view('create_alias_view', async (args) => {
     args.ack();
 });
 
-const createAliasRequestedFromText: Middleware<SlackCommandMiddlewareArgs> = async (args) => {
+const createAliasRequestedFromText: Middleware<SlackCommandMiddlewareArgs> = async ({
+    context,
+    command,
+}) => {
     try {
-        args.context.logStep(tag, 'received');
-        const botCommand = slackCommandToCommand(args.command);
+        context.logStep(tag, 'received');
+        const botCommand = slackCommandToCommand(command);
         if (botCommand) {
-            args.context.logStep(tag, 'validated');
+            context.logStep(tag, 'validated');
             const uploadedCommand = await fileSystem.uploadAlias(botCommand);
-            args.context.logStep(tag, 'uploaded');
+            context.logStep(tag, 'uploaded');
             createAlias(uploadedCommand, storage);
-            args.context.logStep(tag, 'stored');
-            await args.context.sendEphemeral(
-                `You can now use the alias writing :${botCommand.text}`
-            );
+            context.logStep(tag, 'stored');
+            await context.sendEphemeral(`You can now use the alias writing :${botCommand.text}`);
         } else {
-            args.context.logStep(tag, 'invalidated');
-            await args.context.sendEphemeral('Invalid command pattern');
+            context.logStep(tag, 'invalidated');
+            await context.sendEphemeral('Invalid command pattern');
         }
     } catch (err) {
-        await args.context.sendEphemeral('Something went wrong');
-        args.context.logError(err);
+        await context.sendEphemeral('Something went wrong');
+        context.logError(err);
     }
 };
 
