@@ -1,6 +1,6 @@
 import { SlackViewAction } from '@slack/bolt';
 import { ViewBlock, Maybe } from './types';
-import { Alias } from '../messages/types';
+import { Alias } from '../messages';
 
 const getBlockValue = (block: ViewBlock): string => Object.values(block)[0].value;
 

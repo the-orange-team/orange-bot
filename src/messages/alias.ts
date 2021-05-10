@@ -65,3 +65,5 @@ export async function listAlias(userId: string, storage: Storage<Alias>): Promis
         otherAliases,
     };
 }
+
+export { Alias, AliasList };

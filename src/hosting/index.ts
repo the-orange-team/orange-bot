@@ -1,7 +1,7 @@
 import { urlParser } from '../middlewares/handle-gifs-urls';
 import { Bucket } from '@google-cloud/storage';
 import { validMediaTypes } from '../utils';
-import { Alias } from '../messages/types';
+import { Alias } from '../messages';
 import { AxiosResponse } from 'axios';
 import { isUrl } from '../utils';
 import { URL } from 'url';

@@ -1,4 +1,4 @@
-import { Alias } from '../messages/types';
+import { Alias } from '../messages';
 import { OperationResult, Storage } from '../storage/types';
 import { Maybe } from '../utils';
 import { jest } from '@jest/globals';

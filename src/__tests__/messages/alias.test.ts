@@ -1,5 +1,5 @@
 import * as alias from '../../messages/alias';
-import { Alias } from '../../messages/types';
+import { Alias } from '../../messages';
 import { StorageMock } from '../../__mocks__/storage';
 
 jest.mock('../../utils', () => ({

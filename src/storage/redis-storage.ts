@@ -1,6 +1,6 @@
 import { RedisClient } from 'redis';
 import { Storage } from './types';
-import { Alias } from '../messages/types';
+import { Alias } from '../messages';
 import { Maybe, safeJSONParser, zip } from '../utils';
 import { OperationResult } from './types';
 

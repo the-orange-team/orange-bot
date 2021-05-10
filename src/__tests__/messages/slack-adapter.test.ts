@@ -1,6 +1,6 @@
 import { SayArguments, SectionBlock } from '@slack/bolt';
 import * as adapter from '../../messages/slack-adapter';
-import { Alias } from '../../messages/types';
+import { Alias } from '../../messages';
 import { isMediaUrl } from '../../utils';
 import { buildSlashcommand } from '../../__mocks__/slack-api';
 
