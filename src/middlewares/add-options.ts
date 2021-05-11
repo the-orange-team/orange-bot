@@ -13,7 +13,9 @@ app.action('add_option', async ({ body, client, context }) => {
             ...previousViewValues
         } = body.view;
 
-        const result = await client.views.update({
+        const submitBlock = blocks.pop();
+
+        await client.views.update({
             view_id: body.view?.id,
             hash: body?.view?.hash,
             view: {
@@ -26,24 +28,25 @@ app.action('add_option', async ({ body, client, context }) => {
                 clear_on_close: previousViewValues.clear_on_close,
                 notify_on_close: previousViewValues.notify_on_close,
                 external_id: previousViewValues.external_id,
-                blocks: blocks.concat({
-                    type: 'input',
-                    element: {
-                        type: 'plain_text_input',
-                        action_id: uuidv4(),
-                        placeholder: {
-                            type: 'plain_text',
-                            text: 'Enter the value to be returned',
+                blocks: blocks
+                    .concat({
+                        type: 'input',
+                        element: {
+                            type: 'plain_text_input',
+                            action_id: uuidv4(),
+                            placeholder: {
+                                type: 'plain_text',
+                                text: 'Enter the value to be returned',
+                            },
                         },
-                    },
-                    label: {
-                        type: 'plain_text',
-                        text: 'Value',
-                    },
-                }),
+                        label: {
+                            type: 'plain_text',
+                            text: 'Value',
+                        },
+                    })
+                    .concat(submitBlock),
             },
         });
-        console.log(result);
     } catch (error) {
         console.error(error);
     }
