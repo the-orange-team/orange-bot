@@ -4,8 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 app.action(
     { type: 'block_actions', action_id: 'add_option' },
     async ({ body, client, context }) => {
-        context.sendEphemeral('Adding more options');
-
         try {
             const result = await client.views.update({
                 view_id: body?.view?.id,
@@ -42,6 +40,7 @@ app.action(
                 },
             });
             console.log(result);
+            context.sendEphemeral('Adding more options');
         } catch (error) {
             console.error(error);
         }
