@@ -10,7 +10,7 @@ import {
 import { app } from '../app';
 
 app.use(async (args) => {
-    onlyCommands(args);
+    await onlyCommands(args);
     const { context, next, ack } = args as SlackCommandMiddlewareArgs & AllMiddlewareArgs;
 
     context.sendEphemeral = (text: string) =>
