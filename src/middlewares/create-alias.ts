@@ -18,9 +18,9 @@ const tag = 'create-alias';
 app.command('/create', callAuthorized, async ({ ack, client, context, payload, body }) => {
     try {
         const modalSchema = getModalSchema(body);
-        await ack(modalSchema);
+        //await ack(modalSchema);
         const result = await client.views.open(modalSchema);
-        console.log(result);
+        //console.log(result);
         context.logStep(tag, 'received');
         await context.sendEphemeral('Not implemented yet');
     } catch (err) {
@@ -41,6 +41,7 @@ const createAliasWithContext = async (
     return await context.sendEphemeral(`You can now use the alias writing :${alias.text}`);
 };
 
+// TODO: fix logStep function. it's being bound correctly, but the payload object in here is different from the payload object used.
 app.view('create_alias_view', async ({ body, context }) => {
     const alias = parseViewDataToAlias(body);
     if (!alias) return;
