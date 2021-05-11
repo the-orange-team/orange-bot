@@ -9,14 +9,6 @@ app.action('add_option', async ({ body, client, context }) => {
     try {
         const {
             blocks,
-            id,
-            team_id,
-            state,
-            hash,
-            previous_view_id,
-            root_view_id,
-            app_id,
-            bot_id,
 
             ...previousViewValues
         } = body.view;
@@ -25,12 +17,15 @@ app.action('add_option', async ({ body, client, context }) => {
             view_id: body.view?.id,
             hash: body?.view?.hash,
             view: {
-                ...previousViewValues,
-
+                callback_id: previousViewValues.callback_id,
+                title: previousViewValues.title,
+                type: 'modal',
                 close: previousViewValues.close ?? undefined,
                 submit: previousViewValues.submit ?? undefined,
-
-                type: 'modal',
+                private_metadata: previousViewValues.private_metadata,
+                clear_on_close: previousViewValues.clear_on_close,
+                notify_on_close: previousViewValues.notify_on_close,
+                external_id: previousViewValues.external_id,
                 blocks: blocks.concat({
                     type: 'input',
                     element: {
