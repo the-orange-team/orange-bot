@@ -1,10 +1,5 @@
 import { app } from '../app';
-import {
-    Context,
-    ContextMissingPropertyError,
-    Middleware,
-    SlackCommandMiddlewareArgs,
-} from '@slack/bolt';
+import { Context, Middleware, SlackCommandMiddlewareArgs } from '@slack/bolt';
 import { createAlias, slackCommandToCommand } from '../messages';
 import { storage } from '../storage';
 import { callAuthorized } from './user-auth';
@@ -15,14 +10,12 @@ import { Alias } from '../messages';
 
 const tag = 'create-alias';
 
-app.command('/create', callAuthorized, async ({ ack, client, context, payload, body }) => {
+app.command('/create', callAuthorized, async ({ ack, client, context, body }) => {
     try {
         const modalSchema = getModalSchema(body);
-        //await ack(modalSchema);
-        const result = await client.views.open(modalSchema);
-        //console.log(result);
+        await client.views.open(modalSchema);
         context.logStep(tag, 'received');
-        await context.sendEphemeral('Not implemented yet');
+        await ack();
     } catch (err) {
         await context.sendEphemeral('Something went wrong');
         context.logError(err);
@@ -42,7 +35,7 @@ const createAliasWithContext = async (
 };
 
 // TODO: fix logStep function. it's being bound correctly, but the payload object in here is different from the payload object used.
-app.view('create_alias_view', async ({ body, context }) => {
+app.view('create_alias_view', async ({ body, context, ack }) => {
     const alias = parseViewDataToAlias(body);
     if (!alias) return;
 
