@@ -7,15 +7,29 @@ app.action('add_option', async ({ body, client, context }) => {
     if (body.type !== 'block_actions' || !body.view) return;
 
     try {
-        const { blocks, ...previousViewValues } = body.view;
+        const {
+            blocks,
+            id,
+            team_id,
+            state,
+            hash,
+            previous_view_id,
+            root_view_id,
+            app_id,
+            bot_id,
 
-        const previousView = { blocks: [], ...previousViewValues } as View;
+            ...previousViewValues
+        } = body.view;
 
         const result = await client.views.update({
             view_id: body.view?.id,
             hash: body?.view?.hash,
             view: {
-                ...(previousView as View),
+                ...previousViewValues,
+
+                close: previousViewValues.close ?? undefined,
+                submit: previousViewValues.submit ?? undefined,
+
                 type: 'modal',
                 blocks: blocks.concat({
                     type: 'input',
