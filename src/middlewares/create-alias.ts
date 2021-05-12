@@ -17,7 +17,7 @@ app.command('/create', callAuthorized, async ({ ack, client, context, body }) =>
         context.logStep(tag, 'received');
         await ack();
     } catch (err) {
-        await context.sendEphemeral('Something went wrong');
+        await context.sendEphemeral(`Something went wrong: ${err}`);
         context.logError(err);
     }
 });

@@ -9,6 +9,7 @@ import admin from 'firebase-admin';
 import axios from 'axios';
 import path from 'path';
 import fs from 'fs';
+import { FIREBASE_BUCKET_ADDRESS } from '../utils/constants';
 
 export interface FileSystem {
     uploadAlias: (alias: Alias) => Promise<Alias>;
@@ -32,7 +33,14 @@ class FirebaseFileSystem implements FileSystem {
     async uploadAlias(alias: Alias): Promise<Alias> {
         const uploadedValues: string[] = [];
         for (const originalUrl of alias.values) {
-            const uploadedUrl = await this.handleAliasValue(originalUrl, alias.text);
+            if (this.checkForFirebaseURL(originalUrl) && !this.checkForStoredURL(originalUrl)) {
+                throw new Error(`The URL ${originalUrl} doesn't exist anymore`);
+            }
+            const isUploaded =
+                this.checkForFirebaseURL(originalUrl) && this.checkForStoredURL(originalUrl);
+            const uploadedUrl = isUploaded
+                ? originalUrl
+                : await this.handleAliasValue(originalUrl, alias.text);
             uploadedValues.push(uploadedUrl);
         }
         return {
@@ -107,6 +115,26 @@ class FirebaseFileSystem implements FileSystem {
         const contentUrl = new URL(url);
         const randomNumber = Math.floor(Math.random() * 1000);
         return `${aliasName}${randomNumber}${path.basename(contentUrl.pathname)}`;
+    }
+
+    private async checkForStoredURL(originalUrl: string): Promise<boolean> {
+        const storageFile = this.bucket.file(this.getFilePath(originalUrl));
+        try {
+            const [fileExists] = await storageFile.exists();
+            return fileExists;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+
+    private checkForFirebaseURL(originalUrl: string): boolean {
+        if (originalUrl.includes(FIREBASE_BUCKET_ADDRESS)) return true;
+        return false;
+    }
+
+    private getFilePath(originalUrl: string): string {
+        return originalUrl.replace(FIREBASE_BUCKET_ADDRESS, '');
     }
 }
 

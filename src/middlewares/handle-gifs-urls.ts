@@ -2,7 +2,7 @@ import { URL } from 'url';
 import { GIPHY_BY_NAME_ENDPOINT, GIPHY_SHORTLINK_ORIGIN } from '../utils/constants';
 import axios from 'axios';
 import {
-    GIPHY_SHORLINK_HTTPS,
+    GIPHY_SHORTLINK_HTTPS,
     GIPHY_SHORTLINK_HTTP,
     GIPHY_HTTP,
     GIPHY_HTTPS,
@@ -20,7 +20,7 @@ async function runProviderParser(nodeURL: URL): Promise<string | undefined> {
         case GIPHY_HTTPS:
             return giphyUrlParser(nodeURL);
         case GIPHY_SHORTLINK_HTTP:
-        case GIPHY_SHORLINK_HTTPS:
+        case GIPHY_SHORTLINK_HTTPS:
             return await giphyShortUrlParser(nodeURL);
     }
 }
