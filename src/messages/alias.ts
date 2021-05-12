@@ -2,7 +2,7 @@ import { OperationResult, Storage } from '../storage';
 import { getRandomElement, groupArrayByKey, Maybe } from '../utils';
 import { Alias, AliasList } from './types';
 
-export const messageStartingWithColonRegex = /^:[^: ]*[^: ]$/;
+export const messageStartingWithColonRegex = /^.* (:[^: ]*[^: ]) .*$/;
 
 export async function getAliasResponse(
     aliasKey: string,
