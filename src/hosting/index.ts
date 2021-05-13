@@ -33,11 +33,13 @@ class FirebaseFileSystem implements FileSystem {
     async uploadAlias(alias: Alias): Promise<Alias> {
         const uploadedValues: string[] = [];
         for (const originalUrl of alias.values) {
-            if (this.checkForFirebaseURL(originalUrl) && !this.checkForStoredURL(originalUrl)) {
+            const isFireBaseUrl = this.checkForFirebaseURL(originalUrl);
+            const isOnFireBase = await this.checkForStoredURL(originalUrl);
+
+            if (isFireBaseUrl && !isOnFireBase) {
                 throw new Error(`The URL ${originalUrl} doesn't exist anymore`);
             }
-            const isUploaded =
-                this.checkForFirebaseURL(originalUrl) && this.checkForStoredURL(originalUrl);
+            const isUploaded = isFireBaseUrl && isOnFireBase;
             const uploadedUrl = isUploaded
                 ? originalUrl
                 : await this.handleAliasValue(originalUrl, alias.text);

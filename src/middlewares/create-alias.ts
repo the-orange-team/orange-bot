@@ -17,7 +17,7 @@ app.command('/create', callAuthorized, async ({ ack, client, context, body }) =>
         context.logStep(tag, 'received');
         await ack();
     } catch (err) {
-        await context.sendEphemeral(`Something went wrong: ${err}`);
+        await context.sendEphemeral(`Something went wrong: ${err.message}`);
         context.logError(err);
     }
 });
@@ -56,8 +56,8 @@ const createAliasRequestedFromText: Middleware<SlackCommandMiddlewareArgs> = asy
             await context.sendEphemeral('Invalid command pattern');
         }
     } catch (err) {
-        await context.sendEphemeral('Something went wrong');
-        context.logError(err);
+        await context.sendEphemeral(`Something went wrong: ${err.message}`);
+        context.logError(err.message);
     }
 };
 
