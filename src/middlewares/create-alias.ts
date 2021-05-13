@@ -50,7 +50,7 @@ const createAliasRequestedFromText: Middleware<SlackCommandMiddlewareArgs> = asy
         context.logStep(tag, 'received');
         const botCommand = slackCommandToCommand(command);
         if (botCommand) {
-            createAliasWithContext(botCommand, context);
+            await createAliasWithContext(botCommand, context);
         } else {
             context.logStep(tag, 'invalidated');
             await context.sendEphemeral('Invalid command pattern');

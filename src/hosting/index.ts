@@ -37,7 +37,7 @@ class FirebaseFileSystem implements FileSystem {
             const isOnFireBase = await this.checkForStoredURL(originalUrl);
 
             if (isFireBaseUrl && !isOnFireBase) {
-                throw new Error(`The URL ${originalUrl} doesn't exist anymore`);
+                throw new Error(`The URL ${originalUrl} doesn't exist`);
             }
             const isUploaded = isFireBaseUrl && isOnFireBase;
             const uploadedUrl = isUploaded
