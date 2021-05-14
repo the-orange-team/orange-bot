@@ -26,12 +26,17 @@ const createAliasWithContext = async (
     alias: Alias,
     context: Context
 ): Promise<void | undefined> => {
-    context.logStep(tag, 'validated');
-    const uploadedCommand = await fileSystem.uploadAlias(alias);
-    context.logStep(tag, 'uploaded');
-    createAlias(uploadedCommand, storage);
-    context.logStep(tag, 'stored');
-    return await context.sendEphemeral(`You can now use the alias writing :${alias.text}`);
+    try {
+        context.logStep(tag, 'validated');
+        const uploadedCommand = await fileSystem.uploadAlias(alias);
+        context.logStep(tag, 'uploaded');
+        createAlias(uploadedCommand, storage);
+        context.logStep(tag, 'stored');
+        return await context.sendEphemeral(`You can now use the alias writing :${alias.text}`);
+    } catch (err) {
+        await context.sendEphemeral(`Something went wrong: ${err.message}`);
+        context.logError(err);
+    }
 };
 
 // TODO: fix logStep function. it's being bound correctly, but the payload object in here is different from the payload object used.
