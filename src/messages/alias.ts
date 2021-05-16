@@ -2,7 +2,8 @@ import { OperationResult, Storage } from '../storage';
 import { getRandomElement, groupArrayByKey, Maybe } from '../utils';
 import { Alias, AliasList } from './types';
 
-export const wordStartingWithColonRegex = /\B:([\w-]+\b)([^:]|$)/;
+export const wordStartingWithColonRegex =
+    /\B:([\w!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?]+)([^\w!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?:]|$)/;
 
 export async function getAliasResponse(
     aliasKey: string,

@@ -21,7 +21,7 @@ describe('messageStartingWithColonRegex', () => {
     });
 
     test('it should not match command ending with :', () => {
-        const [result, ...rest] = alias.wordStartingWithColonRegex.exec(':alias:') ?? [];
+        const [result, ...rest] = alias.wordStartingWithColonRegex.exec(':alias-alias:') ?? [];
         expect(result).toBeUndefined();
         expect(rest).toHaveLength(0);
     });
