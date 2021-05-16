@@ -29,7 +29,7 @@ const createAliasWithContext = async (
     context.logStep(tag, 'validated');
     const uploadedCommand = await fileSystem.uploadAlias(alias);
     context.logStep(tag, 'uploaded');
-    createAlias(uploadedCommand, storage);
+    await createAlias(uploadedCommand, storage);
     context.logStep(tag, 'stored');
     return await context.sendEphemeral(`You can now use the alias writing :${alias.text}`);
 };
