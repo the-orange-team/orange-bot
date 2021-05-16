@@ -1,9 +1,10 @@
 import { app } from '../app';
-import main from '../blocks/help/help-main.json';
+import { generateHelpBlock } from '../static-blocks/help/index';
 
 const tag = 'user-help';
 
-app.command('/help', async ({ context }) => {
+app.command('/help', async ({ command, context }) => {
+    const [helpArgument] = command.text.trim().split(' ');
     context.logStep(tag, 'received');
-    await context.sendComposedEphemeral(main);
+    await context.sendComposedEphemeral(generateHelpBlock(helpArgument));
 });

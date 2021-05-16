@@ -14,7 +14,7 @@
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": ":warning: Primeiramente, é importante entender que aqui no nosso Slack sempre foi utilizado o caractere `:` como forma de invocar um texto ou link armazenado diretamente no slackbot, por uma facilidade de referência, eu chamo esses textos que invocam um comportamento de `alias`. \n\n Ou seja, quando você digita `:qualquercoisa`, eu vou receber o alias `qualquercoisa` e buscar no meu banco de dados se há alguma resposta em link/imagem/texto para isso. Se o link for de imagem ou GIF, eu irei enviar ele no formato de bloco de imagem dedicado, sem necessidade de chamar thumbnails. Dito isso, aqui vai a lista de guias disponíveis."
+				"text": ":warning: Primeiramente, é importante entender que aqui no nosso Slack sempre foi utilizado o caractere `:` como forma de invocar um texto ou link armazenado diretamente no slackbot, por uma facilidade de referência, eu chamo esses textos que invocam um comportamento de `alias`. \n\n Ou seja, quando você digita `:qualquercoisa`, eu vou receber o alias `qualquercoisa` e buscar no meu banco de dados se há alguma resposta em link/imagem/texto para isso. Se o link for de imagem ou GIF, eu irei enviar ele no formato de bloco de imagem dedicado, sem necessidade de chamar thumbnails. Dito isso, aqui vai como usar o `help` mais detalhadamente."
 			}
 		},
 		{
