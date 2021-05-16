@@ -4,7 +4,6 @@ import { validMediaTypes, generateFileExtensionFromURL } from '../utils';
 import { Alias } from '../messages';
 import { AxiosResponse } from 'axios';
 import { isUrl } from '../utils';
-import { URL } from 'url';
 import admin from 'firebase-admin';
 import axios from 'axios';
 import fs from 'fs';
@@ -66,7 +65,7 @@ class FirebaseFileSystem implements FileSystem {
 
     private async safelyUploadUrl(originalUrl: string, aliasName: string): Promise<string> {
         try {
-            const fileName = this.generateFileName(originalUrl, aliasName);
+            const fileName = await this.generateFileName(originalUrl, aliasName);
             const filePath = await this.urlToFile(originalUrl, fileName);
             return filePath ? await this.uploadToFirebase(filePath) : originalUrl;
         } catch (error) {
@@ -116,10 +115,9 @@ class FirebaseFileSystem implements FileSystem {
         return upload[0].publicUrl();
     }
 
-    private generateFileName(url: string, aliasName: string): string {
-        const contentUrl = new URL(url);
+    private async generateFileName(url: string, aliasName: string): Promise<string> {
         const randomNumber = Math.floor(Math.random() * 1000);
-        return `${aliasName}${randomNumber}${generateFileExtensionFromURL(url)}`;
+        return `${aliasName}${randomNumber}${await generateFileExtensionFromURL(url)}`;
     }
 
     private async checkForStoredURL(originalUrl: string): Promise<boolean> {
