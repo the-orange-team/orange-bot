@@ -86,7 +86,7 @@ describe('tweetToSlackMessage', () => {
 
 describe('slackCommandToCommand', () => {
     test('given a correct command with one value', () => {
-        const slashCommand = buildSlashcommand('test returning tested', '123');
+        const slashCommand = buildSlashcommand('test -v tested', '123');
         expect(adapter.slackCommandToCommand(slashCommand)).toEqual<Alias>({
             text: 'test',
             userId: '123',
@@ -95,7 +95,7 @@ describe('slackCommandToCommand', () => {
     });
 
     test('given a correct command with multiple values', () => {
-        const slashCommand = buildSlashcommand('flipcoin returning tails heads', '123');
+        const slashCommand = buildSlashcommand('flipcoin -v tails heads', '123');
         expect(adapter.slackCommandToCommand(slashCommand)).toEqual<Alias>({
             text: 'flipcoin',
             userId: '123',
@@ -103,9 +103,9 @@ describe('slackCommandToCommand', () => {
         });
     });
 
-    test('given a correct command returning url', () => {
+    test('given a correct command -v url', () => {
         const slashCommand = buildSlashcommand(
-            'cat returning https://media.giphy.com/media/BzyTuYCmvSORqs1ABM/giphy.gif',
+            'cat -v https://media.giphy.com/media/BzyTuYCmvSORqs1ABM/giphy.gif',
             '123'
         );
         expect(adapter.slackCommandToCommand(slashCommand)).toEqual<Alias>({
@@ -118,7 +118,7 @@ describe('slackCommandToCommand', () => {
     test('given a command with multiple values and extra spaces', () => {
         expect(
             adapter.slackCommandToCommand(
-                buildSlashcommand('flipcoin returning tails heads   draw', '123')
+                buildSlashcommand('flipcoin -v tails heads   draw', '123')
             )
         ).toEqual<Alias>({
             text: 'flipcoin',
@@ -131,12 +131,12 @@ describe('slackCommandToCommand', () => {
         test('command starting with :', () => {
             expect(
                 adapter.slackCommandToCommand(
-                    buildSlashcommand('flipcoin: returning tails heads   draw', '123')
+                    buildSlashcommand('flipcoin: -v tails heads   draw', '123')
                 )
             ).toBeNull();
         });
 
-        test('Command without returning', () => {
+        test('Command without -v', () => {
             expect(
                 adapter.slackCommandToCommand(
                     buildSlashcommand('flipcoin tails heads   draw', '123')
