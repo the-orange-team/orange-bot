@@ -1,13 +1,12 @@
 import { urlParser } from '../middlewares/handle-gifs-urls';
 import { Bucket } from '@google-cloud/storage';
-import { validMediaTypes } from '../utils';
+import { validMediaTypes, generateFileExtensionFromURL } from '../utils';
 import { Alias } from '../messages';
 import { AxiosResponse } from 'axios';
 import { isUrl } from '../utils';
 import { URL } from 'url';
 import admin from 'firebase-admin';
 import axios from 'axios';
-import path from 'path';
 import fs from 'fs';
 import { FIREBASE_BUCKET_ADDRESS } from '../utils/constants';
 
@@ -120,7 +119,7 @@ class FirebaseFileSystem implements FileSystem {
     private generateFileName(url: string, aliasName: string): string {
         const contentUrl = new URL(url);
         const randomNumber = Math.floor(Math.random() * 1000);
-        return `${aliasName}${randomNumber}${path.basename(contentUrl.pathname)}`;
+        return `${aliasName}${randomNumber}${generateFileExtensionFromURL(url)}`;
     }
 
     private async checkForStoredURL(originalUrl: string): Promise<boolean> {

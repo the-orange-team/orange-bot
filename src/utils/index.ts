@@ -23,6 +23,30 @@ export const isMediaUrl = async (url: string): Promise<boolean> => {
     }
 };
 
+export const generateFileExtensionFromURL = async (url: string): Promise<string> => {
+    if (isUrl(url)) {
+        return axios
+            .get(url, { responseType: 'stream' })
+            .then((response) => {
+                switch (response.headers['content-type']) {
+                    case 'image/png':
+                        return '.png';
+                    case 'image/jpeg':
+                        return '.jpeg';
+                    case 'image/svg+xml':
+                        return '.svg';
+                    case 'image/gif':
+                        return '.gif';
+                    default:
+                        return '';
+                }
+            })
+            .catch(() => '');
+    } else {
+        return Promise.resolve('');
+    }
+};
+
 /**
  * JSON parser that doesn't break when receiving null as argument
  */
