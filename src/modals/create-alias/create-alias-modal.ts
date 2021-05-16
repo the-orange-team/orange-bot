@@ -19,12 +19,12 @@ function getModalSchema(body: SlashCommand): ViewsOpenArguments {
                         action_id: 'title',
                         placeholder: {
                             type: 'plain_text',
-                            text: 'Input the command',
+                            text: 'Insira o nome do alias',
                         },
                     },
                     label: {
                         type: 'plain_text',
-                        text: 'Command',
+                        text: 'Alias',
                     },
                 },
                 {
@@ -34,12 +34,12 @@ function getModalSchema(body: SlashCommand): ViewsOpenArguments {
                         action_id: uuidv4(),
                         placeholder: {
                             type: 'plain_text',
-                            text: 'Enter the value to be returned',
+                            text: 'Informe o que o alias responderá quando invocado, pode ser uma URL ou texto',
                         },
                     },
                     label: {
                         type: 'plain_text',
-                        text: 'Value',
+                        text: 'Resposta',
                     },
                 },
                 {
@@ -50,7 +50,7 @@ function getModalSchema(body: SlashCommand): ViewsOpenArguments {
                             action_id: 'add_option',
                             text: {
                                 type: 'plain_text',
-                                text: 'Add another option  ',
+                                text: 'Adicionar mais opções de resposta',
                             },
                         },
                     ],

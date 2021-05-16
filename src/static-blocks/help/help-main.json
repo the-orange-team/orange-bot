@@ -4,7 +4,7 @@
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": "Olar, eu sou o Orangebot :tangerine:, e já que você chamou o help sem passar nenhum argumento, eu vou dar uma descrição geral de como eu funciono,e aqui vai também um guia de como utilizar o help e explorar as minhas funcionalidades."
+				"text": "Olar, eu sou o Orangebot :tangerine:, e já que você chamou o help sem passar nenhum argumento válido, eu vou dar uma descrição geral de como eu funciono,e aqui vai também um guia de como utilizar o help e explorar as minhas funcionalidades."
 			}
 		},
 		{
