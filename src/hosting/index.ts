@@ -33,16 +33,7 @@ class FirebaseFileSystem implements FileSystem {
     async uploadAlias(alias: Alias): Promise<Alias> {
         const uploadedValues: string[] = [];
         for (const originalUrl of alias.values) {
-            const isFireBaseUrl = this.checkForFirebaseURL(originalUrl);
-            const isOnFireBase = await this.checkForStoredURL(originalUrl);
-
-            if (isFireBaseUrl && !isOnFireBase) {
-                throw InvalidAliasError.fromInvalidUrl(originalUrl);
-            }
-            const isUploaded = isFireBaseUrl && isOnFireBase;
-            const uploadedUrl = isUploaded
-                ? originalUrl
-                : await this.handleAliasValue(originalUrl, alias.text);
+            const uploadedUrl = await this.handleAliasValue(originalUrl, alias.text);
             uploadedValues.push(uploadedUrl);
         }
         return {
@@ -53,6 +44,19 @@ class FirebaseFileSystem implements FileSystem {
     }
 
     private async handleAliasValue(originalUrl: string, aliasName: string): Promise<string> {
+        const isFirebaseURL = this.checkForFirebaseURL(originalUrl);
+        const stillExists = await this.checkForStoredURL(originalUrl);
+        const doesntExistAnymore = isFirebaseURL && !stillExists;
+        const isStoredAtFirebase = isFirebaseURL && stillExists;
+
+        if (doesntExistAnymore) {
+            throw InvalidAliasError.fromInvalidUrl(originalUrl);
+        }
+
+        return isStoredAtFirebase ? originalUrl : await this.handleValidURL(originalUrl, aliasName);
+    }
+
+    private async handleValidURL(originalUrl: string, aliasName: string): Promise<string> {
         if (isUrl(originalUrl)) {
             const parsedUrl = await urlParser(originalUrl);
             return this.safelyUploadUrl(parsedUrl, aliasName);
