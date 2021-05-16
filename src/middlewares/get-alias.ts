@@ -1,12 +1,12 @@
 import { app } from '../app';
-import { getAliasResponse, messageStartingWithColonRegex, textToSlackMessage } from '../messages';
+import { getAliasResponse, wordStartingWithColonRegex, textToSlackMessage } from '../messages';
 import { storage } from '../storage';
 const tag = 'hidden-get-alias';
 
-app.message(messageStartingWithColonRegex, async ({ context, say, logger }) => {
+app.message(wordStartingWithColonRegex, async ({ context, say, logger }) => {
     // RegExp matches are inside of context.matches
     try {
-        const command = context.matches[0].toLowerCase();
+        const command = context.matches[0].toLowerCase().trim();
         logger.info(`[get-alias] fetching ${command}`);
         const value = (await getAliasResponse(command, storage)) ?? "alias doesn't exist";
         const argument = await textToSlackMessage(command, value);

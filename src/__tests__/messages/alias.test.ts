@@ -14,6 +14,29 @@ beforeEach(() => {
     jest.clearAllMocks();
 });
 
+describe('messageStartingWithColonRegex', () => {
+    test('it should match a command with :', () => {
+        const [result] = alias.wordStartingWithColonRegex.exec(':alias') ?? [];
+        expect(result).toBe(':alias');
+    });
+
+    test('it should not match command ending with :', () => {
+        const [result, ...rest] = alias.wordStartingWithColonRegex.exec(':alias:') ?? [];
+        expect(result).toBeUndefined();
+        expect(rest).toHaveLength(0);
+    });
+
+    test('it should match command in the middle of a sentence', () => {
+        const [result] = alias.wordStartingWithColonRegex.exec(':alias testing') ?? [];
+        expect(result.trim()).toBe(':alias');
+    });
+
+    test('it should match command only the first command', () => {
+        const [result] = alias.wordStartingWithColonRegex.exec('a :test a :test: test test') ?? [];
+        expect(result).toBe(':test ');
+    });
+});
+
 describe('getAliasResponse', () => {
     test('gettings an existing alias', async () => {
         storageMock.getValue.mockResolvedValueOnce({
