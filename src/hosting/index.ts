@@ -116,7 +116,7 @@ class FirebaseFileSystem implements FileSystem {
     }
 
     private async generateFileName(url: string, aliasName: string): Promise<string> {
-        const randomNumber = Math.floor(Math.random() * 1000);
+        const randomNumber = Math.floor(Math.random() * 1000000);
         return `${aliasName}${randomNumber}${await generateFileExtensionFromURL(url)}`;
     }
 
