@@ -50,7 +50,7 @@ function getModalSchema(body: SlashCommand): ViewsOpenArguments {
                             action_id: 'add_option',
                             text: {
                                 type: 'plain_text',
-                                text: 'Adicionar mais opções de resposta',
+                                text: 'Adicionar mais respostas',
                             },
                         },
                     ],
