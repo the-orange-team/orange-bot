@@ -4,8 +4,8 @@ import { createAlias, slackCommandToCommand } from '../messages';
 import { storage } from '../storage';
 import { callAuthorized } from './user-auth';
 import { getModalSchema } from '../modals/create-alias/create-alias-modal';
-import { fileSystem } from '../hosting';
-import { parseViewDataToAlias } from '../utils';
+import { fileSystem, InvalidAliasError } from '../hosting';
+import { parseViewDataToAlias, ViewBlock } from '../utils';
 import { Alias } from '../messages';
 
 const tag = 'create-alias';
@@ -26,25 +26,44 @@ const createAliasWithContext = async (
     alias: Alias,
     context: Context
 ): Promise<void | undefined> => {
-    try {
-        context.logStep(tag, 'validated');
-        const uploadedCommand = await fileSystem.uploadAlias(alias);
-        context.logStep(tag, 'uploaded');
-        createAlias(uploadedCommand, storage);
-        context.logStep(tag, 'stored');
-        return await context.sendEphemeral(`You can now use the alias writing :${alias.text}`);
-    } catch (err) {
-        await context.sendEphemeral(`Something went wrong: ${err.message}`);
-        context.logError(err);
-    }
+    context.logStep(tag, 'validated');
+    const uploadedCommand = await fileSystem.uploadAlias(alias);
+    context.logStep(tag, 'uploaded');
+    createAlias(uploadedCommand, storage);
+    context.logStep(tag, 'stored');
+    return await context.sendEphemeral(`You can now use the alias writing :${alias.text}`);
 };
 
 // TODO: fix logStep function. it's being bound correctly, but the payload object in here is different from the payload object used.
 app.view('create_alias_view', async ({ body, context, ack }) => {
-    const alias = parseViewDataToAlias(body);
-    if (!alias) return;
+    try {
+        const alias = parseViewDataToAlias(body);
+        if (!alias) return;
 
-    await createAliasWithContext(alias, context);
+        await createAliasWithContext(alias, context);
+    } catch (err: any) {
+        if (err instanceof InvalidAliasError) {
+            const invalidBlocks = Object.entries(body.view.state.values)
+                .filter(
+                    ([, actionDict]: [string, ViewBlock]) =>
+                        Object.values(actionDict)[0].value === err.url
+                )
+                .map(([blockId]) => ({ [blockId]: err.message }));
+
+            const invalidBlocksErrors = Object.assign({}, ...invalidBlocks);
+
+            return await ack({
+                response_action: 'errors',
+                errors: invalidBlocksErrors,
+            });
+        } else {
+            console.log(err);
+            return await ack({
+                response_action: 'errors',
+                errors: {},
+            });
+        }
+    }
 });
 
 const createAliasRequestedFromText: Middleware<SlackCommandMiddlewareArgs> = async ({

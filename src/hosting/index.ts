@@ -37,7 +37,7 @@ class FirebaseFileSystem implements FileSystem {
             const isOnFireBase = await this.checkForStoredURL(originalUrl);
 
             if (isFireBaseUrl && !isOnFireBase) {
-                throw new Error(`The URL ${originalUrl} doesn't exist`);
+                throw InvalidAliasError.fromInvalidUrl(originalUrl);
             }
             const isUploaded = isFireBaseUrl && isOnFireBase;
             const uploadedUrl = isUploaded
@@ -141,3 +141,18 @@ class FirebaseFileSystem implements FileSystem {
 }
 
 export const fileSystem = new FirebaseFileSystem();
+
+export class InvalidAliasError extends Error {
+    public url?: string;
+
+    constructor(err: string) {
+        super(err);
+        Object.setPrototypeOf(this, InvalidAliasError.prototype);
+    }
+
+    public static fromInvalidUrl(url: string): InvalidAliasError {
+        const error = new InvalidAliasError(`The URL ${url} doesn't exist`);
+        error.url = url;
+        return error;
+    }
+}
