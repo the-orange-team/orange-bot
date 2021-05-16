@@ -17,7 +17,10 @@ app.command('/list', callAuthorized, async ({ context, command }) => {
 
         if (!commandResultBlocks.length) {
             context.logStep(tag, 'no alias loaded');
-            addTextSectionToBlocks(`No aliases were created yet.`, commandResultBlocks);
+            addTextSectionToBlocks(
+                'Ainda não há alias disponíveis, digite `/help create` caso queira verificar como criar um.',
+                commandResultBlocks
+            );
         }
 
         await context.sendComposedEphemeral({
@@ -28,7 +31,7 @@ app.command('/list', callAuthorized, async ({ context, command }) => {
         context.logError(err);
         await context.sendComposedEphemeral({
             response_type: 'ephemeral',
-            text: `Something went wrong`,
+            text: `Algo deu errado`,
         });
     }
 });

@@ -12,7 +12,9 @@ app.command('/delete', callAuthorized, async ({ command, context, logger }) => {
 
         if (!aliasToDelete) {
             context.logStep(tag, 'invalidated');
-            await context.sendEphemeral(`Invalid command pattern.`);
+            await context.sendEphemeral(
+                'Argumentos inválidos, utilize o `/help delete` caso queira verificar como utilizar esse comando'
+            );
         } else context.logStep(tag, 'validated');
 
         context.logStep(tag, 'deleting');
@@ -24,14 +26,16 @@ app.command('/delete', callAuthorized, async ({ command, context, logger }) => {
         );
         if (operationResult.success) {
             context.logStep(tag, 'deleted');
-            await context.sendEphemeral(`Alias ${aliasToDelete} has been successfully deleted`);
+            await context.sendEphemeral(`Alias ${aliasToDelete} foi deletado com sucesso`);
         } else {
             context.logStep(tag, 'no-op');
-            await context.sendEphemeral(`${operationResult.error}. No-op.`);
+            await context.sendEphemeral(
+                'Operação ignorada. Alias não existe ou não pode ser deletado.'
+            );
         }
     } catch (err) {
         logger.error(err);
-        await context.sendEphemeral(`Something went wrong`);
+        await context.sendEphemeral(`Algo deu errado: ${err.message}`);
         context.logError(err);
     }
 });

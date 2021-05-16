@@ -17,7 +17,7 @@ export const callAuthorized: Middleware<SlackCommandMiddlewareArgs> = async ({
     } else {
         context.logStep(tag, 'user access denied');
         await context.sendEphemeral(
-            "Dev mode is active, and I can't do much right now, try again later"
+            'Dev mode ativo, por enquanto apenas chamadas de alias estão disponíveis'
         );
     }
 };
@@ -29,15 +29,17 @@ app.command('/devmode', async ({ payload, context }) => {
         if (userIsDev(payload.user_id)) {
             context.logStep(tag, `dev mode switch allowed`);
             await storage.setDevModeTo(!devModeActive);
-            context.logStep(tag, `dev mode changed to: ${!devModeActive}`);
+            context.logStep(tag, `Dev mode ativado: ${!devModeActive}`);
             await context.sendEphemeral(generateDevModeMessage(!devModeActive));
         } else {
             context.logStep(tag, `dev mode changes denied`);
-            await context.sendEphemeral(`You don't have credentials to change dev mode :no_good:`);
+            await context.sendEphemeral(
+                `Você não tem permissão para modificar o dev mode :no_good:`
+            );
         }
     } catch (err) {
         await context.sendEphemeral(
-            `Something went wrong, contact @orangebotdevs and don't try this command again`
+            `Algo deu errado, entre em contato com @orangebotdevs e não tente esse comando novamente`
         );
         context.logError(err);
     }

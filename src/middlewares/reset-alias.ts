@@ -21,12 +21,12 @@ app.command('/reset', callAuthorized, async ({ command, context }) => {
         } else {
             context.logStep(tag, 'denied');
             await context.sendEphemeral(
-                `You don't know the password and you shouldn't play with this command`
+                `Se você não sabe a senha, significa que você não deveria utilizar esse comando`
             );
         }
     } catch (err) {
         await context.sendEphemeral(
-            `Something went wrong, contact @orangebotdevs and don't try this command again`
+            `Algo deu errado, entre em contato com @orangebotdevs e não tente esse comando novamente`
         );
         context.logError(err);
     }

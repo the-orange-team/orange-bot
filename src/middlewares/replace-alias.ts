@@ -16,21 +16,21 @@ app.command('/replace', callAuthorized, async ({ command, context }) => {
                 context.logStep(tag, 'found');
                 await createAlias(botCommand, storage);
                 context.logStep(tag, 'updated');
-                await context.sendEphemeral(
-                    `Alias ${botCommand.text} has been successfully replaced`
-                );
+                await context.sendEphemeral(`Alias ${botCommand.text} foi substituído com sucesso`);
             } else {
                 context.logStep(tag, 'not found');
                 await context.sendEphemeral(
-                    `Alias ${botCommand.text} does not exist. You can create it using \`/create\`.`
+                    `Alias ${botCommand.text} não existe. Utilize \`/help create\` para verificar como criar um alias.`
                 );
             }
         } else {
             context.logStep(tag, 'invalidated');
-            await context.sendEphemeral(`Invalid command pattern.`);
+            await context.sendEphemeral(
+                'Argumentos inválidos, utilize o `/help replace` caso queira verificar como utilizar esse comando'
+            );
         }
     } catch (err) {
-        await context.sendEphemeral(`Something went wrong`);
+        await context.sendEphemeral(`Algo deu errado: ${err.message}`);
         context.logError(err);
     }
 });

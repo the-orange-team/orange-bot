@@ -13,7 +13,7 @@ app.command('/pokedolar', callAuthorized, async ({ say, ack, context, payload })
         await say(tweetToSlackMessage(tweet, mediaUrl, payload.user_name));
         await ack();
     } catch (error) {
-        await say('Failed to fetch last tweet.');
+        await say('Não foi possível obter o último tweet.');
         context.logError(error);
     }
 });

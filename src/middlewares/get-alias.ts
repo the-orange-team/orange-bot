@@ -8,11 +8,13 @@ app.message(wordStartingWithColonRegex, async ({ context, say, logger }) => {
     try {
         const command = context.matches[0].toLowerCase().trim();
         logger.info(`[get-alias] fetching ${command}`);
-        const value = (await getAliasResponse(command, storage)) ?? "alias doesn't exist";
+        const value =
+            (await getAliasResponse(command, storage)) ??
+            'Parece que esse alias não existe, digite `/help create` caso queira saber como criar um';
         const argument = await textToSlackMessage(command, value);
         await say(argument);
     } catch (error) {
-        await say('alias call failed, ping @orangebotdevs');
+        await say('A chamada do alias falhou, entre em contato com @orangebotdevs');
         context.logError(error);
     }
 });
@@ -20,12 +22,14 @@ app.message(wordStartingWithColonRegex, async ({ context, say, logger }) => {
 app.command('/hidden', async ({ command, context, ack }) => {
     try {
         context.logStep(tag, 'received');
-        const value = (await getAliasResponse(command.text, storage)) ?? "alias doesn't exist";
+        const value =
+            (await getAliasResponse(command.text, storage)) ??
+            'Parece que esse alias não existe, digite `/help create` caso queira saber como criar um';
         context.logStep(tag, 'retrieved');
         const argument = await textToSlackMessage(command.text, value);
         await ack(argument);
     } catch (err) {
-        await ack('alias call failed, ping @orangebotdevs');
+        await ack('A chamada do alias falhou, entre em contato com @orangebotdevs');
         context.logError(err);
     }
 });

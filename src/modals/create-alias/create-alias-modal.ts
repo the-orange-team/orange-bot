@@ -34,7 +34,7 @@ function getModalSchema(body: SlashCommand): ViewsOpenArguments {
                         action_id: uuidv4(),
                         placeholder: {
                             type: 'plain_text',
-                            text: 'Informe o que o alias responderá quando invocado, pode ser uma URL ou texto',
+                            text: 'Informe o que o alias responderá quando chamado',
                         },
                     },
                     label: {

@@ -17,7 +17,7 @@ app.command('/create', callAuthorized, async ({ ack, client, context, body }) =>
         context.logStep(tag, 'received');
         await ack();
     } catch (err) {
-        await context.sendEphemeral(`Something went wrong: ${err.message}`);
+        await context.sendEphemeral(`Algo deu errado: ${err.message}`);
         context.logError(err);
     }
 });
@@ -31,7 +31,9 @@ const createAliasWithContext = async (
     context.logStep(tag, 'uploaded');
     await createAlias(uploadedCommand, storage);
     context.logStep(tag, 'stored');
-    return await context.sendEphemeral(`You can now use the alias writing :${alias.text}`);
+    return await context.sendEphemeral(
+        `Alias criado, você agora pode chama-lo escrevendo :${alias.text}`
+    );
 };
 
 // TODO: fix logStep function. it's being bound correctly, but the payload object in here is different from the payload object used.
@@ -77,10 +79,12 @@ const createAliasRequestedFromText: Middleware<SlackCommandMiddlewareArgs> = asy
             await createAliasWithContext(botCommand, context);
         } else {
             context.logStep(tag, 'invalidated');
-            await context.sendEphemeral('Invalid command pattern');
+            await context.sendEphemeral(
+                'Argumentos inválidos, utilize o `/help cmdcrt` caso queira verificar como utilizar esse comando'
+            );
         }
     } catch (err) {
-        await context.sendEphemeral(`Something went wrong: ${err.message}`);
+        await context.sendEphemeral(`Algo deu errado: ${err.message}`);
         context.logError(err.message);
     }
 };
