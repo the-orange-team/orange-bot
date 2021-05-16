@@ -1,0 +1,59 @@
+{
+	"blocks": [
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Para criar um alias, você tem duas opções, utilizar o `/create` ou o `/cmdcrt`, aqui eu vou ensinar como utilizar o primeiro comando."
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Assim que você digitar o comando `/create` a seguinte dialog irá aparecer:"
+			}
+		},
+		{
+			"type": "image",
+			"image_url": "https://storage.googleapis.com/the-orange-bot.appspot.com/createdialog473315.png",
+			"alt_text": "inspiration"
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": ":one: é o nome do alias que você quer criar, digite apenas o nome, sem o `:` de invocação"
+			}
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": ":two: é aonde vai o que você quer que eu responda quando o alias for chamado, pode ser uma URL ou um texto. Se for uma URL de uma imagem ou GIF, eu irei retornar ela em um bloco dedicado de imagens"
+			}
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": ":three: serve para você adicionar mais opções de retorno, nesse caso, eu irei aleatoriamente escolher uma das opções disponíveis e postar"
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "O orangebot foi feito por Guri :guribadass:, Rafael :brabo:, Rômulo :romulold: e Thomaz :smoked-thomaz:. Se der merda reclamem com eles. Ou resolva por conta própria aqui: https://github.com/the-orange-team/orange-bot"
+				}
+			]
+		}
+	]
+}

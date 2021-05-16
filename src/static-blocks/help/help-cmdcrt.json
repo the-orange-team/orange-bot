@@ -1,0 +1,53 @@
+{
+	"blocks": [
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Para criar um alias, você tem duas opções, utilizar o `/create` ou o `/cmdcrt`, aqui eu vou ensinar como utilizar o segundo comando."
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "*:one: Use o `/cmdcrt` para criar um alias*. Escreva `/create` seguido do seguinte padrão `[alias] returning [url]`. Exemplo: `/cmdcrt suckithaters -v http://i.imgur.com/4yuup.gif` \n\n\n :warning::warning::warning: SE LIGUE NO SEGUINTE, O NOME DO ALIAS NÃO PODE COMEÇAR COM O CARACTERE `:` EIM. \n\n se você tentar `/cmdcrt :suckithaters returning http://i.imgur.com/4yuup.gif`, isso não vai funcionar :porra:"
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "*:two: Convocando um alias*. Dado que um alias existe, apenas escreva `:alias` que eu vou postar o que foi salvo como valor para esse alias. Ou seja escrevendo `:suckithaters` irá causar isso:"
+			}
+		},
+		{
+			"type": "image",
+			"title": {
+				"type": "plain_text",
+				"text": "image1",
+				"emoji": true
+			},
+			"image_url": "https://storage.googleapis.com/the-orange-bot.appspot.com/uploading122345.png",
+			"alt_text": "image1"
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "O orangebot foi feito por Guri :guribadass:, Rafael :brabo:, Rômulo :romulold: e Thomaz :smoked-thomaz:. Se der merda reclamem com eles. Ou resolva por conta própria aqui: https://github.com/the-orange-team/orange-bot"
+				}
+			]
+		}
+	]
+}

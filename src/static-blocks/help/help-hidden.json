@@ -1,0 +1,33 @@
+{
+	"blocks": [
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "O `/hidden` é uma forma de você convocar um alias apenas para você, isso pode ser útil caso você queira testar o alias que acabou de criar, ou explorar os alias listados."
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Chame o `/hidden` passando apenas o nome do alias, nesse caso para o alias que normalmente se convoca escrevendo `:alias`, utilize apenas o `/hidden alias` e eu responderei o alias de uma forma privada visível apenas pra você"
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "O orangebot foi feito por Guri :guribadass:, Rafael :brabo:, Rômulo :romulold: e Thomaz :smoked-thomaz:. Se der merda reclamem com eles. Ou resolva por conta própria aqui: https://github.com/the-orange-team/orange-bot"
+				}
+			]
+		}
+	]
+}

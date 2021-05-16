@@ -1,0 +1,23 @@
+{
+	"blocks": [
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "O `/delete` é simples, escreva `/delete alias` e eu irei deletar o alias. Caso o alias esteja guardando uma URL que seja armazenada dentro do bot, ou seja, as URLs que começam com `https://storage.googleapis.com/the-orange-bot.appspot.com/`, a URL será preservada e você ainda pode utiliza-lá para outros alias existentes."
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "O orangebot foi feito por Guri :guribadass:, Rafael :brabo:, Rômulo :romulold: e Thomaz :smoked-thomaz:. Se der merda reclamem com eles. Ou resolva por conta própria aqui: https://github.com/the-orange-team/orange-bot"
+				}
+			]
+		}
+	]
+}
