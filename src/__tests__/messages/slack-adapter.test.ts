@@ -14,14 +14,17 @@ const mockedIsMediaUrl = <jest.Mock>isMediaUrl;
 describe('textToSlackMessage', () => {
     test('Given a text return the text', async () => {
         mockedIsMediaUrl.mockImplementationOnce(() => false);
-        expect(await adapter.textToSlackMessage(':some-command', 'some text')).toEqual('some text');
+        expect(await adapter.textToSlackMessage(':some-command', 'some text', '1')).toEqual(
+            'some text'
+        );
     });
     test('Given a not media url return the text', async () => {
         mockedIsMediaUrl.mockImplementationOnce(() => false);
         expect(
             await adapter.textToSlackMessage(
                 ':some-command',
-                'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif'
+                'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif',
+                '1'
             )
         ).toEqual('https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif');
     });
@@ -30,10 +33,12 @@ describe('textToSlackMessage', () => {
         expect(
             await adapter.textToSlackMessage(
                 'some-command',
-                'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif'
+                'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif',
+                '1'
             )
         ).toEqual<SayArguments>({
             text: 'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif',
+            thread_ts: '1',
             blocks: [
                 {
                     type: 'image',

@@ -4,11 +4,13 @@ import { Alias, AliasList } from './types';
 
 export async function textToSlackMessage(
     command: string,
-    response: string
+    response: string,
+    ts: string | undefined
 ): Promise<string | SayArguments> {
     if (await isMediaUrl(response)) {
         return {
             text: response,
+            thread_ts: ts,
             blocks: [
                 {
                     type: 'image',
