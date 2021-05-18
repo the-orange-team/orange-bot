@@ -35,6 +35,11 @@ describe('messageStartingWithColonRegex', () => {
         const [result] = alias.wordStartingWithColonRegex.exec('a :test a :test: test test') ?? [];
         expect(result).toBe(':test ');
     });
+
+    test('it should match command with special latin letters', () => {
+        const [result] = alias.wordStartingWithColonRegex.exec(':putaço') ?? [];
+        expect(result).toBe(':putaço');
+    });
 });
 
 describe('getAliasResponse', () => {
