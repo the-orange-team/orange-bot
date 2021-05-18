@@ -3,7 +3,7 @@ import { getRandomElement, groupArrayByKey, Maybe } from '../utils';
 import { Alias, AliasList } from './types';
 
 export const wordStartingWithColonRegex =
-    /\B:([\w!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?]+)([^\w!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?:]|$)/;
+    /\B:([\wáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ!@#$%^&*()_+\-=[\]{};'"\\|,.<>\/?]+)([^\wáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ!@#$%^&*()_+\-=[\]{};'"\\|,.<>\/?:]|$)/;
 
 export async function getAliasResponse(
     aliasKey: string,
