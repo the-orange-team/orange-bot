@@ -56,10 +56,21 @@ export async function listAlias(userId: string, storage: Storage<Alias>): Promis
         (alias) => alias.userId
     );
 
-    const userAliases = aliasesGroupedByUser[userId] ?? [];
+    const sortAliasFn = (alias1: Alias, alias2: Alias) : number => {
+        if (alias1.text > alias2.text) {
+            return 1;
+        } else if (alias2.text > alias1.text) {
+            return -1;
+        } else {
+            return 0;
+        }
+    };
+
+    const userAliases = aliasesGroupedByUser[userId].sort(sortAliasFn) ?? [];
     const otherAliases = Object.entries(aliasesGroupedByUser)
         .filter(([key]) => key !== userId)
-        .flatMap(([, aliases]) => aliases);
+        .flatMap(([, aliases]) => aliases)
+        .sort(sortAliasFn);
 
     return {
         userAliases,
