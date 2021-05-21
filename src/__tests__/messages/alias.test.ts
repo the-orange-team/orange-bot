@@ -241,4 +241,27 @@ describe('listAlias', () => {
 
         expect(storageMock.getAliasesByKeys).toBeCalledWith(aliasesKeys);
     });
+
+    test('list aliases alphabetically with empty user aliases', async () => {
+        const userId = '3';
+        const aliasesKeys = [':c', ':a', ':b'];
+        storageMock.getAllAliasesKeys.mockResolvedValue(aliasesKeys);
+        storageMock.getAliasesByKeys.mockResolvedValue(
+            new Map<string, Alias>([
+                [':c', { text: 'c', userId: '2', values: ['test3'] }],
+                [':a', { text: 'a', userId: '2', values: ['test'] }],
+                [':b', { text: 'b', userId: '1', values: ['test2'] }],
+            ])
+        );
+        await expect(alias.listAlias(userId, storageMock)).resolves.toEqual({
+            userAliases: [],
+            otherAliases: [
+                { text: 'a', userId: '2', values: ['test'] },
+                { text: 'b', userId: '1', values: ['test2'] },
+                { text: 'c', userId: '2', values: ['test3'] },
+            ],
+        });
+
+        expect(storageMock.getAliasesByKeys).toBeCalledWith(aliasesKeys);
+    });
 });

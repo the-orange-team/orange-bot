@@ -66,7 +66,7 @@ export async function listAlias(userId: string, storage: Storage<Alias>): Promis
         }
     };
 
-    const userAliases = aliasesGroupedByUser[userId].sort(sortAliasFn) ?? [];
+    const userAliases = aliasesGroupedByUser[userId] ? aliasesGroupedByUser[userId].sort(sortAliasFn) : [];
     const otherAliases = Object.entries(aliasesGroupedByUser)
         .filter(([key]) => key !== userId)
         .flatMap(([, aliases]) => aliases)
