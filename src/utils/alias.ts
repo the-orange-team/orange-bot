@@ -5,7 +5,7 @@ import { Alias } from '../messages';
 export const getViewBlockValue = (block: ViewBlock): string => Object.values(block)[0].value;
 
 export const parseViewDataToAlias = ({ view, user }: SlackViewAction): Maybe<Alias> => {
-    const [title, ...values] = Object.values(view.state.values).map(getViewBlockValue);
+    const [title, ...values] = Object.values(view.state.values).map(getViewBlockValue).filter((value) => value);
     if (!title) return null;
 
     return {

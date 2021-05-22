@@ -31,6 +31,7 @@ app.action('add_option', async ({ body, client, context }) => {
                 blocks: blocks
                     .concat({
                         type: 'input',
+                        optional: true,
                         element: {
                             type: 'plain_text_input',
                             action_id: uuidv4(),
