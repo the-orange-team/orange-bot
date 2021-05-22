@@ -1,6 +1,7 @@
 import { OperationResult, Storage } from '../storage';
 import { getRandomElement, groupArrayByKey, Maybe } from '../utils';
 import { Alias, AliasList } from './types';
+import { userIsDev } from '../utils/dev-user';
 
 export const wordStartingWithColonRegex =
     /\B:([\wáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?]+)([^\wáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?:]|$)/;
@@ -35,7 +36,8 @@ export async function deleteAlias(
 
     const alias = await storage.getValue(aliasKey);
 
-    if (!alias || alias.userId !== userId)
+    const isValidAlias = alias ? (userIsDev(userId) || alias.userId === userId) : false;
+    if (!isValidAlias)
         return { error: 'You can only delete the aliases you created', success: false };
 
     const result = await storage.deleteValue(`${aliasKey}`.toLowerCase());

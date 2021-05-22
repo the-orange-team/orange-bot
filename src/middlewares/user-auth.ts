@@ -1,6 +1,7 @@
 import { Middleware, SlackCommandMiddlewareArgs } from '@slack/bolt';
 import { app } from '../app';
 import { storage } from '../storage';
+import { userIsDev } from '../utils/dev-user';
 
 const tag = 'user-auth';
 
@@ -44,13 +45,6 @@ app.command('/devmode', async ({ payload, context }) => {
         context.logError(err);
     }
 });
-
-function userIsDev(userId: string): boolean {
-    const devIds = process.env.DEV_USER_GROUP;
-    const devList = devIds?.substring(1, devIds.length - 1).split(',') ?? [];
-    const devUser = devList.find((str) => str == userId);
-    return Boolean(devUser);
-}
 
 function generateDevModeMessage(devModeActive: boolean): string {
     if (devModeActive) {

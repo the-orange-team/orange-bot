@@ -1,6 +1,7 @@
 import * as alias from '../../messages/alias';
 import { Alias } from '../../messages';
 import { StorageMock } from '../../__mocks__/storage';
+import * as dev_user from '../../utils/dev-user';
 
 jest.mock('../../utils', () => ({
     ...jest.requireActual('../../utils'),
@@ -118,6 +119,12 @@ describe('createAlias', () => {
 });
 
 describe('deleteAlias', () => {
+
+    beforeEach(() => {
+        const spy = jest.spyOn(dev_user, 'userIsDev');
+        spy.mockReturnValue(false);
+    });
+    
     test('delete an owned alias', async () => {
         const userId = 'b';
         storageMock.getValue.mockResolvedValueOnce({
@@ -164,6 +171,25 @@ describe('deleteAlias', () => {
             success: false,
         });
         expect(storageMock.deleteValue).toBeCalledTimes(0);
+    });
+
+    test('delete alias owned by someone else if you are a dev user', async () => {
+        const spy = jest.spyOn(dev_user, 'userIsDev');
+        spy.mockReturnValue(true);
+        
+        const userId = 'b';
+        storageMock.getValue.mockResolvedValueOnce({
+            text: 'a',
+            userId: 'c',
+            values: ['test'],
+        });
+        storageMock.deleteValue.mockResolvedValue({
+            success: true,
+        });
+        await expect(alias.deleteAlias({ text: 'a' }, userId, storageMock)).resolves.toEqual({
+            success: true,
+        });
+        expect(storageMock.deleteValue).toBeCalledWith(':a');
     });
 
     test('can not delete alias that does not exist', async () => {
