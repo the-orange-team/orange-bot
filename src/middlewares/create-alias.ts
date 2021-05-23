@@ -29,11 +29,19 @@ const createAliasWithContext = async (
     context.logStep(tag, 'validated');
     const uploadedCommand = await fileSystem.uploadAlias(alias);
     context.logStep(tag, 'uploaded');
-    await createAlias(uploadedCommand, storage);
-    context.logStep(tag, 'stored');
-    return await context.sendEphemeral(
-        `Alias criado, você agora pode chama-lo escrevendo :${alias.text}`
-    );
+    const operationResult = await createAlias(uploadedCommand, storage);
+    if (operationResult.success) {
+        context.logStep(tag, 'stored');
+        return await context.sendEphemeral(
+            `Alias criado, você agora pode chama-lo escrevendo :${alias.text}`
+        );
+    } else {
+        context.logStep(tag, 'storage failed');
+        return await context.sendEphemeral(
+            `Alias inválido: ${alias.text}`
+        );
+    }
+    
 };
 
 // TODO: fix logStep function. it's being bound correctly, but the payload object in here is different from the payload object used.

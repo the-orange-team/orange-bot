@@ -22,9 +22,15 @@ export async function getAlias(aliasKey: string, storage: Storage<Alias>): Promi
     return await storage.getValue(aliasKey);
 }
 
-export async function createAlias(alias: Alias, storage: Storage<Alias>): Promise<void> {
+export async function createAlias(alias: Alias, storage: Storage<Alias>): Promise<OperationResult> {
     const aliasKey = alias.text.startsWith(':') ? alias.text : ':' + alias.text;
-    await storage.setValue(aliasKey.toLowerCase(), alias);
+    const [aliasKeyRegex] = wordStartingWithColonRegex.exec(aliasKey) ?? [];
+    if (aliasKeyRegex !== undefined) {
+        await storage.setValue(aliasKeyRegex.toLowerCase(), alias);
+        return { success: true };
+    } else {
+        return { error: 'Invalid alias', success: false };
+    }
 }
 
 export async function deleteAlias(

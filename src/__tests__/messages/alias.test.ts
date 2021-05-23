@@ -41,6 +41,12 @@ describe('messageStartingWithColonRegex', () => {
         const [result] = alias.wordStartingWithColonRegex.exec(':putaço') ?? [];
         expect(result).toBe(':putaço');
     });
+
+    test('it should not match with links', () => {
+        const [result, ...rest] = alias.wordStartingWithColonRegex.exec('https://www.youtube.com/watch?v=dQw4w9WgXcQ') ?? [];
+        expect(result).toBeUndefined();
+        expect(rest).toHaveLength(0);
+    });
 });
 
 describe('getAliasResponse', () => {
@@ -87,34 +93,33 @@ describe('getAlias', () => {
 
 describe('createAlias', () => {
     test('creating an alias', async () => {
-        await alias.createAlias(
-            {
-                text: ':a',
-                userId: 'b',
-                values: ['test'],
-            },
-            storageMock
-        );
+        await expect(alias.createAlias({ text: ':a', userId: 'b', values: ['test']}, storageMock)).resolves.toEqual({
+            success: true,
+        });
+
         expect(storageMock.setValue).toBeCalledWith(':a', {
             text: ':a',
             userId: 'b',
             values: ['test'],
         });
     });
-    test('creating an alias without comma', async () => {
-        await alias.createAlias(
-            {
-                text: 'a',
-                userId: 'b',
-                values: ['test'],
-            },
-            storageMock
-        );
+    test('creating an alias without colon', async () => {
+        await expect(alias.createAlias({ text: 'a', userId: 'b', values: ['test']}, storageMock)).resolves.toEqual({
+            success: true,
+        });
         expect(storageMock.setValue).toBeCalledWith(':a', {
             text: 'a',
             userId: 'b',
             values: ['test'],
         });
+    });
+
+    test('creating an alias from an invalid expression is not allowed', async () => {
+        await expect(alias.createAlias({ text: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', userId: 'b', values: ['test']}, storageMock)).resolves.toEqual({
+            error: 'Invalid alias', 
+            success: false,
+        });
+        expect(storageMock.setValue).toBeCalledTimes(0);
     });
 });
 
