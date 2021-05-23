@@ -93,7 +93,7 @@ describe('getAlias', () => {
 
 describe('createAlias', () => {
     test('creating an alias', async () => {
-        await expect(alias.createAlias({ text: ':a', userId: 'b', values: ['test']}, storageMock)).resolves.toEqual({
+        await expect(alias.createAlias({ text: ':a', userId: 'b', values: ['test'] }, storageMock)).resolves.toEqual({
             success: true,
         });
 
@@ -104,7 +104,7 @@ describe('createAlias', () => {
         });
     });
     test('creating an alias without colon', async () => {
-        await expect(alias.createAlias({ text: 'a', userId: 'b', values: ['test']}, storageMock)).resolves.toEqual({
+        await expect(alias.createAlias({ text: 'a', userId: 'b', values: ['test'] }, storageMock)).resolves.toEqual({
             success: true,
         });
         expect(storageMock.setValue).toBeCalledWith(':a', {
@@ -115,7 +115,7 @@ describe('createAlias', () => {
     });
 
     test('creating an alias from an invalid expression is not allowed', async () => {
-        await expect(alias.createAlias({ text: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', userId: 'b', values: ['test']}, storageMock)).resolves.toEqual({
+        await expect(alias.createAlias({ text: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', userId: 'b', values: ['test'] }, storageMock)).resolves.toEqual({
             error: 'Invalid alias', 
             success: false,
         });
