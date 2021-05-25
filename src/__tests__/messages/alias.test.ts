@@ -34,7 +34,16 @@ describe('messageStartingWithColonRegex', () => {
 
     test('it should match command only the first command', () => {
         const [result] = alias.wordStartingWithColonRegex.exec('a :test a :test: test test') ?? [];
-        expect(result).toBe(':test ');
+        expect(result.trim()).toBe(':test');
+    });
+
+    test('require a space before the word start', () => {
+        const [result, ...rest] =
+            alias.wordStartingWithColonRegex.exec(
+                'redes-sociais:052021:e&utm_content=:::&utm_term='
+            ) ?? [];
+        expect(result).toBeUndefined();
+        expect(rest).toHaveLength(0);
     });
 
     test('it should match command with special latin letters', () => {
@@ -119,12 +128,11 @@ describe('createAlias', () => {
 });
 
 describe('deleteAlias', () => {
-
     beforeEach(() => {
         const spy = jest.spyOn(dev_user, 'userIsDev');
         spy.mockReturnValue(false);
     });
-    
+
     test('delete an owned alias', async () => {
         const userId = 'b';
         storageMock.getValue.mockResolvedValueOnce({
@@ -176,7 +184,7 @@ describe('deleteAlias', () => {
     test('delete alias owned by someone else if you are a dev user', async () => {
         const spy = jest.spyOn(dev_user, 'userIsDev');
         spy.mockReturnValue(true);
-        
+
         const userId = 'b';
         storageMock.getValue.mockResolvedValueOnce({
             text: 'a',

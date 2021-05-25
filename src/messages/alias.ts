@@ -4,7 +4,7 @@ import { Alias, AliasList } from './types';
 import { userIsDev } from '../utils/dev-user';
 
 export const wordStartingWithColonRegex =
-    /\B:([\wáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?]+)([^\wáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?:]|$)/;
+    /(^|[ ]+):([\wáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?]+)([^\wáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?:]|$)/;
 
 export async function getAliasResponse(
     aliasKey: string,
@@ -36,7 +36,7 @@ export async function deleteAlias(
 
     const alias = await storage.getValue(aliasKey);
 
-    const isValidAlias = alias ? (userIsDev(userId) || alias.userId === userId) : false;
+    const isValidAlias = alias ? userIsDev(userId) || alias.userId === userId : false;
     if (!isValidAlias)
         return { error: 'You can only delete the aliases you created', success: false };
 
@@ -58,7 +58,7 @@ export async function listAlias(userId: string, storage: Storage<Alias>): Promis
         (alias) => alias.userId
     );
 
-    const sortAliasFn = (alias1: Alias, alias2: Alias) : number => {
+    const sortAliasFn = (alias1: Alias, alias2: Alias): number => {
         if (alias1.text > alias2.text) {
             return 1;
         } else if (alias2.text > alias1.text) {
@@ -68,7 +68,9 @@ export async function listAlias(userId: string, storage: Storage<Alias>): Promis
         }
     };
 
-    const userAliases = aliasesGroupedByUser[userId] ? aliasesGroupedByUser[userId].sort(sortAliasFn) : [];
+    const userAliases = aliasesGroupedByUser[userId]
+        ? aliasesGroupedByUser[userId].sort(sortAliasFn)
+        : [];
     const otherAliases = Object.entries(aliasesGroupedByUser)
         .filter(([key]) => key !== userId)
         .flatMap(([, aliases]) => aliases)
