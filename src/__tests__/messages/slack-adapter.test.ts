@@ -15,7 +15,7 @@ describe('textToSlackMessage', () => {
     test('Given a text return the text', async () => {
         mockedIsMediaUrl.mockImplementationOnce(() => false);
         expect(await adapter.textToSlackMessage(':some-command', 'some text', '1')).toEqual(
-            'some text'
+            { 'text': 'some text', 'thread_ts': '1' }
         );
     });
     test('Given a not media url return the text', async () => {
@@ -26,7 +26,7 @@ describe('textToSlackMessage', () => {
                 'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif',
                 '1'
             )
-        ).toEqual('https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif');
+        ).toEqual({ 'text': 'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif', 'thread_ts': '1' });
     });
     test('Given a media url return the slack say argument', async () => {
         mockedIsMediaUrl.mockImplementationOnce(() => true);

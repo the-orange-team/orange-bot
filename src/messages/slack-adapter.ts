@@ -25,7 +25,10 @@ export async function textToSlackMessage(
             ],
         };
     } else {
-        return response;
+        return {
+            text: response,
+            thread_ts: ts
+        };
     }
 }
 
