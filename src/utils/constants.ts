@@ -8,3 +8,5 @@ export const GIPHY_SHORTLINK_HTTPS = 'https://gph.is';
 export const GIPHY_SHORTLINK_HTTP = 'http://gph.is';
 
 export const FIREBASE_BUCKET_ADDRESS = 'https://storage.googleapis.com/the-orange-bot.appspot.com/';
+
+export const REACTION_THATS_WHAT_SHE_SAID = 'That\'s what she said';
