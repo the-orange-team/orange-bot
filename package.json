@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "engines": {
-    "node": "16.x.x"
+    "node": "20.x.x"
   },
   "scripts": {
     "dev": "nodemon --watch src/ --exec ts-node src/index.ts -e ts",
