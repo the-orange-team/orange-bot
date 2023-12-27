@@ -13,7 +13,7 @@ app.action('add_option', async ({ body, client, context }) => {
             ...previousViewValues
         } = body.view;
 
-        const submitBlock = blocks.pop();
+        const submitBlock = blocks.pop()!;
 
         await client.views.update({
             view_id: body.view?.id,
