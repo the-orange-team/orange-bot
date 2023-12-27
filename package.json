@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "nodemon --watch src/ --exec ts-node src/index.ts -e ts",
     "start": "node dist/index.js",
+    "test": "jest",
     "tsc": "tsc",
     "postinstall": "npm run tsc",
     "lint": "eslint . --ext .ts",
@@ -18,7 +19,7 @@
   "dependencies": {
     "@google-cloud/storage": "^5.8.5",
     "@sentry/node": "^6.3.5",
-    "@slack/bolt": "^3.3.0",
+    "@slack/bolt": "^3.17.0",
     "axios": "^0.21.1",
     "crypto-js": "^4.0.0",
     "firebase-admin": "^9.7.0",

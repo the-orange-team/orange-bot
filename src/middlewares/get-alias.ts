@@ -31,7 +31,7 @@ const handleMessage: Middleware<SlackEventMiddlewareArgs<'message'>> = async ({
     }
 };
 
-app.message(wordStartingWithColonRegex, handleMessage);
+app?.message(wordStartingWithColonRegex, handleMessage);
 
 app.command('/hidden', async ({ command, context, ack }) => {
     try {

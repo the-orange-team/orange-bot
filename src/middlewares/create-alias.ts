@@ -1,5 +1,5 @@
 import { app } from '../app';
-import { Context, Middleware, SlackCommandMiddlewareArgs } from '@slack/bolt';
+import { Context, Middleware, SlackCommandMiddlewareArgs, ViewStateValue } from '@slack/bolt';
 import { createAlias, slackCommandToCommand } from '../messages';
 import { storage } from '../storage';
 import { callAuthorized } from './user-auth';
@@ -46,8 +46,8 @@ app.view('create_alias_view', async ({ body, context, ack }) => {
     } catch (err: any) {
         if (err instanceof InvalidAliasError) {
             const invalidBlocks = Object.entries(body.view.state.values)
-                .filter(
-                    ([, actionDict]: [string, ViewBlock]) =>
+            .filter(
+                    ([, actionDict]: [string, { [actionId: string]: ViewStateValue; }]) =>
                         Object.values(actionDict)[0].value === err.url
                 )
                 .map(([blockId]) => ({ [blockId]: err.message }));
