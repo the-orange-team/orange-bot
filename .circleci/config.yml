@@ -12,13 +12,13 @@ jobs:
       - checkout
       - run:
           name: Install
-          command: yarn install
+          command: npm install
       - run:
           name: Lint
-          command: yarn run lint
+          command: npm run lint
       - run:
           name: Test
-          command: yarn run jest
+          command: npm run jest
       - slack/notify:
           event: fail
           template: basic_fail_1
