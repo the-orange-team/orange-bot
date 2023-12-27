@@ -10,8 +10,7 @@
     "lint": "eslint . --ext .ts",
     "check:types": "tsc --noEmit -p tsconfig.json"
   },
-  "repository": "https://github.com/romulogmp/orange-bot.git",
-  "author": "romulogmp <romulogmp@gmail.com>",
+  "repository": "https://github.com/the-orange-team/orange-bot",
   "license": "MIT",
   "dependencies": {
     "@google-cloud/storage": "^5.8.5",
