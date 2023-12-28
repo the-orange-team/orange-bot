@@ -27,7 +27,7 @@ app.command('/list', callAuthorized, async ({ context, command }) => {
             blocks: commandResultBlocks,
             response_type: 'ephemeral',
         });
-    } catch (err) {
+    } catch (err: any) {
         context.logError(err);
         await context.sendComposedEphemeral({
             response_type: 'ephemeral',

@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { mocked } from 'ts-jest/utils';
 import * as utils from '../utils';
 jest.mock('axios');
 
-const axiosMock = mocked(axios.get, true);
+const axiosMock = jest.mocked(axios.get, { shallow: false });
 
 describe('isUrl', () => {
     test('given a url', () => {

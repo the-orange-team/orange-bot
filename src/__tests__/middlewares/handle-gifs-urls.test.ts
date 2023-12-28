@@ -1,9 +1,8 @@
 import { urlParser } from '../../middlewares/handle-gifs-urls';
 import axios from 'axios';
-import { mocked } from 'ts-jest/utils';
 
 jest.mock('axios');
-const axiosMock = mocked(axios.get, true);
+const axiosMock = jest.mocked(axios.get, { shallow: false });
 
 describe('handle-gifs-urls', () => {
     test('should return formated url for short links', async () => {

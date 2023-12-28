@@ -25,9 +25,9 @@ const handleMessage: Middleware<SlackEventMiddlewareArgs<'message'>> = async ({
         } else {
             logger.info(`[get-alias] fetching ${command} failed`);
         }
-    } catch (error) {
+    } catch (err: any) {
         await say('A chamada do alias falhou, entre em contato com @orangebotdevs');
-        context.logError(error);
+        context.logError(err);
     }
 };
 
@@ -43,7 +43,7 @@ app.command('/hidden', async ({ command, context, ack }) => {
         const threadId = undefined;
         const argument = await textToSlackMessage(command.text, value, threadId);
         await ack(argument);
-    } catch (err) {
+    } catch (err: any) {
         await ack('A chamada do alias falhou, entre em contato com @orangebotdevs');
         context.logError(err);
     }

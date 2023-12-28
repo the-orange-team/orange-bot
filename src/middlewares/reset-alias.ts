@@ -24,7 +24,7 @@ app.command('/reset', callAuthorized, async ({ command, context }) => {
                 `Se você não sabe a senha, significa que você não deveria utilizar esse comando`
             );
         }
-    } catch (err) {
+    } catch (err: any) {
         await context.sendEphemeral(
             `Algo deu errado, entre em contato com @orangebotdevs e não tente esse comando novamente`
         );
