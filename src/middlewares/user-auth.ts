@@ -42,7 +42,7 @@ app.command('/devmode', async ({ payload, context }) => {
         await context.sendEphemeral(
             `Algo deu errado, entre em contato com @orangebotdevs e não tente esse comando novamente`
         );
-        context.logError(err);
+        context.logError(err as string);
     }
 });
 

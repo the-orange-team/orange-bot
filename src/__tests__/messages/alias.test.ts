@@ -29,12 +29,14 @@ describe('messageStartingWithColonRegex', () => {
 
     test('it should match command in the middle of a sentence', () => {
         const [result] = alias.wordStartingWithColonRegex.exec(':alias testing') ?? [];
-        expect(result.trim()).toBe(':alias');
+        expect(result).toBeDefined();
+        expect(result?.trim()).toBe(':alias');
     });
 
     test('it should match command only the first command', () => {
         const [result] = alias.wordStartingWithColonRegex.exec('a :test a :test: test test') ?? [];
-        expect(result.trim()).toBe(':test');
+        expect(result).toBeDefined();
+        expect(result?.trim()).toBe(':test');
     });
 
     test('require a space before the word start', () => {
@@ -54,7 +56,7 @@ describe('messageStartingWithColonRegex', () => {
 
 describe('getAliasResponse', () => {
     test('gettings an existing alias', async () => {
-        storageMock.getValue.mockResolvedValueOnce({
+        storageMock.getValue.mockResolvedValue({
             text: ':a',
             userId: 'b',
             values: ['test'],

@@ -5,7 +5,7 @@ import { storage } from '../storage';
 import { callAuthorized } from './user-auth';
 import { getModalSchema } from '../modals/create-alias/create-alias-modal';
 import { fileSystem, InvalidAliasError } from '../hosting';
-import { parseViewDataToAlias, ViewBlock } from '../utils';
+import { parseViewDataToAlias } from '../utils';
 import { Alias } from '../messages';
 
 const tag = 'create-alias';
@@ -16,7 +16,7 @@ app.command('/create', callAuthorized, async ({ ack, client, context, body }) =>
         await client.views.open(modalSchema);
         context.logStep(tag, 'received');
         await ack();
-    } catch (err) {
+    } catch (err: any) {
         await context.sendEphemeral(`Algo deu errado: ${err.message}`);
         context.logError(err);
     }
@@ -83,7 +83,7 @@ const createAliasRequestedFromText: Middleware<SlackCommandMiddlewareArgs> = asy
                 'Argumentos inválidos, utilize o `/help cmdcrt` caso queira verificar como utilizar esse comando'
             );
         }
-    } catch (err) {
+    } catch (err: any) {
         await context.sendEphemeral(`Algo deu errado: ${err.message}`);
         context.logError(err.message);
     }

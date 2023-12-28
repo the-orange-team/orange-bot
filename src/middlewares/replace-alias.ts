@@ -29,7 +29,7 @@ app.command('/replace', callAuthorized, async ({ command, context }) => {
                 'Argumentos inválidos, utilize o `/help replace` caso queira verificar como utilizar esse comando'
             );
         }
-    } catch (err) {
+    } catch (err: any) {
         await context.sendEphemeral(`Algo deu errado: ${err.message}`);
         context.logError(err);
     }

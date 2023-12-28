@@ -3,14 +3,12 @@ import { OperationResult, Storage } from '../storage/types';
 import { Maybe } from '../utils';
 import { jest } from '@jest/globals';
 
-type setValueArg = string | Alias;
-
 export class StorageMock implements Storage<Alias> {
-    deleteAllKeys = jest.fn<Promise<void>, string[]>();
-    deleteValue = jest.fn<Promise<OperationResult>, string[]>();
-    getAliasesByKeys = jest.fn<Promise<Map<string, Alias>>, string[][]>();
-    getAllAliasesKeys = jest.fn<Promise<string[]>, string[]>();
-    getAllKeys = jest.fn<Promise<string[]>, string[]>();
-    getValue = jest.fn<Promise<Maybe<Alias>>, string[]>();
-    setValue = jest.fn<Promise<Alias>, setValueArg[]>();
+    deleteAllKeys = jest.fn<() => Promise<void>>();
+    deleteValue = jest.fn<(key: string) => Promise<OperationResult>>();
+    getAliasesByKeys = jest.fn<(keys: string[]) => Promise<Map<string, Alias>>>();
+    getAllAliasesKeys = jest.fn<() => Promise<string[]>>();
+    getAllKeys = jest.fn<() => Promise<string[]>>();
+    getValue = jest.fn<(key: string) => Promise<Maybe<Alias>>>();
+    setValue = jest.fn<(key: string, value: Alias) => Promise<Alias>>();
 }

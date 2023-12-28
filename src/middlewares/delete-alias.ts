@@ -33,7 +33,7 @@ app.command('/delete', callAuthorized, async ({ command, context, logger }) => {
                 'Operação ignorada. Alias não existe ou não pode ser deletado.'
             );
         }
-    } catch (err) {
+    } catch (err: any) {
         logger.error(err);
         await context.sendEphemeral(`Algo deu errado: ${err.message}`);
         context.logError(err);

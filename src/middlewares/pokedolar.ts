@@ -12,8 +12,8 @@ app.command('/pokedolar', callAuthorized, async ({ say, ack, context, payload })
         context.logStep(tag, 'fetched');
         await say(tweetToSlackMessage(tweet, mediaUrl, payload.user_name));
         await ack();
-    } catch (error) {
+    } catch (err: any) {
         await say('Não foi possível obter o último tweet.');
-        context.logError(error);
+        context.logError(err);
     }
 });
