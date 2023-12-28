@@ -35,7 +35,7 @@ class LoggerImplementation implements OrangeLogger {
         sentry.addBreadcrumb({
             category: category,
             message: message,
-            level: Sentry.Severity.Info,
+            level: 'info',
             data: {
                 user: payload.user_name,
                 channel: payload.channel_name,
