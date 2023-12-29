@@ -23,14 +23,12 @@
     "axios": "^1.6.3",
     "crypto-js": "^4.2.0",
     "firebase-admin": "^12.0.0",
-    "giphy-api": "^2.0.2",
     "got": "^11.8.6",
     "redis": "^3.1.2",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.1",
-    "@types/giphy-api": "^2.0.6",
     "@types/jest": "^29.5.11",
     "@types/redis": "^2.8.28",
     "@types/uuid": "^9.0.7",
