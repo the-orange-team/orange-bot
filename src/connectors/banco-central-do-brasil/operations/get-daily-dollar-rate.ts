@@ -18,8 +18,8 @@ export function makeGetDailyDollarRate({ gotInstance }: { gotInstance: Got }) {
                 responseType: 'json',
                 searchParams: {
                     $format: 'json',
-                    '@dataInicial': yesterday,
-                    '@dataFinalCotacao': today,
+                    '@dataInicial': `'${yesterday}'`,
+                    '@dataFinalCotacao': `'${today}'`,
                 },
             });
         const { value } = response.body;
