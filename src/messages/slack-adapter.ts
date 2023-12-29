@@ -5,7 +5,7 @@ import { Alias, AliasList } from './types';
 export async function textToSlackMessage(
     command: string,
     response: string,
-    ts: string | undefined
+    ts: string | undefined,
 ): Promise<string | SayArguments> {
     if (await isMediaUrl(response)) {
         return {
@@ -27,30 +27,36 @@ export async function textToSlackMessage(
     } else {
         return {
             text: response,
-            thread_ts: ts
+            thread_ts: ts,
         };
     }
 }
 
-export function tweetToSlackMessage(
-    tweet: string,
-    mediaUrl: string,
-    userName: string
+export function textWithImageToSlackMessage(
+    {
+        text,
+        mediaUrl,
+        userName,
+    }: {
+        text: string,
+        mediaUrl: string,
+        userName: string
+    },
 ): string | SayArguments {
     if (isUrl(mediaUrl)) {
         return {
-            text: tweet,
+            text: text,
             blocks: [
                 {
                     type: 'section',
                     text: {
                         type: 'mrkdwn',
-                        text: `${tweet}`,
+                        text: `${text}`,
                     },
                 },
                 {
                     type: 'image',
-                    block_id: 'twitter_image',
+                    block_id: 'orange_image',
                     image_url: mediaUrl,
                     alt_text: `Requested by: ${userName}`,
                 },
@@ -99,14 +105,14 @@ export function aliasListToSlackBlock({ userAliases, otherAliases }: AliasList):
     if (userAliases.length) {
         addTextSectionToBlocks(
             `*Your aliases:*\n${getAliasesText(userAliases).join('\n')}`,
-            commandResultBlocks
+            commandResultBlocks,
         );
     }
 
     if (otherAliases.length) {
         addTextSectionToBlocks(
             `*Others' aliases:*\n${getAliasesText(otherAliases).join('\n')}`,
-            commandResultBlocks
+            commandResultBlocks,
         );
     }
 

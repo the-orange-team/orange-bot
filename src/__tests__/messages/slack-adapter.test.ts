@@ -15,7 +15,7 @@ describe('textToSlackMessage', () => {
     test('Given a text return the text', async () => {
         mockedIsMediaUrl.mockImplementationOnce(() => false);
         expect(await adapter.textToSlackMessage(':some-command', 'some text', '1')).toEqual(
-            { 'text': 'some text', 'thread_ts': '1' }
+            { 'text': 'some text', 'thread_ts': '1' },
         );
     });
     test('Given a not media url return the text', async () => {
@@ -24,8 +24,8 @@ describe('textToSlackMessage', () => {
             await adapter.textToSlackMessage(
                 ':some-command',
                 'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif',
-                '1'
-            )
+                '1',
+            ),
         ).toEqual({ 'text': 'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif', 'thread_ts': '1' });
     });
     test('Given a media url return the slack say argument', async () => {
@@ -34,8 +34,8 @@ describe('textToSlackMessage', () => {
             await adapter.textToSlackMessage(
                 'some-command',
                 'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif',
-                '1'
-            )
+                '1',
+            ),
         ).toEqual<SayArguments>({
             text: 'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif',
             thread_ts: '1',
@@ -57,30 +57,34 @@ describe('textToSlackMessage', () => {
 
 describe('tweetToSlackMessage', () => {
     test('Given a text tweet returns the tweet string', () => {
-        expect(adapter.tweetToSlackMessage('some tweet', 'some text', 'testUser')).toEqual(
-            'some text'
+        expect(adapter.textWithImageToSlackMessage({
+            text: 'some text',
+            mediaUrl: 'some image url',
+            userName: 'testUser',
+        })).toEqual(
+            'some image url',
         );
     });
     test('Given a media tweet returns a slack message', () => {
         expect(
-            adapter.tweetToSlackMessage(
-                'some tweet',
-                'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif',
-                'testUser'
-            )
+            adapter.textWithImageToSlackMessage({
+                text: 'some text',
+                mediaUrl: 'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif',
+                userName: 'testUser',
+            }),
         ).toEqual<SayArguments>({
-            text: 'some tweet',
+            text: 'some text',
             blocks: [
                 {
                     type: 'section',
                     text: {
                         type: 'mrkdwn',
-                        text: 'some tweet',
+                        text: 'some text',
                     },
                 },
                 {
                     type: 'image',
-                    block_id: 'twitter_image',
+                    block_id: 'orange_image',
                     image_url: 'https://media.giphy.com/media/hhjfuAcwCGFOM/giphy.gif',
                     alt_text: `Requested by: testUser`,
                 },
@@ -111,7 +115,7 @@ describe('slackCommandToCommand', () => {
     test('given a correct command -v url', () => {
         const slashCommand = buildSlashcommand(
             'cat -v https://media.giphy.com/media/BzyTuYCmvSORqs1ABM/giphy.gif',
-            '123'
+            '123',
         );
         expect(adapter.slackCommandToCommand(slashCommand)).toEqual<Alias>({
             text: 'cat',
@@ -123,8 +127,8 @@ describe('slackCommandToCommand', () => {
     test('given a command with multiple values and extra spaces', () => {
         expect(
             adapter.slackCommandToCommand(
-                buildSlashcommand('flipcoin -v tails heads   draw', '123')
-            )
+                buildSlashcommand('flipcoin -v tails heads   draw', '123'),
+            ),
         ).toEqual<Alias>({
             text: 'flipcoin',
             userId: '123',
@@ -136,16 +140,16 @@ describe('slackCommandToCommand', () => {
         test('command starting with :', () => {
             expect(
                 adapter.slackCommandToCommand(
-                    buildSlashcommand('flipcoin: -v tails heads   draw', '123')
-                )
+                    buildSlashcommand('flipcoin: -v tails heads   draw', '123'),
+                ),
             ).toBeNull();
         });
 
         test('Command without -v', () => {
             expect(
                 adapter.slackCommandToCommand(
-                    buildSlashcommand('flipcoin tails heads   draw', '123')
-                )
+                    buildSlashcommand('flipcoin tails heads   draw', '123'),
+                ),
             ).toBeNull();
             expect(adapter.slackCommandToCommand(buildSlashcommand('', '123'))).toBeNull();
         });
@@ -161,7 +165,7 @@ describe('aliasListToSlackBlock', () => {
                     { text: 'text2', values: ['2'], userId: '123' },
                     { text: 'text3', values: ['3', '4'], userId: '123' },
                 ],
-            })
+            }),
         ).toEqual<SectionBlock[]>([
             {
                 type: 'section',
@@ -174,7 +178,7 @@ describe('aliasListToSlackBlock', () => {
                 type: 'section',
                 text: {
                     type: 'mrkdwn',
-                    text: "\n*Others' aliases:*\n:text1",
+                    text: '\n*Others\' aliases:*\n:text1',
                 },
             },
         ]);
