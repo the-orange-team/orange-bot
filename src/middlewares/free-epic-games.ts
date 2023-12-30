@@ -29,7 +29,7 @@ app.command('/free-epic-games', async ({ ack, context, say, payload }) => {
 export async function scheduleFreeGamesJob() {
     CronJob.from({
         cronTime: '0 13 * * 4',
-        onTick: async function() {
+        onTick: async () => {
             const freeGames = await getAvailableFreeGames();
             freeGames.map((freeGame) => {
                 app.client.chat.postMessage({
