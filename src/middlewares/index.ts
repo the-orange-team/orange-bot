@@ -10,8 +10,8 @@ import './create-alias';
 import './add-options';
 import './replace-alias';
 import './get-alias';
-import './list-alias';
 import './reset-alias';
 import './on-reaction-added';
 
 import './pokedolar';
+import './free-epic-games';
