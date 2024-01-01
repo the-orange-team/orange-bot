@@ -2,9 +2,9 @@ import type { Got } from 'got';
 import got from 'got';
 import { makeGetDailyDollarRate } from './operations/get-daily-dollar-rate';
 
-export function makeBCBConnector() {
+export function makeAwesomeApiConnector() {
     const gotInstance: Got = got.extend({
-        prefixUrl: 'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/',
+        prefixUrl: 'https://economia.awesomeapi.com.br/json/',
         retry: 3,
     });
 

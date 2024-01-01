@@ -1,4 +1,4 @@
-import { makeBCBConnector } from './index';
+import { makeAwesomeApiConnector } from './index';
 import * as getCurrentDollarRateModule from './operations/get-daily-dollar-rate';
 import { makeGetDailyDollarRate } from './operations/get-daily-dollar-rate';
 import got from 'got';
@@ -10,22 +10,22 @@ jest.mock('got', () => ({
     }),
 }));
 
-describe('makeBCBConnector', () => {
-    it('should create BCB Connector with correct configurations', () => {
+describe('makeAwesomeApiConnector', () => {
+    it('should create Awesome Api Connector with correct configurations', () => {
         // Mock the makeGetDailyDollarRate function
         const makeGetDailyDollarRateMock = jest.fn();
         jest.spyOn(getCurrentDollarRateModule, 'makeGetDailyDollarRate').mockImplementation(makeGetDailyDollarRateMock);
 
         // Arrange
-        const bcbConnector = makeBCBConnector();
+        const awesomeApiConnector = makeAwesomeApiConnector();
 
         // Assert
         expect(got.extend).toHaveBeenCalledWith({
-            prefixUrl: 'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata',
+            prefixUrl: 'https://economia.awesomeapi.com.br/json/',
             retry: 3,
         });
 
-        expect(bcbConnector).toHaveProperty('getDailyDollarRate');
+        expect(awesomeApiConnector).toHaveProperty('getDailyDollarRate');
 
         expect(makeGetDailyDollarRate).toHaveBeenCalledWith({
             gotInstance: expect.objectContaining({
