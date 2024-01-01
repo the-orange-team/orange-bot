@@ -2,7 +2,7 @@ import { app } from '../app';
 import { textWithImageToSlackMessage } from '../messages';
 import { callAuthorized } from './user-auth';
 
-import { makeBCBConnector } from '../connectors/banco-central-do-brasil';
+import { makeAwesomeApiConnector } from '../connectors/awesome-api-economia';
 import { makePokeApiConnector } from '../connectors/poke-api';
 import { PokemonSpritesType } from '../connectors/poke-api/entities/types';
 import { firstLetterToUpperCase } from '../utils/strings';
@@ -57,24 +57,17 @@ async function getPokemonByNumber(pokemonNumber: number) {
 }
 
 async function getCurrentDollarRate() {
-    const today = new Date();
-    const bcbConnector = makeBCBConnector();
-    const results = await bcbConnector.getDailyDollarRate({
-            configuration: {
+    const awesomeApiConnector = makeAwesomeApiConnector();
+    const result = await awesomeApiConnector.getDailyDollarRate({
+            configurations: {
                 params: {
-                    date: today,
+                    currencies: 'USD-BRL',
                 },
             },
         },
     );
 
-    const latestResult = results.pop();
-
-    if (!latestResult) {
-        return undefined;
-    }
-
-    const { buyingRate, sellingRate, dateTimeQuote } = latestResult;
+    const { buyingRate, sellingRate, dateTimeQuote } = result;
     return { buyingRate, sellingRate, dateTimeQuote };
 }
 

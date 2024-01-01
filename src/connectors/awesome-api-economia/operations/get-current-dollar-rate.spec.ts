@@ -1,13 +1,14 @@
 import { makeGetDailyDollarRate } from './get-daily-dollar-rate';
 import nock, { disableNetConnect } from 'nock';
 import got, { Got } from 'got';
+import { ConfigurationType } from '../entities/types';
 
 beforeAll(() => {
     disableNetConnect();
 });
 
-const baseUrl = 'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/';
-const requestURI = '/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)';
+const baseUrl = 'https://economia.awesomeapi.com.br/json/';
+const requestURI = '/last/USD-BRL';
 
 describe('makeGetDailyDollarRate', () => {
     it('should fetch daily dollar rate for a specific date range', async () => {
@@ -17,40 +18,39 @@ describe('makeGetDailyDollarRate', () => {
             retry: 0,
         });
 
-        const configuration = {
+        const configurations: ConfigurationType = {
             params: {
-                date: new Date('2023-12-29'),
+                currencies: 'USD-BRL',
             },
         };
 
         const getDailyDollarRate = makeGetDailyDollarRate({ gotInstance });
 
         const mockedResponse = {
-            value: [{
-                cotacaoCompra: 666,
-                cotacaoVenda: 666,
-                dataHoraCotacao: '2023-12-28T15:30:00',
-            }],
+            USDBRL: {
+                bid: 666,
+                ask: 666,
+                create_date: '2023-12-28T15:30:00',
+            },
         };
 
         const scope = nock(baseUrl)
             .get(requestURI)
-            .query(true)
             .reply(200, mockedResponse);
 
         // Call the function
-        const result = await getDailyDollarRate({ configuration });
+        const result = await getDailyDollarRate({ configurations });
 
         // Assertions
         expect(scope.isDone()).toBe(true);
 
         // Assert the returned data format and values
-        expect(result).toEqual([
+        expect(result).toEqual(
             {
                 buyingRate: 666,
                 sellingRate: 666,
                 dateTimeQuote: '2023-12-28T15:30:00',
             },
-        ]);
+        );
     });
 });

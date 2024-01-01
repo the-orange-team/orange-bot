@@ -5,15 +5,15 @@ export type DailyDollarRateType = {
 }
 
 export type ResponseType = {
-    value: {
-        cotacaoCompra: number;
-        cotacaoVenda: number;
-        dataHoraCotacao: string;
-    }[]
+    USDBRL: {
+        bid: number;
+        ask: number;
+        create_date: string;
+    }
 }
 
 export type ConfigurationType = {
     params: {
-        date: Date;
+        currencies: 'USD-BRL' | 'EUR-BRL' | 'BTC-BRL';
     }
 }
