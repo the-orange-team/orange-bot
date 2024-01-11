@@ -24,6 +24,8 @@ app.command('/free-epic-games', async ({ ack, context, say, payload }) => {
         }));
         await ack();
     });
+    await context.sendEphemeral('Não há jogos grátis no momento.');
+    await ack();
 });
 
 export async function scheduleFreeGamesJob() {
@@ -31,6 +33,12 @@ export async function scheduleFreeGamesJob() {
         cronTime: '0 13 * * 4',
         onTick: async () => {
             const freeGames = await getAvailableFreeGames();
+            if (freeGames.length === 0) {
+                app.client.chat.postMessage({
+                    channel: '#gaming',
+                    text: 'Não há jogos grátis no momento.',
+                });
+            }
             freeGames.map((freeGame) => {
                 app.client.chat.postMessage({
                     channel: '#gaming',
