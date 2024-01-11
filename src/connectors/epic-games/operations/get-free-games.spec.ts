@@ -32,6 +32,22 @@ describe('makeGetFreeGames', () => {
                                         url: 'https://test.com/test.png',
                                     },
                                 ],
+                                promotions: {
+                                    promotionalOffers: [
+                                        {
+                                            promotionalOffers: [
+                                                {
+                                                    startDate: '2021-01-01',
+                                                    endDate: '2021-01-02',
+                                                    discountSetting: {
+                                                        discountType: 'PERCENTAGE',
+                                                        discountPercentage: 100,
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
                             },
                         ],
                     },
