@@ -24,7 +24,7 @@ app.command('/free-epic-games', async ({ ack, context, say, payload }) => {
         }));
         await ack();
     });
-    await say('Não há jogos grátis no momento.');
+    await context.sendEphemeral('Não há jogos grátis no momento.');
     await ack();
 });
 
