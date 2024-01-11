@@ -15,5 +15,17 @@ export type ElementType = {
     expiryDate: string;
     keyImages: Array<{ type: string; url: string }>;
     id: string;
+    promotions: {
+        promotionalOffers: Array<{
+            promotionalOffers: Array<{
+                startDate: string;
+                endDate: string;
+                discountSetting: {
+                    discountType: string;
+                    discountPercentage: number;
+                };
+            }>;
+        }>;
+    }
 }
 
