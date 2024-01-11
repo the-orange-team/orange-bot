@@ -24,6 +24,10 @@ app.command('/free-epic-games', async ({ ack, context, say, payload }) => {
     context.logStep(TAG, 'received');
     const freeGames = await getAvailableFreeGames();
     context.logStep(TAG, 'fetched');
+    if (freeGames.length === 0) {
+        await context.sendEphemeral('Não há jogos grátis no momento.');
+        await ack();
+    }
     freeGames.map(async (freeGame) => {
         await say(textWithImageToSlackMessage({
             text: createFreeEpicGameMessage(freeGame),
@@ -32,8 +36,6 @@ app.command('/free-epic-games', async ({ ack, context, say, payload }) => {
         }));
         await ack();
     });
-    await context.sendEphemeral('Não há jogos grátis no momento.');
-    await ack();
 });
 
 export async function scheduleFreeGamesJob() {
