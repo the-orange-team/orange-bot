@@ -8,8 +8,9 @@ const TAG = 'free-epic-games';
 
 async function getAvailableFreeGames() {
     const epicGamesConnector = makeEpicGamesConnector();
-    const freeGames = await epicGamesConnector.getFreeGames();
+    const elements = await epicGamesConnector.getFreeGames();
     // get the free games available today
+    const freeGames = elements.filter((freegame) => freegame.promotions);
     return freeGames.filter((freeGame) =>
         freeGame.promotions.promotionalOffers.filter((promotionalOffer) =>
             promotionalOffer.promotionalOffers.filter((promotionalOffer) =>
