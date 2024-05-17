@@ -6,7 +6,8 @@ export function extractUrl(text: string): string | null {
 
 export function getHost(url: string): string {
     const urlObj = new URL(url);
-    return urlObj.hostname;
+    const hostname = urlObj.hostname;
+    return hostname.startsWith('www.') ? hostname.slice(4) : hostname;
 }
 
 export function replaceHostname(url: string, newHostname: string): string {
