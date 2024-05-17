@@ -28,7 +28,7 @@ app.command('/fix-link', callAuthorized, async ({ context, command }) => {
             await context.sendEphemeral(`Nenhum link encontrado`);
         } else {
             const fixedUrl = convertToFixedEmbedLink(url);
-            await context.sendEphemeral(url);
+            await context.sendEphemeral(`Url enviada por, ${command.user_name}: ${fixedUrl}`);
         }
     } catch (err: any) {
         context.logError(err);
