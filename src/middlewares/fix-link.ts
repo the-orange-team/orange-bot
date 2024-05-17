@@ -16,7 +16,7 @@ function convertToFixedEmbedLink(url: string): string {
     return hostMap[urlHost] ? replaceHostname(url, hostMap[urlHost]) : url;
 }
 
-app.command('/fix-link', callAuthorized, async ({ context, command }) => {
+app.command('/fix-link', callAuthorized, async ({ context, say, ack,command }) => {
     try {
         context.logStep(tag, 'received');
 
@@ -28,7 +28,8 @@ app.command('/fix-link', callAuthorized, async ({ context, command }) => {
             await context.sendEphemeral(`Nenhum link encontrado`);
         } else {
             const fixedUrl = convertToFixedEmbedLink(url);
-            await context.sendEphemeral(`Url enviada por, ${command.user_name}: ${fixedUrl}`);
+            await say(`Url enviada por, ${command.user_name}: ${fixedUrl}`);
+            await ack();
         }
     } catch (err: any) {
         context.logError(err);
