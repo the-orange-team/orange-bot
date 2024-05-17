@@ -12,6 +12,7 @@ import './replace-alias';
 import './get-alias';
 import './reset-alias';
 import './on-reaction-added';
+import './fix-link';
 
 import './pokedolar';
 import './free-epic-games';
