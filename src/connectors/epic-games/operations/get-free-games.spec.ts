@@ -1,7 +1,7 @@
 import { makeGetFreeGames } from './get-free-games';
 import nock from 'nock';
 import got, { Got } from 'got';
-import { ResponseType } from '../entities/types';
+import { OfferType, ResponseType } from '../entities/types';
 
 describe('makeGetFreeGames', () => {
     const baseUrl = 'https://store-site-backend-static.ak.epicgames.com/';
@@ -26,12 +26,18 @@ describe('makeGetFreeGames', () => {
                                 description: 'This is a test game',
                                 effectiveDate: '2021-01-01',
                                 expiryDate: '2021-01-02',
+                                offerType: OfferType.BASE_GAME,
                                 keyImages: [
                                     {
                                         type: 'DieselStoreFrontWide',
                                         url: 'https://test.com/test.png',
                                     },
                                 ],
+                                price: {
+                                    totalPrice: {
+                                        discountPrice: 0,
+                                    },
+                                },
                                 promotions: {
                                     promotionalOffers: [
                                         {
