@@ -1,6 +1,6 @@
 import { makeEpicGamesConnector } from '../connectors/epic-games';
 import { app } from '../app';
-import { ElementType } from '../connectors/epic-games/entities/types';
+import { ElementType, OfferType } from '../connectors/epic-games/entities/types';
 import { textWithImageToSlackMessage } from '../messages';
 import { CronJob } from 'cron';
 
@@ -9,16 +9,20 @@ const TAG = 'free-epic-games';
 async function getAvailableFreeGames() {
     const epicGamesConnector = makeEpicGamesConnector();
     const elements = await epicGamesConnector.getFreeGames();
-    // get the free games available today
-    const freeGames = elements.filter((freegame) => freegame.promotions);
-    return freeGames.filter((freeGame) =>
-        freeGame.promotions.promotionalOffers.filter((promotionalOffer) =>
-            promotionalOffer.promotionalOffers.filter((promotionalOffer) =>
-                new Date(promotionalOffer.startDate) <= new Date() &&
-                new Date(promotionalOffer.endDate) >= new Date(),
-            ).length > 0,
-        ).length > 0,
-    );
+
+    return elements.filter(({ offerType, price, promotions }) => {
+        // Exclude ADD_ON types and ensure discount price is 0
+        if (offerType === OfferType.ADD_ON || price.totalPrice.discountPrice !== 0) {
+            return false;
+        }
+
+        // Check if there are active promotions
+        return promotions.promotionalOffers.some(({ promotionalOffers }) =>
+            promotionalOffers.some(({ startDate, endDate }) =>
+                new Date(startDate) <= new Date() && new Date(endDate) >= new Date(),
+            ),
+        );
+    });
 }
 
 app.command('/free-epic-games', async ({ ack, context, say, payload }) => {
@@ -83,7 +87,7 @@ function createFreeEpicGameMessage(freeGame: ElementType) {
         `${freeGame.description}\n` +
         `Disponível de: *${new Date(currentOffer!.startDate).toLocaleDateString('pt-BR')}* \n` +
         `Até: *${new Date(currentOffer!.endDate).toLocaleDateString('pt-BR')}* \n` +
-        `Epic Store: https://epic.gm/freegames`;
+        `Epic Store: epic.gm/freegames`;
 }
 
 function getCurrentOffer(freeGame: ElementType) {
