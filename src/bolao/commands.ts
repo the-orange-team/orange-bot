@@ -4,6 +4,7 @@ import {
     SlackCommandMiddlewareArgs,
     ModalView,
     AllMiddlewareArgs,
+    SlackViewMiddlewareArgs,
 } from '@slack/bolt';
 import fs from 'fs';
 import path from 'path';
@@ -339,6 +340,45 @@ export const bolaoCommandHandler = async ({
         default:
             await respond('Usage: /bolao [predict|leaderboard|refresh|results] ...');
     }
+};
+
+export const handleBolaoPredictModal = async ({
+    ack,
+    body,
+    view,
+    client,
+}: SlackViewMiddlewareArgs<ViewSubmitAction> & AllMiddlewareArgs) => {
+    await ack();
+    const user = body.user.id;
+    // Gather all matches from all competitions, prefer cache for consistency
+    let matchesByComp = loadMatchesCache();
+    if (!matchesByComp) {
+        matchesByComp = await fetchTomorrowsMatchesAllCompetitions();
+        saveMatchesCache(matchesByComp);
+    }
+    const matches = Object.values(matchesByComp).flat();
+    const predictions = loadPredictions();
+    let saved = 0;
+    for (const match of matches) {
+        const block = view.state.values[`match_${match.id}`];
+        if (!block) continue;
+        const score = block.score.value;
+        if (!score || !/^\d+-\d+$/.test(score)) continue;
+        const existingIdx = predictions.findIndex((p) => p.user === user && p.matchId === match.id);
+        const prediction: Prediction = { user, matchId: match.id, score };
+        if (existingIdx >= 0) {
+            predictions[existingIdx] = prediction;
+        } else {
+            predictions.push(prediction);
+        }
+        saved++;
+    }
+    savePredictions(predictions);
+    await client.chat.postEphemeral({
+        channel: body.view.private_metadata || body.user.id,
+        user,
+        text: saved ? `Saved ${saved} prediction(s) for today!` : 'No valid predictions submitted.',
+    });
 };
 
 export {
