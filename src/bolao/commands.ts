@@ -1,4 +1,10 @@
-import { App, ViewSubmitAction, SlackCommandMiddlewareArgs, ModalView } from '@slack/bolt';
+import {
+    App,
+    ViewSubmitAction,
+    SlackCommandMiddlewareArgs,
+    ModalView,
+    AllMiddlewareArgs,
+} from '@slack/bolt';
 import fs from 'fs';
 import path from 'path';
 import { Match, Prediction, Score } from './types';
@@ -197,183 +203,143 @@ function formatMatchStatus(match: any): string {
     return `${match.teamA} vs ${match.teamB} — ${status}`;
 }
 
-export function registerBolaoCommands(app: App) {
-    app.command('/bolao', async ({ command, ack, respond, client, body }) => {
-        await ack();
-        const args = command.text.trim().split(/\s+/);
-        const subcommand = args[0];
-        if (subcommand === 'predict') {
-            // 1. Open loading modal immediately
-            const loadingModal: ModalView = {
-                type: 'modal',
-                callback_id: 'bolao_predict_modal_loading',
-                title: { type: 'plain_text', text: 'Bolão: Predict Scores' },
-                close: { type: 'plain_text', text: 'Cancel' },
-                blocks: [
-                    { type: 'section', text: { type: 'plain_text', text: 'Loading matches...' } },
-                ],
-            };
-            const openRes = await client.views.open({
-                trigger_id: body.trigger_id,
-                view: loadingModal,
-            });
-            // 2. Fetch matches for tomorrow in the background
-            let matchesByComp: { [comp: string]: Match[] } = {};
-            let allMatches: Match[] = [];
-            let usedCache = false;
-            try {
-                matchesByComp = await fetchTomorrowsMatchesAllCompetitions();
+export const bolaoCommandHandler = async ({
+    command,
+    ack,
+    respond,
+    client,
+    body,
+}: SlackCommandMiddlewareArgs & AllMiddlewareArgs) => {
+    await ack();
+    const args = command.text.trim().split(/\s+/);
+    const subcommand = args[0];
+    if (subcommand === 'predict') {
+        // 1. Open loading modal immediately
+        const loadingModal: ModalView = {
+            type: 'modal',
+            callback_id: 'bolao_predict_modal_loading',
+            title: { type: 'plain_text', text: 'Bolão: Predict Scores' },
+            close: { type: 'plain_text', text: 'Cancel' },
+            blocks: [{ type: 'section', text: { type: 'plain_text', text: 'Loading matches...' } }],
+        };
+        const openRes = await client.views.open({
+            trigger_id: body.trigger_id,
+            view: loadingModal,
+        });
+        // 2. Fetch matches for tomorrow in the background
+        let matchesByComp: { [comp: string]: Match[] } = {};
+        let allMatches: Match[] = [];
+        let usedCache = false;
+        try {
+            matchesByComp = await fetchTomorrowsMatchesAllCompetitions();
+            allMatches = Object.values(matchesByComp).flat();
+            if (allMatches.length) {
+                saveMatchesCache(matchesByComp);
+            }
+        } catch (err) {
+            // On error, try cache
+            const cached = loadMatchesCache();
+            if (cached) {
+                matchesByComp = cached;
                 allMatches = Object.values(matchesByComp).flat();
-                if (allMatches.length) {
-                    saveMatchesCache(matchesByComp);
-                }
-            } catch (err) {
-                // On error, try cache
-                const cached = loadMatchesCache();
-                if (cached) {
-                    matchesByComp = cached;
-                    allMatches = Object.values(matchesByComp).flat();
-                    usedCache = true;
-                }
+                usedCache = true;
             }
-            if (!allMatches.length) {
-                // Update modal to show no matches
-                await client.views.update({
-                    view_id: openRes.view?.id,
-                    view: {
-                        type: 'modal',
-                        callback_id: 'bolao_predict_modal',
-                        title: { type: 'plain_text', text: 'Bolão: Predict Scores' },
-                        close: { type: 'plain_text', text: 'Cancel' },
-                        blocks: [
-                            {
-                                type: 'section',
-                                text: {
-                                    type: 'plain_text',
-                                    text: 'No matches available for tomorrow.',
-                                },
-                            },
-                        ],
-                    } as ModalView,
-                });
-                return;
-            }
-            // 3. Update the modal with the real matches
+        }
+        if (!allMatches.length) {
+            // Update modal to show no matches
             await client.views.update({
                 view_id: openRes.view?.id,
-                view: buildPredictionModalGrouped(matchesByComp),
-            });
-            if (usedCache) {
-                await respond(':warning: Using cached matches due to API error.');
-            }
-            return;
-        }
-        if (subcommand === 'results') {
-            // Fetch all matches for tomorrow (raw, with status and scores)
-            const matchesByComp = await fetchTomorrowsMatchesAllCompetitions();
-            let blocks: any[] = [];
-            let hasMatches = false;
-            for (const comp in matchesByComp) {
-                const matches = matchesByComp[comp];
-                if (!matches.length) continue;
-                hasMatches = true;
-                blocks.push({ type: 'header', text: { type: 'plain_text', text: comp } });
-                for (const match of matches as any[]) {
-                    blocks.push({
-                        type: 'section',
-                        text: { type: 'mrkdwn', text: formatMatchStatus(match) },
-                    });
-                }
-            }
-            if (!hasMatches) {
-                blocks = [
-                    { type: 'section', text: { type: 'plain_text', text: 'No matches today.' } },
-                ];
-            }
-            await client.chat.postEphemeral({
-                channel: command.channel_id,
-                user: command.user_id,
-                text: "Tomorrow's Football Results",
-                blocks,
+                view: {
+                    type: 'modal',
+                    callback_id: 'bolao_predict_modal',
+                    title: { type: 'plain_text', text: 'Bolão: Predict Scores' },
+                    close: { type: 'plain_text', text: 'Cancel' },
+                    blocks: [
+                        {
+                            type: 'section',
+                            text: {
+                                type: 'plain_text',
+                                text: 'No matches available for tomorrow.',
+                            },
+                        },
+                    ],
+                } as ModalView,
             });
             return;
         }
-        switch (subcommand) {
-            case 'leaderboard': {
-                const scores = loadScores();
-                if (scores.length === 0) {
-                    await respond('No scores yet.');
-                    break;
-                }
-                const sorted = scores.slice().sort((a, b) => b.points - a.points);
-                let leaderboard = '🏆 Bolão Leaderboard:\n';
-                for (let i = 0; i < sorted.length; i++) {
-                    const s = sorted[i];
-                    let displayName = s.user;
-                    try {
-                        const userInfo = await client.users.info({ user: s.user });
-                        displayName =
-                            userInfo.user?.profile?.display_name ||
-                            userInfo.user?.real_name ||
-                            s.user;
-                    } catch {}
-                    leaderboard += `${i + 1}. ${displayName} – ${s.points} pts\n`;
-                }
-                await respond(leaderboard);
-                break;
-            }
-            case 'refresh': {
-                try {
-                    await fetchTomorrowsMatchesAllCompetitions();
-                    await respond("Fetched and cached today's matches from the API!");
-                } catch (err) {
-                    await respond("Failed to fetch today's matches.");
-                }
-                break;
-            }
-            default:
-                await respond('Usage: /bolao [predict|leaderboard|refresh|results] ...');
-        }
-    });
-
-    app.view('bolao_predict_modal', async ({ ack, body, view, client }) => {
-        await ack();
-        const user = body.user.id;
-        // Gather all matches from all competitions, prefer cache for consistency
-        let matchesByComp = loadMatchesCache();
-        if (!matchesByComp) {
-            matchesByComp = await fetchTomorrowsMatchesAllCompetitions();
-            saveMatchesCache(matchesByComp);
-        }
-        const matches = Object.values(matchesByComp).flat();
-        const predictions = loadPredictions();
-        let saved = 0;
-        for (const match of matches) {
-            const block = view.state.values[`match_${match.id}`];
-            if (!block) continue;
-            const score = block.score.value;
-            if (!score || !/^\d+-\d+$/.test(score)) continue;
-            const existingIdx = predictions.findIndex(
-                (p) => p.user === user && p.matchId === match.id
-            );
-            const prediction: Prediction = { user, matchId: match.id, score };
-            if (existingIdx >= 0) {
-                predictions[existingIdx] = prediction;
-            } else {
-                predictions.push(prediction);
-            }
-            saved++;
-        }
-        savePredictions(predictions);
-        await client.chat.postEphemeral({
-            channel: body.view.private_metadata || body.user.id,
-            user,
-            text: saved
-                ? `Saved ${saved} prediction(s) for today!`
-                : 'No valid predictions submitted.',
+        // 3. Update the modal with the real matches
+        await client.views.update({
+            view_id: openRes.view?.id,
+            view: buildPredictionModalGrouped(matchesByComp),
         });
-    });
-}
+        if (usedCache) {
+            await respond(':warning: Using cached matches due to API error.');
+        }
+        return;
+    }
+    if (subcommand === 'results') {
+        // Fetch all matches for tomorrow (raw, with status and scores)
+        const matchesByComp = await fetchTomorrowsMatchesAllCompetitions();
+        let blocks: any[] = [];
+        let hasMatches = false;
+        for (const comp in matchesByComp) {
+            const matches = matchesByComp[comp];
+            if (!matches.length) continue;
+            hasMatches = true;
+            blocks.push({ type: 'header', text: { type: 'plain_text', text: comp } });
+            for (const match of matches as any[]) {
+                blocks.push({
+                    type: 'section',
+                    text: { type: 'mrkdwn', text: formatMatchStatus(match) },
+                });
+            }
+        }
+        if (!hasMatches) {
+            blocks = [{ type: 'section', text: { type: 'plain_text', text: 'No matches today.' } }];
+        }
+        await client.chat.postEphemeral({
+            channel: command.channel_id,
+            user: command.user_id,
+            text: "Tomorrow's Football Results",
+            blocks,
+        });
+        return;
+    }
+    switch (subcommand) {
+        case 'leaderboard': {
+            const scores = loadScores();
+            if (scores.length === 0) {
+                await respond('No scores yet.');
+                break;
+            }
+            const sorted = scores.slice().sort((a, b) => b.points - a.points);
+            let leaderboard = '🏆 Bolão Leaderboard:\n';
+            for (let i = 0; i < sorted.length; i++) {
+                const s = sorted[i];
+                let displayName = s.user;
+                try {
+                    const userInfo = await client.users.info({ user: s.user });
+                    displayName =
+                        userInfo.user?.profile?.display_name || userInfo.user?.real_name || s.user;
+                } catch {}
+                leaderboard += `${i + 1}. ${displayName} – ${s.points} pts\n`;
+            }
+            await respond(leaderboard);
+            break;
+        }
+        case 'refresh': {
+            try {
+                await fetchTomorrowsMatchesAllCompetitions();
+                await respond("Fetched and cached today's matches from the API!");
+            } catch (err) {
+                await respond("Failed to fetch today's matches.");
+            }
+            break;
+        }
+        default:
+            await respond('Usage: /bolao [predict|leaderboard|refresh|results] ...');
+    }
+};
 
 export {
     fetchTomorrowsMatchesAllCompetitions as fetchTodaysMatchesAllCompetitions,
