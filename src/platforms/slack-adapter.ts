@@ -115,6 +115,8 @@ export class SlackAdapter implements PlatformAdapter {
         this.handlers.set(commandName, handler);
 
         this.app.command(commandName, async (args) => {
+            // Acknowledge immediately to prevent Slack from retrying
+            await args.ack();
             const ctx = this.createContext(args);
             await handler(ctx);
         });
