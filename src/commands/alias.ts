@@ -1,6 +1,7 @@
 /**
- * Cross-platform alias commands: list, create, delete, replace, hidden, get.
+ * Cross-platform alias commands: list, create, delete, replace, hidden, get, search.
  */
+import Fuse from 'fuse.js';
 import {
     CommandHandler,
     PlatformContext,
@@ -27,8 +28,10 @@ const TAG_DELETE = 'delete-alias';
 const TAG_REPLACE = 'replace-alias';
 const TAG_HIDDEN = 'hidden-get-alias';
 const TAG_GET = 'get-alias';
+const TAG_SEARCH = 'search-alias';
 
 const PAGE_SIZE = 15;
+const SEARCH_RESULTS_LIMIT = 10;
 const LIST_ACTION_PREFIX = 'alias_list_';
 
 /**
@@ -64,15 +67,15 @@ function parseAliasCommand(
  */
 function getAllAliases(aliasList: AliasList): { text: string; isOwn: boolean }[] {
     const all: { text: string; isOwn: boolean }[] = [];
-    
+
     for (const alias of aliasList.userAliases) {
         all.push({ text: alias.text, isOwn: true });
     }
-    
+
     for (const alias of aliasList.otherAliases) {
         all.push({ text: alias.text, isOwn: false });
     }
-    
+
     return all;
 }
 
@@ -87,7 +90,7 @@ function formatAliasPage(
     const allAliases = getAllAliases(aliasList);
     const totalAliases = allAliases.length;
     const totalPages = Math.max(1, Math.ceil(totalAliases / pageSize));
-    
+
     if (totalAliases === 0) {
         return {
             text: 'Ainda não há aliases disponíveis. Use `/help create` para saber como criar um.',
@@ -95,31 +98,31 @@ function formatAliasPage(
             totalAliases: 0,
         };
     }
-    
+
     const start = page * pageSize;
     const end = Math.min(start + pageSize, totalAliases);
     const pageAliases = allAliases.slice(start, end);
-    
+
     const lines: string[] = [];
-    
+
     // Group by ownership for this page
     const ownAliases = pageAliases.filter((a) => a.isOwn);
     const otherAliases = pageAliases.filter((a) => !a.isOwn);
-    
+
     if (ownAliases.length > 0) {
         lines.push('**Seus aliases:**');
         lines.push(ownAliases.map((a) => `:${a.text}`).join(', '));
     }
-    
+
     if (otherAliases.length > 0) {
         if (lines.length > 0) lines.push('');
         lines.push('**Aliases de outros:**');
         lines.push(otherAliases.map((a) => `:${a.text}`).join(', '));
     }
-    
+
     lines.push('');
     lines.push(`📄 Página ${page + 1}/${totalPages} (${totalAliases} aliases no total)`);
-    
+
     return {
         text: lines.join('\n'),
         totalPages,
@@ -136,21 +139,21 @@ function createPaginationButtons(
     totalPages: number
 ): MessageButton[] {
     const buttons: MessageButton[] = [];
-    
+
     buttons.push({
         id: `${LIST_ACTION_PREFIX}${userId}_${currentPage - 1}`,
         label: '◀️ Anterior',
         style: 'secondary',
         disabled: currentPage === 0,
     });
-    
+
     buttons.push({
         id: `${LIST_ACTION_PREFIX}${userId}_${currentPage + 1}`,
         label: 'Próximo ▶️',
         style: 'secondary',
         disabled: currentPage >= totalPages - 1,
     });
-    
+
     return buttons;
 }
 
@@ -161,14 +164,14 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 async function getCachedAliasList(userId: string): Promise<AliasList> {
     const cached = aliasListCache.get(userId);
     const now = Date.now();
-    
+
     if (cached && now - cached.timestamp < CACHE_TTL) {
         return cached.aliasList;
     }
-    
+
     const aliasList = await listAlias(userId, storage);
     aliasListCache.set(userId, { aliasList, timestamp: now });
-    
+
     return aliasList;
 }
 
@@ -183,12 +186,12 @@ export const listHandler: CommandHandler = async (ctx: PlatformContext) => {
         ctx.logStep(TAG_LIST, 'retrieved aliases');
 
         const { text, totalPages, totalAliases } = formatAliasPage(aliasList, 0, PAGE_SIZE);
-        
+
         const message: UnifiedMessage = {
             text,
             markdown: text,
         };
-        
+
         // Only add pagination buttons if there's more than one page
         if (totalPages > 1) {
             message.buttons = createPaginationButtons(ctx.user.id, 0, totalPages);
@@ -209,30 +212,30 @@ export const listHandler: CommandHandler = async (ctx: PlatformContext) => {
 export const listPaginationHandler: ButtonHandler = async (ctx: ButtonContext) => {
     try {
         ctx.logStep(TAG_LIST, `pagination button clicked: ${ctx.buttonId}`);
-        
+
         // Parse button ID: alias_list_{userId}_{page}
         const parts = ctx.buttonId.split('_');
         const page = parseInt(parts[parts.length - 1], 10);
         const userId = parts.slice(2, -1).join('_'); // Handle userIds with underscores
-        
+
         // Security: only allow the original user to paginate
         if (userId !== ctx.user.id) {
             ctx.logStep(TAG_LIST, 'unauthorized pagination attempt');
             return;
         }
-        
+
         const aliasList = await getCachedAliasList(userId);
         const { text, totalPages } = formatAliasPage(aliasList, page, PAGE_SIZE);
-        
+
         const message: UnifiedMessage = {
             text,
             markdown: text,
         };
-        
+
         if (totalPages > 1) {
             message.buttons = createPaginationButtons(userId, page, totalPages);
         }
-        
+
         await ctx.updateMessage(message);
     } catch (err: any) {
         ctx.logError(err);
@@ -243,6 +246,80 @@ export const listPaginationHandler: ButtonHandler = async (ctx: ButtonContext) =
  * Get the action ID prefix for registering the button handler.
  */
 export const LIST_ACTION_ID_PREFIX = LIST_ACTION_PREFIX;
+
+/**
+ * /search - Search for aliases using fuzzy matching
+ */
+export const searchHandler: CommandHandler = async (ctx: PlatformContext) => {
+    try {
+        ctx.logStep(TAG_SEARCH, 'received');
+
+        const query = ctx.commandText.trim();
+
+        if (!query) {
+            await ctx.sendEphemeral({
+                text: 'Use `/search termo` para buscar aliases. Exemplo: `/search coffee`',
+            });
+            return;
+        }
+
+        ctx.logStep(TAG_SEARCH, `searching for: ${query}`);
+
+        // Get all aliases
+        const aliasList = await getCachedAliasList(ctx.user.id);
+        const allAliases = getAllAliases(aliasList);
+
+        if (allAliases.length === 0) {
+            await ctx.sendEphemeral({
+                text: 'Ainda não há aliases disponíveis. Use `/help create` para saber como criar um.',
+            });
+            return;
+        }
+
+        // Configure Fuse.js for fuzzy search
+        const fuse = new Fuse(allAliases, {
+            keys: ['text'],
+            threshold: 0.4, // 0 = exact match, 1 = match anything
+            includeScore: true,
+            minMatchCharLength: 2,
+        });
+
+        const results = fuse.search(query, { limit: SEARCH_RESULTS_LIMIT });
+        ctx.logStep(TAG_SEARCH, `found ${results.length} results`);
+
+        if (results.length === 0) {
+            await ctx.sendEphemeral({
+                text: `Nenhum alias encontrado para "${query}". Tente outro termo ou use \`/list\` para ver todos.`,
+            });
+            return;
+        }
+
+        // Format results
+        const lines: string[] = [`🔍 Resultados para "${query}":\n`];
+
+        for (const result of results) {
+            const alias = result.item;
+            const ownership = alias.isOwn ? '(seu)' : '';
+            lines.push(`:${alias.text}: ${ownership}`);
+        }
+
+        if (results.length === SEARCH_RESULTS_LIMIT) {
+            lines.push(`\n_Mostrando os ${SEARCH_RESULTS_LIMIT} primeiros resultados._`);
+        }
+
+        const text = lines.join('\n');
+
+        await ctx.sendEphemeral({
+            text,
+            markdown: text,
+        });
+    } catch (err: any) {
+        ctx.logError(err);
+        await ctx.sendEphemeral({
+            text: 'Algo deu errado ao buscar aliases.',
+        });
+    }
+};
 
 /**
  * /create - Create a new alias (text command version)

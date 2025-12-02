@@ -17,6 +17,7 @@ export {
     replaceHandler,
     hiddenHandler,
     getAliasHandler,
+    searchHandler,
 } from './alias';
 export { fixLinkHandler } from './fix-link';
 export { resetHandler } from './reset';

@@ -56,17 +56,17 @@ function toDiscordButtonStyle(style?: MessageButton['style']): ButtonStyle {
  */
 function createButtonRow(buttons: MessageButton[]): ActionRowBuilder<ButtonBuilder> {
     const row = new ActionRowBuilder<ButtonBuilder>();
-    
+
     for (const button of buttons) {
         const discordButton = new ButtonBuilder()
             .setCustomId(button.id)
             .setLabel(button.label)
             .setStyle(toDiscordButtonStyle(button.style))
             .setDisabled(button.disabled ?? false);
-        
+
         row.addComponents(discordButton);
     }
-    
+
     return row;
 }
 
@@ -283,7 +283,7 @@ export class DiscordAdapter implements PlatformAdapter {
      */
     private async handleButtonInteraction(interaction: ButtonInteraction): Promise<void> {
         const buttonId = interaction.customId;
-        
+
         // Find the matching handler
         const registered = this.buttonHandlers.find((h) => buttonId.startsWith(h.prefix));
         if (!registered) {

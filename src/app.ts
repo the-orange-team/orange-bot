@@ -15,6 +15,7 @@ import {
     fixLinkHandler,
     resetHandler,
     getAliasHandler,
+    searchHandler,
 } from './commands';
 
 // Legacy singleton for backward compatibility with existing middlewares
@@ -43,6 +44,7 @@ discordAdapter.registerCommand('replace', replaceHandler);
 discordAdapter.registerCommand('hidden', hiddenHandler);
 discordAdapter.registerCommand('fix-link', fixLinkHandler);
 discordAdapter.registerCommand('reset', resetHandler);
+discordAdapter.registerCommand('search', searchHandler);
 
 // Register :alias: pattern handler for Discord messages
 discordAdapter.registerMessagePattern(getAliasHandler);

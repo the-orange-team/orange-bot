@@ -2,7 +2,14 @@
  * Slack adapter implementing the PlatformAdapter interface.
  * Bridges Slack Bolt API to the unified platform abstraction.
  */
-import { App, LogLevel, SlackCommandMiddlewareArgs, AllMiddlewareArgs, BlockAction, ButtonAction } from '@slack/bolt';
+import {
+    App,
+    LogLevel,
+    SlackCommandMiddlewareArgs,
+    AllMiddlewareArgs,
+    BlockAction,
+    ButtonAction,
+} from '@slack/bolt';
 import {
     PlatformAdapter,
     PlatformContext,
@@ -118,60 +125,63 @@ export class SlackAdapter implements PlatformAdapter {
         this.buttonHandlers.set(actionIdPrefix, handler);
 
         // Register with Slack using regex to match prefix
-        this.app.action(new RegExp(`^${actionIdPrefix}`), async ({ action, ack, body, client, respond }) => {
-            const buttonAction = action as ButtonAction;
-            const blockAction = body as BlockAction;
+        this.app.action(
+            new RegExp(`^${actionIdPrefix}`),
+            async ({ action, ack, body, client, respond }) => {
+                const buttonAction = action as ButtonAction;
+                const blockAction = body as BlockAction;
 
-            const user: PlatformUser = {
-                id: blockAction.user.id,
-                username: blockAction.user.username || blockAction.user.id,
-                displayName: blockAction.user.name,
-            };
+                const user: PlatformUser = {
+                    id: blockAction.user.id,
+                    username: blockAction.user.username || blockAction.user.id,
+                    displayName: blockAction.user.name,
+                };
 
-            const channel: PlatformChannel = {
-                id: blockAction.channel?.id || '',
-                name: blockAction.channel?.name,
-            };
+                const channel: PlatformChannel = {
+                    id: blockAction.channel?.id || '',
+                    name: blockAction.channel?.name,
+                };
 
-            let acknowledged = false;
+                let acknowledged = false;
 
-            const ctx: ButtonContext = {
-                platform: 'slack',
-                user,
-                channel,
-                buttonId: buttonAction.action_id,
+                const ctx: ButtonContext = {
+                    platform: 'slack',
+                    user,
+                    channel,
+                    buttonId: buttonAction.action_id,
 
-                updateMessage: async (message: UnifiedMessage) => {
-                    const slackMessage = toSlackMessage(message);
-                    await respond({
-                        ...slackMessage,
-                        replace_original: true,
-                    });
-                },
+                    updateMessage: async (message: UnifiedMessage) => {
+                        const slackMessage = toSlackMessage(message);
+                        await respond({
+                            ...slackMessage,
+                            replace_original: true,
+                        });
+                    },
 
-                ack: async () => {
-                    if (!acknowledged) {
-                        await ack();
-                        acknowledged = true;
-                    }
-                },
+                    ack: async () => {
+                        if (!acknowledged) {
+                            await ack();
+                            acknowledged = true;
+                        }
+                    },
 
-                logStep: (tag: string, logMessage: string) => {
-                    console.log(`[${tag}] ${logMessage}`);
-                },
+                    logStep: (tag: string, logMessage: string) => {
+                        console.log(`[${tag}] ${logMessage}`);
+                    },
 
-                logError: (error: unknown) => {
-                    console.error('[Slack Button Error]', error);
-                },
-            };
+                    logError: (error: unknown) => {
+                        console.error('[Slack Button Error]', error);
+                    },
+                };
 
-            try {
-                await ctx.ack(); // Always ack first for Slack
-                await handler(ctx);
-            } catch (error) {
-                console.error(`Error handling button ${buttonAction.action_id}:`, error);
+                try {
+                    await ctx.ack(); // Always ack first for Slack
+                    await handler(ctx);
+                } catch (error) {
+                    console.error(`Error handling button ${buttonAction.action_id}:`, error);
+                }
             }
-        });
+        );
     }
 
     private createContext(args: SlackCommandMiddlewareArgs & AllMiddlewareArgs): PlatformContext {
