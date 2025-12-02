@@ -300,7 +300,7 @@ export const searchHandler: CommandHandler = async (ctx: PlatformContext) => {
         for (const result of results) {
             const alias = result.item;
             const ownership = alias.isOwn ? '(seu)' : '';
-            lines.push(`:${alias.text}: ${ownership}`);
+            lines.push(`:${alias.text} ${ownership}`);
         }
 
         if (results.length === SEARCH_RESULTS_LIMIT) {
