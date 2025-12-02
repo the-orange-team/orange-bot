@@ -92,13 +92,15 @@ export class SlackAdapter implements PlatformAdapter {
     private handlers: Map<string, CommandHandler> = new Map();
     private buttonHandlers: Map<string, ButtonHandler> = new Map();
 
-    constructor() {
-        this.app = new App({
-            token: process.env.SLACK_TOKEN,
-            appToken: process.env.SLACK_APP_TOKEN,
-            socketMode: true,
-            logLevel: LogLevel.INFO,
-        });
+    constructor(existingApp?: App) {
+        this.app =
+            existingApp ??
+            new App({
+                token: process.env.SLACK_TOKEN,
+                appToken: process.env.SLACK_APP_TOKEN,
+                socketMode: true,
+                logLevel: LogLevel.INFO,
+            });
     }
 
     /**
@@ -246,9 +248,9 @@ export class SlackAdapter implements PlatformAdapter {
 // Export singleton instance for backward compatibility
 let slackAdapter: SlackAdapter | null = null;
 
-export function getSlackAdapter(): SlackAdapter {
+export function getSlackAdapter(existingApp?: App): SlackAdapter {
     if (!slackAdapter) {
-        slackAdapter = new SlackAdapter();
+        slackAdapter = new SlackAdapter(existingApp);
     }
     return slackAdapter;
 }

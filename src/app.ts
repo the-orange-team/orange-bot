@@ -29,7 +29,8 @@ const singleton = new App({
 export const app = singleton;
 
 // New platform adapters
-export const slackAdapter = getSlackAdapter();
+// Pass the existing app to SlackAdapter so commands register on the same instance
+export const slackAdapter = getSlackAdapter(singleton);
 export const discordAdapter = getDiscordAdapter();
 
 // Register cross-platform commands with Discord
