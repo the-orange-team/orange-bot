@@ -44,7 +44,7 @@ discordAdapter.registerCommand('replace', replaceHandler);
 discordAdapter.registerCommand('hidden', hiddenHandler);
 discordAdapter.registerCommand('fix-link', fixLinkHandler);
 discordAdapter.registerCommand('reset', resetHandler);
-discordAdapter.registerCommand('search', searchHandler);
+discordAdapter.registerCommand('search-alias', searchHandler);
 
 // Register :alias: pattern handler for Discord messages
 discordAdapter.registerMessagePattern(getAliasHandler);

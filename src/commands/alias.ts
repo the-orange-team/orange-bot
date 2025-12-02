@@ -258,7 +258,7 @@ export const searchHandler: CommandHandler = async (ctx: PlatformContext) => {
 
         if (!query) {
             await ctx.sendEphemeral({
-                text: 'Use `/search termo` para buscar aliases. Exemplo: `/search coffee`',
+                text: 'Use `/search-alias termo` para buscar aliases. Exemplo: `/search-alias coffee`',
             });
             return;
         }
