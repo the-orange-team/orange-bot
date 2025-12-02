@@ -16,4 +16,3 @@ import './fix-link';
 
 import './pokedolar';
 import './free-epic-games';
-import './bolao';
