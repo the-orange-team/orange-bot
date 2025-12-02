@@ -53,6 +53,9 @@ discordAdapter.registerMessagePattern(getAliasHandler);
 discordAdapter.registerButtonHandler(LIST_ACTION_ID_PREFIX, listPaginationHandler);
 slackAdapter.registerButtonHandler(LIST_ACTION_ID_PREFIX, listPaginationHandler);
 
+// Register Slack commands via adapter (new pattern)
+slackAdapter.registerCommand('search-alias', searchHandler);
+
 // Helper to check if Discord is configured
 export function isDiscordEnabled(): boolean {
     return !!(process.env.DISCORD_TOKEN && process.env.DISCORD_CLIENT_ID);
