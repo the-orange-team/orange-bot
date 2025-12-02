@@ -10,6 +10,8 @@ export { helpHandler } from './help';
 export { freeEpicGamesHandler } from './free-epic-games';
 export {
     listHandler,
+    listPaginationHandler,
+    LIST_ACTION_ID_PREFIX,
     createHandler,
     deleteHandler,
     replaceHandler,

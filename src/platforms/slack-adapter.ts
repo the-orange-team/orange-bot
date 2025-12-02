@@ -2,7 +2,7 @@
  * Slack adapter implementing the PlatformAdapter interface.
  * Bridges Slack Bolt API to the unified platform abstraction.
  */
-import { App, LogLevel, SlackCommandMiddlewareArgs, AllMiddlewareArgs } from '@slack/bolt';
+import { App, LogLevel, SlackCommandMiddlewareArgs, AllMiddlewareArgs, BlockAction, ButtonAction } from '@slack/bolt';
 import {
     PlatformAdapter,
     PlatformContext,
@@ -10,7 +10,24 @@ import {
     UnifiedMessage,
     PlatformUser,
     PlatformChannel,
+    ButtonHandler,
+    ButtonContext,
+    MessageButton,
 } from './types';
+
+/**
+ * Convert MessageButton style to Slack button style.
+ */
+function toSlackButtonStyle(style?: MessageButton['style']): 'primary' | 'danger' | undefined {
+    switch (style) {
+        case 'primary':
+            return 'primary';
+        case 'danger':
+            return 'danger';
+        default:
+            return undefined;
+    }
+}
 
 /**
  * Convert a UnifiedMessage to Slack's message format.
@@ -39,6 +56,23 @@ function toSlackMessage(message: UnifiedMessage): any {
         });
     }
 
+    // Add buttons if present
+    if (message.buttons && message.buttons.length > 0) {
+        blocks.push({
+            type: 'actions',
+            elements: message.buttons.map((button) => ({
+                type: 'button',
+                text: {
+                    type: 'plain_text',
+                    text: button.label,
+                    emoji: true,
+                },
+                action_id: button.id,
+                style: toSlackButtonStyle(button.style),
+            })),
+        });
+    }
+
     return {
         text: message.text,
         blocks: blocks.length > 0 ? blocks : undefined,
@@ -49,6 +83,7 @@ export class SlackAdapter implements PlatformAdapter {
     readonly platform = 'slack' as const;
     private app: App;
     private handlers: Map<string, CommandHandler> = new Map();
+    private buttonHandlers: Map<string, ButtonHandler> = new Map();
 
     constructor() {
         this.app = new App({
@@ -73,6 +108,69 @@ export class SlackAdapter implements PlatformAdapter {
         this.app.command(commandName, async (args) => {
             const ctx = this.createContext(args);
             await handler(ctx);
+        });
+    }
+
+    /**
+     * Register a button action handler.
+     */
+    registerButtonHandler(actionIdPrefix: string, handler: ButtonHandler): void {
+        this.buttonHandlers.set(actionIdPrefix, handler);
+
+        // Register with Slack using regex to match prefix
+        this.app.action(new RegExp(`^${actionIdPrefix}`), async ({ action, ack, body, client, respond }) => {
+            const buttonAction = action as ButtonAction;
+            const blockAction = body as BlockAction;
+
+            const user: PlatformUser = {
+                id: blockAction.user.id,
+                username: blockAction.user.username || blockAction.user.id,
+                displayName: blockAction.user.name,
+            };
+
+            const channel: PlatformChannel = {
+                id: blockAction.channel?.id || '',
+                name: blockAction.channel?.name,
+            };
+
+            let acknowledged = false;
+
+            const ctx: ButtonContext = {
+                platform: 'slack',
+                user,
+                channel,
+                buttonId: buttonAction.action_id,
+
+                updateMessage: async (message: UnifiedMessage) => {
+                    const slackMessage = toSlackMessage(message);
+                    await respond({
+                        ...slackMessage,
+                        replace_original: true,
+                    });
+                },
+
+                ack: async () => {
+                    if (!acknowledged) {
+                        await ack();
+                        acknowledged = true;
+                    }
+                },
+
+                logStep: (tag: string, logMessage: string) => {
+                    console.log(`[${tag}] ${logMessage}`);
+                },
+
+                logError: (error: unknown) => {
+                    console.error('[Slack Button Error]', error);
+                },
+            };
+
+            try {
+                await ctx.ack(); // Always ack first for Slack
+                await handler(ctx);
+            } catch (error) {
+                console.error(`Error handling button ${buttonAction.action_id}:`, error);
+            }
         });
     }
 

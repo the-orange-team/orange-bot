@@ -6,6 +6,8 @@ import {
     helpHandler,
     freeEpicGamesHandler,
     listHandler,
+    listPaginationHandler,
+    LIST_ACTION_ID_PREFIX,
     createHandler,
     deleteHandler,
     replaceHandler,
@@ -44,6 +46,10 @@ discordAdapter.registerCommand('reset', resetHandler);
 
 // Register :alias: pattern handler for Discord messages
 discordAdapter.registerMessagePattern(getAliasHandler);
+
+// Register button handlers for pagination
+discordAdapter.registerButtonHandler(LIST_ACTION_ID_PREFIX, listPaginationHandler);
+slackAdapter.registerButtonHandler(LIST_ACTION_ID_PREFIX, listPaginationHandler);
 
 // Helper to check if Discord is configured
 export function isDiscordEnabled(): boolean {

@@ -14,6 +14,11 @@ import {
     SlashCommandOptionsOnlyBuilder,
     Message,
     MessageCreateOptions,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ButtonInteraction,
+    InteractionUpdateOptions,
 } from 'discord.js';
 import {
     PlatformAdapter,
@@ -22,11 +27,48 @@ import {
     UnifiedMessage,
     PlatformUser,
     PlatformChannel,
+    ButtonHandler,
+    ButtonContext,
+    MessageButton,
 } from './types';
 
 // Regex to match :alias: pattern (same as Slack)
 const ALIAS_PATTERN =
     /(^|[ ]+):([\wáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?]+)([^\wáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ!@#$%^&*()_+\-=[\]{};'"\\|,.<>/?:]|$)/;
+
+/**
+ * Convert MessageButton style to Discord ButtonStyle.
+ */
+function toDiscordButtonStyle(style?: MessageButton['style']): ButtonStyle {
+    switch (style) {
+        case 'primary':
+            return ButtonStyle.Primary;
+        case 'danger':
+            return ButtonStyle.Danger;
+        case 'secondary':
+        default:
+            return ButtonStyle.Secondary;
+    }
+}
+
+/**
+ * Create Discord button components from UnifiedMessage buttons.
+ */
+function createButtonRow(buttons: MessageButton[]): ActionRowBuilder<ButtonBuilder> {
+    const row = new ActionRowBuilder<ButtonBuilder>();
+    
+    for (const button of buttons) {
+        const discordButton = new ButtonBuilder()
+            .setCustomId(button.id)
+            .setLabel(button.label)
+            .setStyle(toDiscordButtonStyle(button.style))
+            .setDisabled(button.disabled ?? false);
+        
+        row.addComponents(discordButton);
+    }
+    
+    return row;
+}
 
 /**
  * Convert a UnifiedMessage to Discord's message format for interactions.
@@ -46,6 +88,39 @@ function toDiscordMessage(message: UnifiedMessage): InteractionReplyOptions {
     } else {
         // Just use content for simple text messages
         options.content = message.markdown || message.text;
+    }
+
+    // Add buttons if present
+    if (message.buttons && message.buttons.length > 0) {
+        options.components = [createButtonRow(message.buttons)];
+    }
+
+    return options;
+}
+
+/**
+ * Convert a UnifiedMessage to Discord's message format for updating.
+ */
+function toDiscordUpdateMessage(message: UnifiedMessage): InteractionUpdateOptions {
+    const options: InteractionUpdateOptions = {};
+
+    // If there's an image, use an embed
+    if (message.image) {
+        const embed = new EmbedBuilder()
+            .setDescription(message.markdown || message.text)
+            .setImage(message.image.url);
+
+        options.embeds = [embed];
+    } else {
+        // Just use content for simple text messages
+        options.content = message.markdown || message.text;
+    }
+
+    // Add buttons if present
+    if (message.buttons && message.buttons.length > 0) {
+        options.components = [createButtonRow(message.buttons)];
+    } else {
+        options.components = [];
     }
 
     return options;
@@ -78,11 +153,17 @@ interface RegisteredCommand {
     builder: SlashCommandOptionsOnlyBuilder;
 }
 
+interface RegisteredButtonHandler {
+    prefix: string;
+    handler: ButtonHandler;
+}
+
 export class DiscordAdapter implements PlatformAdapter {
     readonly platform = 'discord' as const;
     private client: Client;
     private rest: REST;
     private commands: Map<string, RegisteredCommand> = new Map();
+    private buttonHandlers: RegisteredButtonHandler[] = [];
     private messageHandler: CommandHandler | null = null;
     private clientId: string;
     private guildId?: string; // Optional: for guild-specific commands (faster registration)
@@ -134,6 +215,13 @@ export class DiscordAdapter implements PlatformAdapter {
         this.messageHandler = handler;
     }
 
+    /**
+     * Register a button action handler.
+     */
+    registerButtonHandler(actionIdPrefix: string, handler: ButtonHandler): void {
+        this.buttonHandlers.push({ prefix: actionIdPrefix, handler });
+    }
+
     private setupEventHandlers(): void {
         this.client.on('ready', () => {
             console.log(`🎮 Discord bot logged in as ${this.client.user?.tag}`);
@@ -141,6 +229,12 @@ export class DiscordAdapter implements PlatformAdapter {
 
         // Handle slash command interactions
         this.client.on('interactionCreate', async (interaction) => {
+            // Handle button interactions
+            if (interaction.isButton()) {
+                await this.handleButtonInteraction(interaction);
+                return;
+            }
+
             if (!interaction.isChatInputCommand()) return;
 
             const command = this.commands.get(interaction.commandName);
@@ -182,6 +276,74 @@ export class DiscordAdapter implements PlatformAdapter {
                 console.error(`Error handling alias :${aliasName}:`, error);
             }
         });
+    }
+
+    /**
+     * Handle button interaction clicks.
+     */
+    private async handleButtonInteraction(interaction: ButtonInteraction): Promise<void> {
+        const buttonId = interaction.customId;
+        
+        // Find the matching handler
+        const registered = this.buttonHandlers.find((h) => buttonId.startsWith(h.prefix));
+        if (!registered) {
+            console.warn(`No handler for button: ${buttonId}`);
+            return;
+        }
+
+        const user: PlatformUser = {
+            id: interaction.user.id,
+            username: interaction.user.username,
+            displayName: interaction.user.displayName || interaction.user.username,
+        };
+
+        const channel: PlatformChannel = {
+            id: interaction.channelId,
+            name:
+                interaction.channel && 'name' in interaction.channel
+                    ? interaction.channel.name ?? undefined
+                    : undefined,
+        };
+
+        let acknowledged = false;
+
+        const ctx: ButtonContext = {
+            platform: 'discord',
+            user,
+            channel,
+            buttonId,
+
+            updateMessage: async (message: UnifiedMessage) => {
+                const discordMessage = toDiscordUpdateMessage(message);
+                if (!acknowledged) {
+                    await interaction.update(discordMessage);
+                    acknowledged = true;
+                } else {
+                    await interaction.editReply(discordMessage);
+                }
+            },
+
+            ack: async () => {
+                if (!acknowledged) {
+                    await interaction.deferUpdate();
+                    acknowledged = true;
+                }
+            },
+
+            logStep: (tag: string, logMessage: string) => {
+                console.log(`[${tag}] ${logMessage}`);
+            },
+
+            logError: (error: unknown) => {
+                console.error('[Discord Button Error]', error);
+            },
+        };
+
+        try {
+            await registered.handler(ctx);
+        } catch (error) {
+            console.error(`Error handling button ${buttonId}:`, error);
+        }
     }
 
     private createContext(interaction: ChatInputCommandInteraction): PlatformContext {
